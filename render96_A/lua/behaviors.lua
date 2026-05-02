@@ -986,6 +986,46 @@ end
 
 id_bhvRender96MrIParticle = hook_behavior(nil, OBJ_LIST_GENACTOR, false, bhv_mr_i_render96_particle_init, bhv_mr_i_render96_particle_loop)
 
+---@param o Object
+local function bhv_mr_i_render96_fire_particle_init(o)
+    local sParticleHitbox = get_temp_object_hitbox()
+    sParticleHitbox.interactType        = INTERACT_FLAME
+    sParticleHitbox.downOffset          = 0
+    sParticleHitbox.damageOrCoinValue   = 2
+    sParticleHitbox.health              = 1
+    sParticleHitbox.numLootCoins        = 0
+    sParticleHitbox.radius              = 100
+    sParticleHitbox.height              = 100
+    sParticleHitbox.hurtboxRadius       = 50
+    sParticleHitbox.hurtboxHeight       = 50
+    obj_set_hitbox(o, sParticleHitbox)
+
+    o.oFlags = OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE
+    o.header.gfx.node.flags = o.header.gfx.node.flags | GRAPH_RENDER_BILLBOARD
+    o.oDrawingDistance   = 4000
+
+    cur_obj_scale(6)
+end
+
+---@param o Object
+local function bhv_mr_i_render96_fire_particle_loop(o)
+    cur_obj_move_using_fvel_and_gravity()
+    cur_obj_update_floor_and_walls()
+    o.oAnimState = math.floor(math.random() * 10)
+    if (o.oInteractStatus & 0x8000) ~= 0
+        or o.oTimer >= 101
+        or (o.oMoveFlags & OBJ_MOVE_LANDED) ~= 0 
+        or (o.oMoveFlags & OBJ_MOVE_HIT_WALL) ~= 0 
+        or (o.oMoveFlags & OBJ_MOVE_MASK_IN_WATER) ~= 0
+        or (o.activeFlags & ACTIVE_FLAG_IN_DIFFERENT_ROOM) ~= 0 then
+        spawn_mist_particles()
+        obj_mark_for_deletion(o)
+    end
+    o.oInteractStatus = 0
+end
+
+id_bhvRender96MrIFireParticle = hook_behavior(nil, OBJ_LIST_GENACTOR, false, bhv_mr_i_render96_fire_particle_init, bhv_mr_i_render96_fire_particle_loop)
+
 local DEATH_THRESHOLD = 4 * math.pi
 local FOV_THRESHOLD = degrees_to_sm64(30)
 local CIRCLE_MIN_DELTA  = 200
@@ -1039,10 +1079,14 @@ local function bhv_mr_i_render96_fire(o, player)
     local pitch = o.oFaceAnglePitch
     local speed = 25.0
     local spawnY = o.oPosY - 40
+    local particle = nil
 
-    if o.oBehParams2ndByte == 0x05010000 then spawnY = spawnY - 40 end
-
-    local particle = spawn_non_sync_object(id_bhvRender96MrIParticle, E_MODEL_PURPLE_MARBLE, o.oPosX, spawnY, o.oPosZ, nil)
+    if o.oBehParams2ndByte == 0x05010000 then 
+        spawnY = spawnY - 40 
+        particle = spawn_non_sync_object(id_bhvRender96MrIFireParticle, E_MODEL_BLUE_FLAME, o.oPosX, spawnY, o.oPosZ, nil)
+    else
+        particle = spawn_non_sync_object(id_bhvRender96MrIParticle, E_MODEL_PURPLE_MARBLE, o.oPosX, spawnY, o.oPosZ, nil)
+    end
     if particle == nil then return end
 
     particle.oMoveAngleYaw   = yaw
