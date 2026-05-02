@@ -585,10 +585,10 @@ end
 
 ---@param m MarioState
 local function wario_current_actions(m)
-    if (m.action == ACT_HOLD_IDLE) then set_mario_action(m, ACT_WARIO_HOLD_IDLE, 0) end
-    if (m.action == ACT_HOLD_HEAVY_IDLE) then set_mario_action(m, ACT_WARIO_HOLD_HEAVY_IDLE, 0) end
-    if (m.action == ACT_HOLD_WALKING) then set_mario_action(m, ACT_WARIO_HOLD_WALKING, 0) end
-    if (m.action == ACT_HOLD_HEAVY_WALKING) then set_mario_action(m, ACT_WARIO_HOLD_HEAVY_WALKING, 0) end
+    if (m.action == ACT_HOLD_IDLE) then return set_mario_action(m, ACT_WARIO_HOLD_IDLE, 0) end
+    if (m.action == ACT_HOLD_HEAVY_IDLE) then return set_mario_action(m, ACT_WARIO_HOLD_HEAVY_IDLE, 0) end
+    if (m.action == ACT_HOLD_WALKING) then return set_mario_action(m, ACT_WARIO_HOLD_WALKING, 0) end
+    if (m.action == ACT_HOLD_HEAVY_WALKING) then return set_mario_action(m, ACT_WARIO_HOLD_HEAVY_WALKING, 0) end
 end
 
 hook_mario_action(ACT_WARIO_CHARGE, act_wario_charge)
@@ -786,13 +786,13 @@ end
 
 hook_event(HOOK_ON_MODS_LOADED, function ()
     if _G.charSelect ~= nil then
-        -- Set Luigi and Wario Unlock Conditions
+        -- Luigi
         _G.charSelect.character_set_locked(CT_LUIGI, luigi_bool, true)
-        _G.charSelect.character_set_locked(CT_WARIO, wario_bool, true)
-        -- Hook Luigi and Wario Movesets
-        _G.charSelect.character_hook_moveset(CT_WARIO, HOOK_BEFORE_SET_MARIO_ACTION, wario_before_actions)
-        _G.charSelect.character_hook_moveset(CT_WARIO, HOOK_ON_SET_MARIO_ACTION, wario_current_actions)
         _G.charSelect.character_hook_moveset(CT_LUIGI, HOOK_BEFORE_PHYS_STEP, luigi_before_phys_step)
         _G.charSelect.character_hook_moveset(CT_LUIGI, HOOK_MARIO_UPDATE, luigi_update)
+        -- Wario
+        _G.charSelect.character_set_locked(CT_WARIO, wario_bool, true)
+        _G.charSelect.character_hook_moveset(CT_WARIO, HOOK_BEFORE_SET_MARIO_ACTION, wario_before_actions)
+        _G.charSelect.character_hook_moveset(CT_WARIO, HOOK_ON_SET_MARIO_ACTION, wario_current_actions)
     end
 end)
