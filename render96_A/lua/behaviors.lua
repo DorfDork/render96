@@ -1473,7 +1473,7 @@ local function bhv_star_particle_loop(o)
     if star ~= nil then
         obj_set_pos(o, star.oPosX, star.oPosY, star.oPosZ)
     end
-    if obj_is_hidden(o.parentObj) ~= 0 then
+    if obj_is_hidden(o.parentObj) ~= 0 or (obj_has_behavior_id(o.parentObj, id_bhvHiddenStar) ~= 0 and o.oAction == 0) then
         cur_obj_hide()
     else
         cur_obj_unhide()
