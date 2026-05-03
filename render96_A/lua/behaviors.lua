@@ -621,18 +621,25 @@ end
 local function bhv_thwomp_render96_loop(o)
     bhv_thwomp_render96_shake(o)
     if o.oAction == 0 then o.oSwitchState2 = TWHOMP_FACE_BASE end
-    if o.oAction == 1 then o.oSwitchState2 = TWHOMP_FACE_ANGRY end
     if o.oAction == 2 then o.oSwitchState2 = TWHOMP_FACE_URGH end
+    if o.oAction == 3 then o.oSwitchState2 = TWHOMP_FACE_ANGRY end
 
+   local remaining = o.oThwompRandomTimer - o.oTimer
+    if remaining > (o.oThwompShakeTicks + 0.5) or remaining < 0 then
+         if o.oAction == 1 then o.oSwitchState2 = TWHOMP_FACE_BASE end
+    else
+        if o.oAction == 1 then o.oSwitchState2 = TWHOMP_FACE_ANGRY end
+    end
+    
     local prevAction = o.oThwompPrevAction or o.oAction
     if prevAction ~= 3 and o.oAction == 3 then
         o.oThwompSquishTimer = 0
-        o.oThwompSquishDur = 15
+        o.oThwompSquishDur = 5
         o.oThwompBaseScale = o.header.gfx.scale.x
     end
 
     if (o.oThwompSquishDur or 0) > 0 and (o.oThwompSquishTimer or 0) <= o.oThwompSquishDur then
-        r96lib.squish_apply(o, o.oThwompSquishTimer, o.oThwompSquishDur, 0.25, -0.40, 0.25, o.oThwompBaseScale, nil)
+        r96lib.squish_apply(o, o.oThwompSquishTimer, o.oThwompSquishDur, 0.15, -0.20, 0.15, o.oThwompBaseScale, nil)
         o.oThwompSquishTimer = o.oThwompSquishTimer + 1
     end
 
@@ -1588,3 +1595,46 @@ id_bhvRender96SpawnedStarNoLevelExit = hook_behavior(id_bhvSpawnedStarNoLevelExi
 id_bhvRender96HiddenStar = hook_behavior(id_bhvHiddenStar, OBJ_LIST_LEVEL, false, bhv_star_render96_init, nil)
 id_bhvRender96SpawnCoordStar = hook_behavior(id_bhvStarSpawnCoordinates, OBJ_LIST_LEVEL, false, bhv_star_render96_init, nil)
 id_bhvRender96CelebrationStar = hook_behavior(id_bhvCelebrationStar, OBJ_LIST_LEVEL, false, bhv_star_render96_init, nil)
+
+---@param o Object
+local function bhv_whomp_render96_init(o)
+    o.oThwompPrevAction = o.oAction or 0
+    o.oThwompSquishTimer = 0
+    o.oThwompSquishDur = 0
+    o.oThwompBaseScale = o.header.gfx.scale.x
+end
+
+local function bhv_whomp_render96_loop(o)
+    local prevAction = o.oThwompPrevAction or o.oAction
+    if prevAction ~= 5 and o.oAction == 5 then
+        o.oThwompSquishTimer = 0
+        o.oThwompSquishDur = 5
+        o.oThwompBaseScale = o.header.gfx.scale.x
+    end
+
+    if (o.oThwompSquishDur or 0) > 0 and (o.oThwompSquishTimer or 0) <= o.oThwompSquishDur then
+        r96lib.squish_apply(o, o.oThwompSquishTimer, o.oThwompSquishDur, -0.10, 0.15, 0.15, o.oThwompBaseScale, nil)
+        o.oThwompSquishTimer = o.oThwompSquishTimer + 1
+    end
+
+    o.oThwompPrevAction = o.oAction
+end
+
+id_bhvRender96SmallWhomp = hook_behavior(id_bhvSmallWhomp, OBJ_LIST_SURFACE, false, bhv_whomp_render96_init, bhv_whomp_render96_loop)
+id_bhvRender96WhompKingBoss = hook_behavior(id_bhvWhompKingBoss, OBJ_LIST_SURFACE, false, bhv_whomp_render96_init, bhv_whomp_render96_loop)
+
+
+---@param o Object
+local function bhv_pokey_render96_init(o)
+    o.header.gfx.node.flags = o.header.gfx.node.flags & ~GRAPH_RENDER_BILLBOARD
+end
+
+local function bhv_pokey_render96_loop(o)
+    local player = nearest_player_to_object(o)
+    local angleToPlayer = obj_angle_to_object(o, player)
+    o.oFaceAngleYaw =  angleToPlayer
+end
+
+
+id_bhvRender96Pokey = hook_behavior(id_bhvPokey, OBJ_LIST_SURFACE, false, bhv_pokey_render96_init, bhv_pokey_render96_loop)
+id_bhvRender96PokeyBodyPart = hook_behavior(id_bhvPokeyBodyPart, OBJ_LIST_SURFACE, false, bhv_pokey_render96_init, bhv_pokey_render96_loop)
