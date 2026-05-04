@@ -73,7 +73,7 @@ define_custom_obj_fields({
     oThwompSquishDur    = 'f32',
     oThwompBaseScale    = 'f32',
     oWarioHeadBool      = 'f32',
-    oMusicFade          = 'f32',
+    oMusic              = 'f32',
     oCelebrationStar    = 'f32'
 })
 
@@ -336,7 +336,6 @@ local function bhv_goomba_render96_init(o)
     o.oSwitchState1 = GOOMBA_EYE_OPEN
     o.oSwitchTimer1 = 0
     o.oSwitchTimer2 = 0
-    o.oMusicFade = 0
 end
 
 ---@param o Object
@@ -843,25 +842,13 @@ local function bhv_warp_pipe_render96_init(o)
     o.hitboxHeight = 50
     o.oInteractStatus = 0
     o.collisionData = smlua_collision_util_get("warp_pipe_seg3_collision_03009AC8")
-    o.oMusicFade = FADE_OUT
 end
 
 ---@param o Object
 local function bhv_warp_pipe_render96_red_loop(o)
     load_object_collision_model()
     bhv_warp_loop()
-    local audioStream = audio_stream_load(BOO_PIPE_RED)
-    local distanceToPlayer = dist_between_objects(m.marioObj, o)
-    if distanceToPlayer < 1000 and o.oMusicFade == 0 then
-        --audio_stream_set_loop_points(audioStream, 0, 333353)
-        audio_stream_set_looping(audioStream, true)
-        audio_stream_play(audioStream, true, 0)
-        o.oMusicFade = FADE_IN
-    end
-    if distanceToPlayer > 1000 then
-        o.oMusicFade = FADE_OUT
-    end
-    r96lib.audio_fade(o, audioStream)
+    r96lib.audio_fade(o, BOO_PIPE_RED)
 end
 
 id_bhvRender96WarpPipeRed = hook_behavior(nil, OBJ_LIST_SURFACE, false, bhv_warp_pipe_render96_init, bhv_warp_pipe_render96_red_loop)
@@ -870,18 +857,7 @@ id_bhvRender96WarpPipeRed = hook_behavior(nil, OBJ_LIST_SURFACE, false, bhv_warp
 local function bhv_warp_pipe_render96_green_loop(o)
     load_object_collision_model()
     bhv_warp_loop()
-    local audioStream = audio_stream_load(BOO_PIPE_GREEN)
-    local distanceToPlayer = dist_between_objects(m.marioObj, o)
-    if distanceToPlayer < 1000 and o.oMusicFade == 0 then
-        --audio_stream_set_loop_points(audioStream, 0, 333353)
-        audio_stream_set_looping(audioStream, true)
-        audio_stream_play(audioStream, true, 0)
-        o.oMusicFade = FADE_IN
-    end
-    if distanceToPlayer > 1000 then
-        o.oMusicFade = FADE_OUT
-    end
-    r96lib.audio_fade(o, audioStream)
+    --r96lib.audio_fade(o, BOO_PIPE_GREEN)
 end
 
 id_bhvRender96WarpPipeGreen = hook_behavior(nil, OBJ_LIST_SURFACE, false, bhv_warp_pipe_render96_init, bhv_warp_pipe_render96_green_loop)
@@ -890,18 +866,7 @@ id_bhvRender96WarpPipeGreen = hook_behavior(nil, OBJ_LIST_SURFACE, false, bhv_wa
 local function bhv_warp_pipe_render96_yellow_loop(o)
     load_object_collision_model()
     bhv_warp_loop()
-    local audioStream = audio_stream_load(BOO_PIPE_YELLOW)
-    local distanceToPlayer = dist_between_objects(m.marioObj, o)
-    if distanceToPlayer < 1000 and o.oMusicFade == 0 then
-        --audio_stream_set_loop_points(audioStream, 0, 333353)
-        audio_stream_set_looping(audioStream, true)
-        audio_stream_play(audioStream, true, 0)
-        o.oMusicFade = FADE_IN
-    end
-    if distanceToPlayer > 1000 then
-        o.oMusicFade = FADE_OUT
-    end
-    r96lib.audio_fade(o, audioStream)
+    --r96lib.audio_fade(o, BOO_PIPE_YELLOW)
 end
 
 id_bhvRender96WarpPipeYellow = hook_behavior(nil, OBJ_LIST_SURFACE, false, bhv_warp_pipe_render96_init, bhv_warp_pipe_render96_yellow_loop)

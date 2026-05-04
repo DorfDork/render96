@@ -7,6 +7,9 @@ bloWarps = require("/lib/warps")
 UvScroll = require("/lib/uv-scroll")
 require("/lib/r96lib")
 
+-- Constants
+require('lua/constants')
+
 -- Players
 require('lua/mario')
 require('lua/character_moveset')
@@ -18,7 +21,7 @@ require('lua/extra_char_unlock')
 require('lua/got_milk')
 require('lua/mario_milk_run')
 
--- Levels
+local charSelect = _G.charSelect
 
 local function pipe_entry(m, o)
     play_sound(SOUND_MENU_ENTER_PIPE, gGlobalSoundSource)
@@ -30,33 +33,28 @@ local function pipe_exit(m, o)
 end
 
 local function boo_pipe_red_exit(m, o)
-    play_sound(SOUND_MENU_EXIT_PIPE, gGlobalSoundSource)
-    set_mario_action(m, ACT_EMERGE_FROM_PIPE, 0)
-    _G.charSelect.character_set_current_number(CT_MARIO, 1)
+    pipe_exit(m)
+    charSelect.character_set_current_number(CT_MARIO, 1)
 end
 
 local function boo_pipe_green_exit(m, o)
-    play_sound(SOUND_MENU_EXIT_PIPE, gGlobalSoundSource)
-    set_mario_action(m, ACT_EMERGE_FROM_PIPE, 0)
-    if gNumLuigiKeys ~= 8 then _G.charSelect.character_set_current_number(m.character.type, 1) end
-    if gNumLuigiKeys == 8 then _G.charSelect.character_set_current_number(CT_LUIGI, 1) end
+    pipe_exit(m)
+    local char = gNumLuigiKeys == 8 and CT_LUIGI or m.character.type
+    charSelect.character_set_current_number(char, 1)
 end
 
 local function boo_pipe_yellow_exit(m, o)
-    play_sound(SOUND_MENU_EXIT_PIPE, gGlobalSoundSource)
-    set_mario_action(m, ACT_EMERGE_FROM_PIPE, 0)
-    if gNumWarioCoins ~= 6 then _G.charSelect.character_set_current_number(m.character.type, 1) end
-    if gNumWarioCoins == 6 then _G.charSelect.character_set_current_number(CT_WARIO, 1) end
+    pipe_exit(m)
+    local char = gNumWarioCoins == 6 and CT_WARIO or m.character.type
+    charSelect.character_set_current_number(char, 1)
 end
 
 local function boo_pipe_green_model()
-    if gNumLuigiKeys ~= 8 then return E_MODEL_WARP_PIPE_BOO_GREEN_LOCKED end
-    if gNumLuigiKeys == 8 then return E_MODEL_WARP_PIPE_BOO_GREEN_UNLOCKED end
+    return gNumLuigiKeys == 8 and E_MODEL_WARP_PIPE_BOO_GREEN_UNLOCKED or  E_MODEL_WARP_PIPE_BOO_GREEN_LOCKED
 end
 
 local function boo_pipe_yellow_model()
-    if gNumWarioCoins ~= 6 then return E_MODEL_WARP_PIPE_BOO_YELLOW_LOCKED end
-    if gNumWarioCoins == 6 then return E_MODEL_WARP_PIPE_BOO_YELLOW_UNLOCKED end
+    return gNumWarioCoins == 6 and E_MODEL_WARP_PIPE_BOO_YELLOW_UNLOCKED or  E_MODEL_WARP_PIPE_BOO_YELLOW_LOCKED
 end
 
 local function obj_beh_params2(o, val)
@@ -85,12 +83,10 @@ r96lib.addModelOverride(id_bhvMerryGoRoundBigBoo,   E_MODEL_BOO_BIG)
 r96lib.addModelOverride(id_bhvBooWithCage,          E_MODEL_BOO_BIG)
 r96lib.addModelOverride(id_bhvGhostHuntBigBoo,      E_MODEL_BOO_KING)
 r96lib.addModelOverride(id_bhvBooInCastle,          E_MODEL_BOO_KING)
-
+r96lib.addModelOverride(id_bhvBigBullyWithMinions,  E_MODEL_BULLY_BIG)
 r96lib.addModelOverride(id_bhvGrindel,              E_MODEL_GRINDLE)
 r96lib.addModelOverride(id_bhvHorizontalGrindel,    E_MODEL_GRINDLE)
 r96lib.addModelOverride(id_bhvSpindel,              E_MODEL_SPINDLE)
-r96lib.addModelOverride(id_bhvBigBullyWithMinions,  E_MODEL_BULLY_BIG)
---r96lib.addModelOverride(id_bhvToxBox,               E_MODEL_TOXBOX)
 
 -- Enemies
 r96lib.addSpawn(LEVEL_LLL, 1, E_MODEL_BLARGG, id_bhvRender96Blargg, -6766, 0,  3033, 0, 0, 0)
@@ -121,6 +117,19 @@ r96lib.addSpawn(LEVEL_SA, 1, E_MODEL_LUIGI_KEY, id_bhvLuigiKeys,     -318,  -160
 r96lib.addSpawn(LEVEL_PSS, 1, E_MODEL_LUIGI_KEY, id_bhvLuigiKeys,    6094,  6144, -4145, 0, 0, 0, nil, function(o) obj_beh_params2(o, 6) end)
 r96lib.addSpawn(LEVEL_BITDW, 1, E_MODEL_LUIGI_KEY, id_bhvLuigiKeys, -4560,  1126,  -179, 0, 0, 0, nil, function(o) obj_beh_params2(o, 7) end)
 
+
+-- Scroll the uvs to the right
+local function uv_scroll_right(input_vtx, original_uv, current_uv)
+    -- adjustable constants
+    local speed = 10
+
+    -- move the UVs to the right
+    current_uv[1] = current_uv[1] + speed
+end
+
+UvScroll.hook_scrolling_function('star_particle_001_displaylist_mesh_layer_5_tri_1', uv_scroll_right)
+
+
 function wario_head_spawner()
     local levelNum = gNetworkPlayers[0].currLevelNum
     local areaNum = gNetworkPlayers[0].currAreaIndex
@@ -141,49 +150,8 @@ function check_model_cheat()
     --if gNumLuigiKeys ~= 8 and gMarioStates[0].character.type == CT_LUIGI then _G.charSelect.character_set_current_number(CT_MARIO, 1) end
     --if gNumWarioCoins ~= 6 and gMarioStates[0].character.type == CT_WARIO then _G.charSelect.character_set_current_number(CT_MARIO, 1) end
 end
-
-
-
 hook_event(HOOK_MARIO_UPDATE, check_model_cheat)
-
 hook_event(HOOK_ON_WARP, wario_head_spawner)
-
-
-local star_particle_frame = 0
-
--- Scroll the uvs to the right
-local function uv_scroll_right(input_vtx, original_uv, current_uv)
-    -- adjustable constants
-    local speed = 10
-
-    -- move the UVs to the right
-    current_uv[1] = current_uv[1] + speed
-end
-
-local function uv_scroll_star_particle(vtx, original_uv, current_uv)
-    local amplitude = 1.0
-    local frequency = 0.61
-    local width     = 32 * 0x20
-
-    local angle = (frequency * star_particle_frame * (math.pi * 2)) / (1024 * 16 - 1)
-    local delta = math.floor(amplitude * frequency * math.cos(angle) * 0x20)
-
-    if math.abs(current_uv[1]) > width then
-        local sign = current_uv[1] > 0 and 1 or -1
-        delta = delta - math.floor(math.abs(current_uv[1]) / width) * width * sign
-    end
-
-    current_uv[1] = current_uv[1] + delta
-end
-
-hook_event(HOOK_UPDATE, function()
-    star_particle_frame = star_particle_frame + 1
-end)
-UvScroll.hook_scrolling_function('star_particle_001_displaylist_mesh_layer_5_tri_1', uv_scroll_right)
-
-
-
-
 function squishtest()
     --vec3f_set(gMarioStates[0].marioObj.header.gfx.scale, 3, 1, 1);
     --vec3f_set(gMarioStates[0].marioObj.header.gfx.scale, .1, 1, 1)
@@ -199,9 +167,9 @@ local function mario_update(m)
    -- spawn_non_sync_object(id_bhvRender96Star, E_MODEL_STAR, m.pos.x + 200, m.pos.y, m.pos.z, nil)
    --   
    --end
-   -- if m.action == ACT_BACKFLIP then
-   --     warp_to_level(LEVEL_SL, 1, 1)
-   -- end
+   if m.action == ACT_BACKFLIP then
+       warp_to_level(LEVEL_FOURTH_FLOOR, 1, 1)
+   end
     local mrI = obj_get_nearest_object_with_behavior_id(gMarioStates[0].marioObj, id_bhvMrI)
     if mrI ~= nil then
         --print(mrI.oPosX, mrI.oPosY, mrI.oPosZ)
