@@ -59,12 +59,12 @@ gNumWarioCoins = select(2, r96lib.load_render96_data("wario_coin"):gsub("1", "")
 --gPlayerSyncTable[index]
 
 -- Audio
-GOT_MILK_POWERUP = "event_got_milk_powerup.mp3"
-GOT_MILK_SONG = "event_got_milk.mp3"
-BOO_PIPE_RED = 'event_mario_musicbox.mp3'
-BOO_PIPE_GREEN = 'event_luigi_musicbox.mp3'
-BOO_PIPE_YELLOW = 'event_wario_musicbox.mp3'
-GOOMBA_SCREAM = "event_goomba_scream.mp3"
+GOT_MILK_POWERUP = audio_stream_load("event_got_milk_powerup.mp3")
+GOT_MILK_SONG = audio_stream_load("event_got_milk.mp3")
+BOO_PIPE_RED = audio_stream_load("event_mario_musicbox.mp3")
+BOO_PIPE_GREEN = audio_stream_load("event_luigi_musicbox.mp3")
+BOO_PIPE_YELLOW = audio_stream_load("event_wario_musicbox.mp3")
+GOOMBA_SCREAM = audio_stream_load("event_goomba_scream.mp3")
 
 -- oAction states
 GOOMBA_ACT_STUN = 3

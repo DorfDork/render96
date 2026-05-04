@@ -343,6 +343,7 @@ local function bhv_goomba_render96_death(o)
     spawn_mist_particles()
     obj_spawn_yellow_coins(o, o.oNumLootCoins)
     create_sound_spawner(SOUND_OBJ_STOMPED)
+    audio_stream_stop(GOOMBA_SCREAM)
     o.activeFlags = ACTIVE_FLAG_DEACTIVATED
     obj_mark_for_deletion(o)
 end
@@ -358,15 +359,7 @@ local function bhv_goomba_render96_throw_physics(o)
     o.oFriction = 0.99
     o.oBuoyancy = 1.4
     o.oForwardVel = 40.0
-    local audioStream = audio_stream_load(GOOMBA_SCREAM)
-    local distanceToPlayer = dist_between_objects(m.marioObj, o)
-    --if distanceToPlayer < 50 then
-        
-    --end
-    if distanceToPlayer > 50 then
-    end
     if (o.oMoveFlags & OBJ_MOVE_LANDED) ~= 0 or (o.oMoveFlags & OBJ_MOVE_HIT_WALL) ~= 0 or (o.oMoveFlags & OBJ_MOVE_MASK_IN_WATER) ~= 0 then 
-        audio_stream_stop(audioStream)
         bhv_goomba_render96_death(o) return end
 
     if (o.oMoveFlags & OBJ_MOVE_ABOVE_LAVA) ~= 0 then
@@ -374,6 +367,7 @@ local function bhv_goomba_render96_throw_physics(o)
         obj_mark_for_deletion(o)
         return
     end
+    r96lib.audio_fade(o, GOOMBA_SCREAM, nil, nil, false)
 end
 
 ---@param o Object
@@ -387,8 +381,6 @@ local function bhv_goomba_render96_held(o)
         cur_obj_become_tangible()
         o.header.gfx.node.flags = o.header.gfx.node.flags & ~GRAPH_RENDER_INVISIBLE
         o.oVelY = 20.0
-        local audioStream = audio_stream_load(GOOMBA_SCREAM)
-        audio_stream_play(audioStream, false, 1)
         o.oHeldState = HELD_FREE
     end
 end
@@ -848,7 +840,7 @@ end
 local function bhv_warp_pipe_render96_red_loop(o)
     load_object_collision_model()
     bhv_warp_loop()
-    r96lib.audio_fade(o, BOO_PIPE_RED)
+    r96lib.audio_fade(o, BOO_PIPE_RED, 500, 1200, true)
 end
 
 id_bhvRender96WarpPipeRed = hook_behavior(nil, OBJ_LIST_SURFACE, false, bhv_warp_pipe_render96_init, bhv_warp_pipe_render96_red_loop)
@@ -857,7 +849,7 @@ id_bhvRender96WarpPipeRed = hook_behavior(nil, OBJ_LIST_SURFACE, false, bhv_warp
 local function bhv_warp_pipe_render96_green_loop(o)
     load_object_collision_model()
     bhv_warp_loop()
-    --r96lib.audio_fade(o, BOO_PIPE_GREEN)
+    r96lib.audio_fade(o, BOO_PIPE_GREEN, 500, 1200, true)
 end
 
 id_bhvRender96WarpPipeGreen = hook_behavior(nil, OBJ_LIST_SURFACE, false, bhv_warp_pipe_render96_init, bhv_warp_pipe_render96_green_loop)
@@ -866,7 +858,7 @@ id_bhvRender96WarpPipeGreen = hook_behavior(nil, OBJ_LIST_SURFACE, false, bhv_wa
 local function bhv_warp_pipe_render96_yellow_loop(o)
     load_object_collision_model()
     bhv_warp_loop()
-    --r96lib.audio_fade(o, BOO_PIPE_YELLOW)
+    r96lib.audio_fade(o, BOO_PIPE_YELLOW, 500, 1200, true)
 end
 
 id_bhvRender96WarpPipeYellow = hook_behavior(nil, OBJ_LIST_SURFACE, false, bhv_warp_pipe_render96_init, bhv_warp_pipe_render96_yellow_loop)

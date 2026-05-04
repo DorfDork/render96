@@ -1,9 +1,9 @@
 r96lib = {}
 
-
--- Music
-FADE_OUT = 0
-FADE_IN = 1
+local m = gMarioStates[0]
+define_custom_obj_fields({
+    oAudioPrevDistToMario = 'f32',
+})
 
 function r96lib.spawn_object(modelId, bhvId, x, y, z, rx, ry, rz, func)
     local childObj = spawn_non_sync_object(bhvId, modelId, 0, 0, 0, func)
@@ -67,31 +67,41 @@ function r96lib.spawn_object_param(cond, modelId, bhvId, bhvParam, x, y, z, rx, 
     end
 end
 
-local m = gMarioStates[0]
-
-function r96lib.audio_fade(o, soundId)
-
+-- Emulates a ModAudio Stream being attached to an object, including doppler effects for non-music
+---@param o Object The object the audio is from
+---@param audioStream ModAudio An ModAudio Stream
+---@param rangeMin number? The range in units at which audio is loudest (1)
+---@param rangeMax number? The range in units at which audio is quietest (0)
+---@param isMusic boolean? Wheather the audio is forced looped and the Doppler Effect is deactivated
+function r96lib.audio_fade(o, audioStream, rangeMin, rangeMax, isMusic)
     if o == nil then return end
-    local audioStream = audio_stream_load(soundId)
-    local distanceToPlayer = dist_between_objects(m.marioObj, o)
-    local volume = audio_stream_get_volume(audioStream) or 0
-
-    if distanceToPlayer < 1000 then
-        if volume <= 0 then
-            audio_stream_set_looping(audioStream, true)
-            audio_stream_play(audioStream, true, 0)
-            print("worky")
-        end
-        volume = math.min(volume + 0.02, 1)
-    else
-        volume = math.max(volume - 0.02, 0)
-        if volume <= 0 then
-            audio_stream_stop(audioStream)
-            return
-        end
+    if audioStream == nil or not audioStream.isStream then return end
+    if not audio_stream_get_looping(audioStream) and isMusic then
+        audio_stream_set_looping(audioStream, true)
     end
-    print(volume)
+    if o.activeFlags == ACTIVE_FLAG_DEACTIVATED then
+        audio_stream_set_position(audioStream, 0)
+        audio_stream_stop(audioStream)
+    end
+    local distanceToPlayer = dist_between_objects(m.marioObj, o)
+    local wallInterupt = collision_find_surface_on_ray(m.pos.x, m.pos.y + 70, m.pos.z, o.oPosX - m.pos.x, (o.oPosY + o.hitboxHeight*0.5) - (m.pos.y + 70), o.oPosZ - m.pos.z, 128).surface ~= nil
+
+    local hitbox = math.max(math.sqrt(o.hitboxRadius^2 + o.hitboxHeight^2), math.sqrt(o.hurtboxRadius^2 + o.hurtboxHeight^2))
+    rangeMin = rangeMin or hitbox*5
+    rangeMax = rangeMax or hitbox*25
+
+    local volume = 1 - math.clamp((distanceToPlayer - rangeMin)/(rangeMax*(wallInterupt and 0.5 or 1)), 0, 1)
+    --djui_chat_message_create(tostring(volume))
+    if volume > 0 then
+        audio_stream_play(audioStream, false, 0)
+    end
+
     audio_stream_set_volume(audioStream, volume)
+    -- Update Doppler effect
+    if not isMusic then
+        audio_stream_set_frequency(audioStream, 1 - (distanceToPlayer - o.oAudioPrevDistToMario)/math.lerp(rangeMin, rangeMax, 0.1))
+        o.oAudioPrevDistToMario = distanceToPlayer
+    end
 end
 
 function r96lib.save_render96_data(name, index)
