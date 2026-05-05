@@ -1604,6 +1604,27 @@ local function bhv_pokey_render96_loop(o)
     o.oFaceAngleYaw =  angleToPlayer
 end
 
-
 id_bhvRender96Pokey = hook_behavior(id_bhvPokey, OBJ_LIST_SURFACE, false, bhv_pokey_render96_init, bhv_pokey_render96_loop)
 id_bhvRender96PokeyBodyPart = hook_behavior(id_bhvPokeyBodyPart, OBJ_LIST_SURFACE, false, bhv_pokey_render96_init, bhv_pokey_render96_loop)
+
+---@param o Object
+local function bhv_tuxie_render96_loop(o)
+    local player = nearest_player_to_object(o)
+    local distanceToPlayer = dist_between_objects(o, player)
+    local smallPenguin = obj_get_nearest_object_with_behavior_id(o, id_bhvUnused20E0)
+    if smallPenguin ~= nil and smallPenguin.oPosY < -4850 then o.oAction = 4 end
+    if o.oAction == 4 then
+        o.oForwardVel = 30.0
+        cur_obj_rotate_yaw_toward(o.oAngleToMario, 0x1000)
+        cur_obj_init_animation_with_sound(3)
+        if distanceToPlayer < 300 then
+            hurt_and_set_mario_action(m, ACT_QUICKSAND_DEATH, 0, 16)
+            o.oAction = 2 
+        end
+        --if m.health == 255 then 
+        --    o.oAction = 2 
+        --end
+    end
+end
+
+id_bhvRender96TuxiesMother = hook_behavior(id_bhvTuxiesMother, OBJ_LIST_SURFACE, false, nil, bhv_tuxie_render96_loop)

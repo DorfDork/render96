@@ -22,6 +22,8 @@ ACT_WARIO_SWING_FLING_THROW = allocate_mario_action(ACT_FLAG_STATIONARY | ACT_FL
 
 -- Models
 E_MODEL_BLARGG_FRIENDLY = smlua_model_util_get_id("blargg_friendly_geo")
+E_MODEL_PENGUIN_BABY = smlua_model_util_get_id("penguin_baby_geo")
+E_MODEL_PENGUIN_RACER = smlua_model_util_get_id("penguin_racer_geo")
 E_MODEL_BOO_KING = smlua_model_util_get_id("boo_king_geo")
 E_MODEL_BOO_BIG = smlua_model_util_get_id("boo_big_geo")
 E_MODEL_BULLY_BIG = smlua_model_util_get_id("bully_big_geo")

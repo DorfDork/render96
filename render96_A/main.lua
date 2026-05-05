@@ -88,6 +88,9 @@ r96lib.addModelOverride(id_bhvGrindel,              E_MODEL_GRINDLE)
 r96lib.addModelOverride(id_bhvHorizontalGrindel,    E_MODEL_GRINDLE)
 r96lib.addModelOverride(id_bhvSpindel,              E_MODEL_SPINDLE)
 
+r96lib.addModelOverride(id_bhvSmallPenguin,              E_MODEL_PENGUIN_BABY)
+r96lib.addModelOverride(id_bhvRacingPenguin,              E_MODEL_PENGUIN_RACER)
+
 -- Enemies
 r96lib.addSpawn(LEVEL_LLL, 1, E_MODEL_BLARGG, id_bhvRender96Blargg, -6766, 0,  3033, 0, 0, 0)
 r96lib.addSpawn(LEVEL_LLL, 1, E_MODEL_BLARGG, id_bhvRender96Blargg, -6018, 0, -5512, 0, 0, 0)
@@ -167,9 +170,9 @@ local function mario_update(m)
    -- spawn_non_sync_object(id_bhvRender96Star, E_MODEL_STAR, m.pos.x + 200, m.pos.y, m.pos.z, nil)
    --   
    --end
-   if m.action == ACT_BACKFLIP then
-       warp_to_level(LEVEL_FOURTH_FLOOR, 1, 1)
-   end
+   --if m.action == ACT_BACKFLIP then
+   --    warp_to_level(LEVEL_CCM, 1, 1)
+   --end
     local mrI = obj_get_nearest_object_with_behavior_id(gMarioStates[0].marioObj, id_bhvMrI)
     if mrI ~= nil then
         --print(mrI.oPosX, mrI.oPosY, mrI.oPosZ)
