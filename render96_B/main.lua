@@ -4,10 +4,10 @@
 
 define_custom_obj_fields({
     oSwitchState1       = 'f32',
-    oSwitchTimer1       = 'f32',
+    oSwitchTimer1       = 's32',
     oSwitchState2       = 'f32',
-    oSwitchTimer2       = 'f32',
-    oMrIBlinkIndex      = 'f32',
+    oSwitchTimer2       = 's32',
+    oMrIBlinkIndex      = 's32',
     oMrITracking        = 'f32',
     oMrILastAngle       = 'f32',
     oMrIFireTimer       = 'f32',
@@ -22,7 +22,6 @@ define_custom_obj_fields({
     oThwompSquishDur    = 'f32',
     oThwompBaseScale    = 'f32',
     oWarioHeadBool      = 'f32',
-    oMusic              = 'f32',
     oCelebrationStar    = 'f32'
 })
 
@@ -43,4 +42,3 @@ function geo_switch_plant_face(node, matStackIndex) cast_graph_node(node).select
 function geo_switch_toad_hat(node, matStackIndex) cast_graph_node(node).selectedCase = geo_get_current_object().oSwitchState1 return end
 function geo_switch_toad_vest(node, matStackIndex) cast_graph_node(node).selectedCase = geo_get_current_object().oSwitchState2 return end
 function geo_switch_tuxie_mother(node, matStackIndex) cast_graph_node(node).selectedCase = geo_get_current_object().oSwitchState1 return end
-function geo_switch_tuxie(node, matStackIndex) cast_graph_node(node).selectedCase = geo_get_current_object().oSwitchState1 return end

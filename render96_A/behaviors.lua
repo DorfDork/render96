@@ -1,5 +1,6 @@
 local o2oint = require("lib/o2oint")
 local r96lib = require("/lib/r96lib")
+require("constants")
 
 ---@param id BehaviorId|number
 ---@param override boolean
@@ -71,10 +72,10 @@ local sThrownInteractions = o2oint.Interactions({
 
 define_custom_obj_fields({
     oSwitchState1       = 'f32',
-    oSwitchTimer1       = 'f32',
+    oSwitchTimer1       = 's32',
     oSwitchState2       = 'f32',
-    oSwitchTimer2       = 'f32',
-    oMrIBlinkIndex      = 'f32',
+    oSwitchTimer2       = 's32',
+    oMrIBlinkIndex      = 's32',
     oMrITracking        = 'f32',
     oMrILastAngle       = 'f32',
     oMrIFireTimer       = 'f32',
@@ -89,7 +90,6 @@ define_custom_obj_fields({
     oThwompSquishDur    = 'f32',
     oThwompBaseScale    = 'f32',
     oWarioHeadBool      = 'f32',
-    oMusic              = 'f32',
     oCelebrationStar    = 'f32'
 })
 
@@ -110,7 +110,6 @@ function geo_switch_plant_face(node, matStackIndex) cast_graph_node(node).select
 function geo_switch_toad_hat(node, matStackIndex) cast_graph_node(node).selectedCase = geo_get_current_object().oSwitchState1 return end
 function geo_switch_toad_vest(node, matStackIndex) cast_graph_node(node).selectedCase = geo_get_current_object().oSwitchState2 return end
 function geo_switch_tuxie_mother(node, matStackIndex) cast_graph_node(node).selectedCase = geo_get_current_object().oSwitchState1 return end
-function geo_switch_tuxie(node, matStackIndex) cast_graph_node(node).selectedCase = geo_get_current_object().oSwitchState1 return end
 
 ---@param o Object
 local function bhv_blargg_render96_init(o)
@@ -292,6 +291,7 @@ local function bhv_blargg_friendly_render96_init(o)
     o.oHomeZ = o.oPosZ
     o.activeFlags = ACTIVE_FLAG_ACTIVE
     o.oFlags = o.oFlags | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE
+    cur_obj_scale(1)
 end
 
 ---@param o Object
@@ -326,8 +326,17 @@ local function bhv_blargg_friendly_render96_loop(o)
         if math.abs(o.oPosY - o.oFloorHeight) < 5.0 then
             if floor ~= nil and floor.type == SURFACE_BURNING then
                  spawn_non_sync_object(id_bhvKoopaShellFlame, E_MODEL_RED_FLAME, o.oPosX, o.oPosY, o.oPosZ, nil)
+                 o.oTimer = 0
+                 o.oMrISize = 1
+                 cur_obj_scale(o.oMrISize)
             else
-                --bhv_blargg_friendly_render96_explode(o)
+                if o.oTimer % 10 == 0 then
+                    o.oMrISize = o.oMrISize - .1
+                    cur_obj_scale(o.oMrISize)
+                    if o.oMrISize <= 0.4 then
+                        bhv_blargg_friendly_render96_explode(o)
+                    end
+                end
             end
         end
         if (o.oInteractStatus & INT_STATUS_STOP_RIDING) ~= 0 then
@@ -1181,9 +1190,8 @@ end
 local function bhv_mr_i_render96_attack(o, player, dist, angleToPlayer, angleDiff)
     o.oFaceAngleYaw = angleToPlayer
     o.oFaceAnglePitch = math.min(obj_pitch_to_object(o, player), 0)
-
     o.oMrIFireTimer = o.oMrIFireTimer + 1
-    if o.oMrIFireTimer >= 120 then
+    if o.oMrIFireTimer >= 100 then
         o.oSwitchTimer1 = o.oSwitchTimer1 - 1
         if o.oSwitchTimer1 <= 0 then
             o.oMrIBlinkIndex = o.oMrIBlinkIndex + 1
@@ -1205,6 +1213,7 @@ local function bhv_mr_i_render96_attack(o, player, dist, angleToPlayer, angleDif
         o.oAction = MR_I_DIZZY
         o.oMrIDizzyTimer = 0
         o.oMrITracking = 0
+        o.oSwitchState2 = MR_I_OPEN 
     end     
     if dist > o.oMrIDetectRadius * 1.5 then
         o.oAction = MR_I_IDLE
@@ -1272,12 +1281,26 @@ sMrIBlinkStates = { MR_I_OPEN, MR_I_ALMOST_OPEN, MR_I_HALF_OPEN, MR_I_ALMOST_CLO
 
 ---@param o Object
 local function bhv_mr_i_render96_loop(o)
-    smlua_anim_util_set_animation(o, "mr_i_idle")
     local player = nearest_player_to_object(o)
     local dist   = dist_between_objects(o, player)
     local angleToPlayer = obj_angle_to_object(o, player)
     local angleDiff = abs_angle_diff(o.oFaceAngleYaw, angleToPlayer)
     sMrIActionStates[o.oAction + 1](o, player, dist, angleToPlayer, angleDiff)
+
+        local prevAction = o.oThwompPrevAction or o.oAction
+    if prevAction ~= 1 and o.oAction == 1 then
+        o.oThwompSquishTimer = 0
+        o.oThwompSquishDur = 5
+        o.oThwompBaseScale = o.header.gfx.scale.x
+    end
+
+    if (o.oThwompSquishDur or 0) > 0 and (o.oThwompSquishTimer or 0) <= o.oThwompSquishDur then
+        r96lib.squish_apply(o, o.oThwompSquishTimer, o.oThwompSquishDur, 0.15, -0.20, 0.15, o.oThwompBaseScale, nil)
+        o.oThwompSquishTimer = o.oThwompSquishTimer + 1
+    end
+
+    o.oThwompPrevAction = o.oAction
+
     o.oInteractStatus = 0
 end
 
@@ -1629,8 +1652,8 @@ local function bhv_pokey_render96_loop(o)
     o.oFaceAngleYaw =  angleToPlayer
 end
 
-id_bhvRender96Pokey = hook_behavior(id_bhvPokey, OBJ_LIST_SURFACE, false, bhv_pokey_render96_init, bhv_pokey_render96_loop)
-id_bhvRender96PokeyBodyPart = hook_behavior(id_bhvPokeyBodyPart, OBJ_LIST_SURFACE, false, bhv_pokey_render96_init, bhv_pokey_render96_loop)
+id_bhvRender96Pokey = hook_render96_behavior(id_bhvPokey, false, bhv_pokey_render96_init, bhv_pokey_render96_loop, OBJ_LIST_SURFACE)
+id_bhvRender96PokeyBodyPart = hook_render96_behavior(id_bhvPokeyBodyPart, false, bhv_pokey_render96_init, bhv_pokey_render96_loop, OBJ_LIST_SURFACE)
 
 ---@param o Object
 local function bhv_tuxie_mother_render96_loop(o)
@@ -1679,4 +1702,4 @@ local function bhv_tuxie_mother_render96_loop(o)
 
 end
 
-id_bhvRender96TuxiesMother = hook_behavior(id_bhvTuxiesMother, OBJ_LIST_SURFACE, false, nil, bhv_tuxie_mother_render96_loop)
+id_bhvRender96TuxiesMother = hook_render96_behavior(id_bhvTuxiesMother, false, nil, bhv_tuxie_mother_render96_loop, OBJ_LIST_SURFACE)
