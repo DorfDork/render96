@@ -689,7 +689,7 @@ local function bhv_whomp_render96_loop(o)
     end
 
     if (o.oThwompSquishDur or 0) > 0 and (o.oThwompSquishTimer or 0) <= o.oThwompSquishDur then
-        r96lib.squish_apply(o, o.oThwompSquishTimer, o.oThwompSquishDur, 0.15, 0.15, -0.3, o.oThwompBaseScale, nil)
+        r96lib.squish_apply(o, o.oThwompSquishTimer, o.oThwompSquishDur, 0.10, 0.10, -0.2, o.oThwompBaseScale, nil)
         o.oThwompSquishTimer = o.oThwompSquishTimer + 1
     end
 
@@ -1445,6 +1445,20 @@ end
 
 ---@param o Object
 local function bhv_boo_render96_loop(o)
+
+    local prevAction = o.oThwompPrevAction or o.oAction
+    if prevAction ~= 2 and o.oAction == 2 then
+        o.oThwompSquishTimer = 0
+        o.oThwompSquishDur = 5
+        o.oThwompBaseScale = o.header.gfx.scale.x
+    end
+
+    if (o.oThwompSquishDur or 0) > 0 and (o.oThwompSquishTimer or 0) <= o.oThwompSquishDur then
+        r96lib.squish_apply(o, o.oThwompSquishTimer, o.oThwompSquishDur, 0.15, 0.15, -0.3, o.oThwompBaseScale, nil)
+        o.oThwompSquishTimer = o.oThwompSquishTimer + 1
+    end
+
+    o.oThwompPrevAction = o.oAction
 
     local sBooScared = { 0, 1, 2, 3, 4, 4, 4}
     local sBooHunt = { 4, 4, 4, 3, 2, 1, 0}
