@@ -194,6 +194,7 @@ function r96lib.addModelOverride(bhv, model)
     })
 end
 
+function r96lib.addModelParamOverride(bhv, param, model)
     table.insert(sModelOverrides, {
         bhv   = bhv,
         model = model,
