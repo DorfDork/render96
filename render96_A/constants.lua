@@ -22,6 +22,7 @@ ACT_WARIO_SWING_FLING_THROW = allocate_mario_action(ACT_FLAG_STATIONARY | ACT_FL
 ACT_WARIO_GROUND_POUND = allocate_mario_action(ACT_GROUP_AIRBORNE |ACT_FLAG_AIR | ACT_FLAG_ATTACKING)
 
 -- Models
+E_MODEL_KOOPA_QUICK_BOB = smlua_model_util_get_id("koopa_quick_bob_geo")
 E_MODEL_WHOMP_KING = smlua_model_util_get_id("whomp_king_geo")
 E_MODEL_PIRANHA_PLANT_FIRE = smlua_model_util_get_id("piranha_plant_fire_geo")
 E_MODEL_BLARGG_FRIENDLY = smlua_model_util_get_id("blargg_friendly_geo")

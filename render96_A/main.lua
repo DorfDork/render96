@@ -63,21 +63,22 @@ bloWarps.newWarpNode(LEVEL_FOURTH_FLOOR, 1, 0x02, LEVEL_FOURTH_FLOOR, 1, 0x02, p
 bloWarps.createWarpObj(id_bhvRender96WarpPipeYellow, boo_pipe_yellow_model(), 0x02, nil, LEVEL_FOURTH_FLOOR, 1, {-1281, -110, 2270}, {0, 0x8000, 0})
 
 -- Models
-r96lib.addModelOverride(id_bhvBalconyBigBoo,        E_MODEL_BOO_BIG)
-r96lib.addModelOverride(id_bhvMerryGoRoundBigBoo,   E_MODEL_BOO_BIG)
-r96lib.addModelOverride(id_bhvBooWithCage,          E_MODEL_BOO_BIG)
+r96lib.addModelOverride(id_bhvBalconyBigBoo,            E_MODEL_BOO_BIG)
+r96lib.addModelOverride(id_bhvMerryGoRoundBigBoo,       E_MODEL_BOO_BIG)
+r96lib.addModelOverride(id_bhvBooWithCage,             E_MODEL_BOO_BIG)
 r96lib.addModelOverride(id_bhvGhostHuntBigBoo,      E_MODEL_BOO_KING)
 r96lib.addModelOverride(id_bhvBooInCastle,          E_MODEL_BOO_KING)
 r96lib.addModelOverride(id_bhvBigBullyWithMinions,  E_MODEL_BULLY_BIG)
 r96lib.addModelOverride(id_bhvGrindel,              E_MODEL_GRINDLE)
 r96lib.addModelOverride(id_bhvHorizontalGrindel,    E_MODEL_GRINDLE)
-r96lib.addModelOverride(id_bhvSpindel,              E_MODEL_SPINDLE)
-
+r96lib.addModelOverride(id_bhvSpindel,            E_MODEL_SPINDLE)
 r96lib.addModelOverride(id_bhvSmallPenguin,              E_MODEL_PENGUIN_BABY)
 r96lib.addModelOverride(id_bhvRacingPenguin,              E_MODEL_PENGUIN_RACER)
 r96lib.addModelOverride(id_bhvSLWalkingPenguin,              E_MODEL_PENGUIN_SL)
 r96lib.addModelOverride(id_bhvFirePiranhaPlant,              E_MODEL_PIRANHA_PLANT_FIRE)
 r96lib.addModelOverride(id_bhvWhompKingBoss,              E_MODEL_WHOMP_KING)
+r96lib.addModelParamOverride(id_bhvKoopa, 0x01020000,             E_MODEL_KOOPA_QUICK_BOB)
+r96lib.addModelParamOverride(id_bhvKoopa, 0x02030000,             E_MODEL_KOOPA_QUICK_BOB)
 
 -- Enemies
 r96lib.addSpawn(LEVEL_LLL, 1, E_MODEL_BLARGG, id_bhvRender96Blargg, -6766, 0,  3033, 0, 0, 0)
