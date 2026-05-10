@@ -90,7 +90,10 @@ define_custom_obj_fields({
     oThwompSquishDur    = 'f32',
     oThwompBaseScale    = 'f32',
     oWarioHeadBool      = 'f32',
-    oCelebrationStar    = 'f32'
+    oCelebrationStar    = 'f32',
+    oColorR             = 'f32',
+    oColorG             = 'f32',
+    oColorB             = 'f32'
 })
 
 function geo_switch_amp_glow_state(node, matStackIndex) cast_graph_node(node).selectedCase = geo_get_current_object().oSwitchState1 return end
@@ -1421,7 +1424,6 @@ id_bhvRender96FirePiranhaPlant = hook_render96_behavior(id_bhvFirePiranhaPlant, 
 ---@param o Object
 local function bhv_chain_chomp_render96_loop(o)
     local frame = o.header.gfx.animInfo.animFrame
-    djui_chat_message_create(get_active_mod().name)
 
     local sBiteFrames = { 0, 1, 2, 4, 6, 8, 6, 4, 2, 0, 2, 4, 6, 8, 6, 4, 2, 1, 0}
     if frame > 0 then
@@ -1727,3 +1729,43 @@ local function bhv_tuxie_mother_render96_loop(o)
 end
 
 id_bhvRender96TuxiesMother = hook_render96_behavior(id_bhvTuxiesMother, false, nil, bhv_tuxie_mother_render96_loop, OBJ_LIST_SURFACE)
+
+
+
+local function pulse_slow(t)
+    local s = (math.sin(t * 0.05) * 0.5 + 0.5)
+
+    local r = 24 + (150 - 24) * s
+    local g = 24 + (0 - 24) * s
+    local b = 42 + (0 - 42) * s
+
+    return math.floor(r), math.floor(g), math.floor(b)
+end
+
+local function pulse_fast(t)
+    -- Full cycle every ~20 frames
+    local s = (math.sin(t * 0.2) * 0.5 + 0.5)
+    local r = 24 + (150 - 24) * s
+    local g = 24 + (0 - 24) * s
+    local b = 42 + (0 - 42) * s
+
+    return math.floor(r), math.floor(g), math.floor(b)
+end
+
+
+local function pulse_ramp_bobomb(o, t, timer)
+    -- timer goes 1-150, pulse starts slow and speeds up
+    -- frequency scales from 0.02 at timer=1 to 0.4 at timer=150
+    local freq = 0.02 + (timer / 150) * 0.3
+    local s = (math.sin(t * freq) * 0.5 + 0.5)
+    o.oColorR = 13 + (150 - 13) * s
+    o.oColorG = 29 + (0 - 29) * s
+    o.oColorB = 52 + (0 - 52) * s
+end
+
+---@param o Object
+local function bhv_bobomb_render96_loop(o)
+    pulse_ramp_bobomb(o, o.oBobombFuseTimer, 150)
+end
+
+id_bhvRender96Bobomb = hook_render96_behavior(id_bhvBobomb, false, nil, bhv_bobomb_render96_loop, OBJ_LIST_SURFACE)

@@ -22,7 +22,10 @@ define_custom_obj_fields({
     oThwompSquishDur    = 'f32',
     oThwompBaseScale    = 'f32',
     oWarioHeadBool      = 'f32',
-    oCelebrationStar    = 'f32'
+    oCelebrationStar    = 'f32',
+    oColorR             = 'f32',
+    oColorG             = 'f32',
+    oColorB             = 'f32'
 })
 
 function geo_switch_amp_glow_state(node, matStackIndex) cast_graph_node(node).selectedCase = geo_get_current_object().oSwitchState1 return end
@@ -62,4 +65,33 @@ function geo_function_scuttle_body(node, matStackIndex)
     rotN.rotation.z = rot
 
     return
+end
+
+function geo_color_update(node, matStackIndex)
+
+end
+
+function apply_color(mat, r, g, b)
+    local function parse_dl(cmd, op)
+        if op == G_SETPRIMCOLOR then
+            gfx_set_command(cmd, "gsDPSetPrimColor(0, 0, %i, %i, %i, 255)", r, g, b)
+        end
+    end
+
+    gfx_parse(mat, parse_dl)
+end
+
+function geo_function_bobomb_angry(node, matStackIndex)
+    local o = geo_get_current_object()
+    local matDisplayList = cast_graph_node(node.next) ---@type GraphNodeDisplayList
+
+local custom = gfx_get_from_name("bobomb_angry_mat_"..tostring(o._pointer))
+    if custom == nil then
+        local len = gfx_get_length(matDisplayList.displayList)
+custom = gfx_create("bobomb_angry_mat_"..tostring(o._pointer), len)
+        gfx_copy(custom, matDisplayList.displayList, len)
+    end
+    local mat = gfx_get_command(custom, 0)
+    apply_color(custom, o.oColorR, o.oColorG, o.oColorB)
+    cast_graph_node(node.next).displayList = custom
 end
