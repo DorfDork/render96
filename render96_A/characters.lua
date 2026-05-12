@@ -778,7 +778,9 @@ local function act_wario_swing_fling_held(m)
 
     if sWarioWalkSpin then
         if obj_has_behavior_id(o, id_bhvBobomb) == 1 then
-            o.oBobombFuseTimer = 0
+            if o.oBobombFuseTimer >= 150 then 
+                o.oBobombFuseTimer = 125
+            end
         end
         if m.angleVel.y <= -0xE00 then m.angleVel.y = -0x1800 end
         if m.angleVel.y >= 0xE00 then m.angleVel.y = 0x1800 end

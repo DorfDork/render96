@@ -143,85 +143,22 @@ function geo_color_update(node, matStackIndex)
 end
 
 function geo_function_scuttle_body_color(node, matStackIndex)
-    local o = geo_get_current_object()
-    if o == nil then return end
-    local id = tostring(o._pointer)
-    local gfx_name = "scuttle_dl_" .. id
-    local gfx_mat_name = "scuttle_mat_" .. id
-
-    local gfx = gfx_get_from_name(gfx_name)
-    if gfx == nil then
-        local orig_dl = gfx_get_from_name("scuttlebug_scuttle_body_dl_mesh_layer_1")
-        local len = gfx_get_length(orig_dl)
-        gfx = gfx_create(gfx_name, len)
-        gfx_copy(gfx, orig_dl, len)
-    end
-
-    local gfx_mat = gfx_get_from_name(gfx_mat_name)
-    if gfx_mat == nil then
-        local orig_mat = gfx_get_from_name("mat_scuttlebug_scuttlebug_body")
-        local len = gfx_get_length(orig_mat)
-        gfx_mat = gfx_create(gfx_mat_name, len)
-        gfx_copy(gfx_mat, orig_mat, len)
-    end
-
-    local cmd_prim = gfx_get_command(gfx_mat, 7)
-    gfx_set_command(cmd_prim, "gsDPSetPrimColor(0, 0, %i, %i, %i, 255)", o.oColorR, o.oColorG, o.oColorB)
-
-    local cmd0 = gfx_get_command(gfx, 0)
-    gfx_set_command(cmd0, "gsSPDisplayList(%g)", gfx_mat)
-
-
-    cast_graph_node(node.next).displayList = gfx
+    r96lib.gfxColorPatch(node, matStackIndex, {
+        prefix    = "scuttle",
+        origDl    = "scuttlebug_scuttle_body_dl_mesh_layer_1",
+        origMat   = "mat_scuttlebug_scuttlebug_body",
+        primIndex = 7,
+    })
 end
 
 function geo_function_bobomb_angry(node, matStackIndex)
-    local o = geo_get_current_object()
-    if o == nil then return end
-    local id = tostring(o._pointer)
-    local gfx_name = "bobomb_angry_dl_" .. id
-    local gfx_mat_name = "bobomb_angry_mat_" .. id
-
-    local gfx = gfx_get_from_name(gfx_name)
-    if gfx == nil then
-        local orig_dl = gfx_get_from_name("black_bobomb_000_displaylist_mesh_layer_1")
-        local len = gfx_get_length(orig_dl)
-        gfx = gfx_create(gfx_name, len)
-        gfx_copy(gfx, orig_dl, len)
-    end
-
-    local gfx_mat = gfx_get_from_name(gfx_mat_name)
-    if gfx_mat == nil then
-        local orig_mat = gfx_get_from_name("mat_black_bobomb_bobomb_blue")
-        local len = gfx_get_length(orig_mat)
-        gfx_mat = gfx_create(gfx_mat_name, len)
-        gfx_copy(gfx_mat, orig_mat, len)
-    end
-
-    local cmd_prim = gfx_get_command(gfx_mat, 8)
-    gfx_set_command(cmd_prim, "gsDPSetPrimColor(0, 0, %i, %i, %i, 255)", o.oColorR, o.oColorG, o.oColorB)
-
-    local cmd0 = gfx_get_command(gfx, 0)
-    gfx_set_command(cmd0, "gsSPDisplayList(%g)", gfx_mat)
-
-
-    cast_graph_node(node.next).displayList = gfx
+    r96lib.gfxColorPatch(node, matStackIndex, {
+        prefix    = "bobomb_angry",
+        origDl    = "black_bobomb_000_displaylist_mesh_layer_1",
+        origMat   = "mat_black_bobomb_bobomb_blue",
+        primIndex = 8,
+    })
 end
-
-local function on_object_unload(o)
-    local id = tostring(o._pointer)
-    local dl = gfx_get_from_name("bobomb_angry_dl_" .. id)
-    if dl then gfx_delete(dl) end
-    local mat = gfx_get_from_name("bobomb_angry_mat_" .. id)
-    if mat then gfx_delete(mat) end
-    local mat = gfx_get_from_name("scuttle_dl_" .. id)
-    if mat then gfx_delete(mat) end
-    local mat = gfx_get_from_name("scuttle_mat_" .. id)
-    if mat then gfx_delete(mat) end
-end
-
-hook_event(HOOK_ON_OBJECT_UNLOAD, on_object_unload)
-hook_event(HOOK_ON_LEVEL_INIT, function() gfx_delete_all() end)
 
 ---@param o Object
 local function bhv_blargg_render96_init(o)
@@ -1844,14 +1781,13 @@ local function pulse_fast(t)
 end
 
 
-local function pulse_ramp_bobomb(o, t, timer)
-    -- timer goes 1-150, pulse starts slow and speeds up
-    -- frequency scales from 0.02 at timer=1 to 0.4 at timer=150
-    local freq = 0.02 + (t / 150) * 0.3
+local function pulse_ramp_bobomb(o, t, timeMax)
+    local freq = 0.02 + (t / timeMax) * 0.3
     local s = (math.sin((t * freq) - math.pi*0.5) * 0.5 + 0.5)
-    o.oColorR = math.lerp(13, 150, s)
+    o.oColorR = math.lerp(13, timeMax, s)
     o.oColorG = math.lerp(29, 0, s)
     o.oColorB = math.lerp(52, 0, s)
+    if t >= 150 then o.oColorR = 13 o.oColorG = 29 o.oColorB = 52 end
 end
 
 ---@param o Object
