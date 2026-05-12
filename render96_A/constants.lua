@@ -52,7 +52,7 @@ E_MODEL_WARP_PIPE_BOO_YELLOW_LOCKED = smlua_model_util_get_id("warp_pipe_boo_yel
 E_MODEL_WARP_PIPE_BOO_YELLOW_UNLOCKED = smlua_model_util_get_id("warp_pipe_boo_yellow_unlocked_geo")
 
 -- Levels
-LEVEL_FOURTH_FLOOR = level_register("level_fourth_floor_entry", COURSE_NONE, "Fourth Floor", "fourth_floor", 28000, 0x28, 0x28, 0x28)
+LEVEL_INNER_WORKINGS = level_register("level_inner_workings_entry", COURSE_NONE, "Inner Workings", "inner_workings", 28000, 0x28, 0x28, 0x28)
 
 -- Anims
 CHAR_ANIM_MILK_RUNNING = 'mario_milk_run'
