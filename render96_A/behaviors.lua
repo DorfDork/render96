@@ -135,8 +135,13 @@ function geo_function_scuttle_body(node, matStackIndex)
     return
 end
 
-function geo_color_update(node, matStackIndex)
-
+function geo_function_kingbob_pulse(node, matStackIndex)
+    r96lib.gfxColorPatch(node, matStackIndex, {
+        prefix    = "kingbob",
+        origDl    = "king_bobomb_004_offset_mesh_layer_1",
+        origMat   = "mat_king_bobomb_king_bobomb_body",
+        primIndex = 8,
+    })
 end
 
 function geo_function_scuttle_body_color(node, matStackIndex)
@@ -1755,28 +1760,6 @@ end
 
 id_bhvRender96TuxiesMother = hook_render96_behavior(id_bhvTuxiesMother, false, nil, bhv_tuxie_mother_render96_loop, OBJ_LIST_SURFACE)
 
-
-
-local function pulse_slow(t)
-    local s = (math.sin(t * 0.05) * 0.5 + 0.5)
-
-    local r = 24 + (150 - 24) * s
-    local g = 24 + (0 - 24) * s
-    local b = 42 + (0 - 42) * s
-
-    return math.floor(r), math.floor(g), math.floor(b)
-end
-
-local function pulse_fast(t)
-    -- Full cycle every ~20 frames
-    local s = (math.sin(t * 0.2) * 0.5 + 0.5)
-    local r = 24 + (150 - 24) * s
-    local g = 24 + (0 - 24) * s
-    local b = 42 + (0 - 42) * s
-
-    return math.floor(r), math.floor(g), math.floor(b)
-end
-
 local COLORS_BOBOMB = {
     {r = 13, g = 29, b = 52},
     {r = 200, g = 0, b = 0}, 
@@ -1792,7 +1775,20 @@ local function bhv_bobomb_render96_loop(o)
     end
 end
 
-id_bhvRender96Bobomb = hook_render96_behavior(id_bhvBobomb, false, nil, bhv_bobomb_render96_loop, OBJ_LIST_SURFACE)
+id_bhvRender96Bobomb = hook_render96_behavior(id_bhvBobomb, false, nil, bhv_bobomb_render96_loop, OBJ_LIST_DESTRUCTIVE)
+
+local COLORS_KINGBOBOMB = {
+    {r = 24, g = 24, b = 42},
+    {r = 150, g = 0,  b = 0},
+}
+
+---@param o Object
+local function bhv_king_bobomb_render96_loop(o)
+    if o.oHealth == 2 then r96lib.pulse_rapid(o, COLORS_KINGBOBOMB, o.oTimer, 0.1) end
+    if o.oHealth == 1 then r96lib.pulse_rapid(o, COLORS_KINGBOBOMB, o.oTimer, 0.3) end
+end
+
+id_bhvRender96KingBobomb = hook_render96_behavior(id_bhvKingBobomb, false, nil, bhv_king_bobomb_render96_loop, OBJ_LIST_GENACTOR)
 
 local COLORS_SCUTTLE = {
     {r = 0x40, g = 0x21, b = 0x3B},
@@ -1800,20 +1796,9 @@ local COLORS_SCUTTLE = {
     {r = 0x00, g = 0x00, b = 0x00},
 }
 
-local function pulse_cycle(o, colors, framesPerColor)
-    framesPerColor = framesPerColor or 30
-    local frame = o.oTimer % (#colors * framesPerColor)
-    local i = math.floor(frame / framesPerColor) + 1
-    local c1, c2 = colors[i], colors[(i % #colors) + 1]
-    local t = (frame % framesPerColor) / framesPerColor
-    o.oColorR = math.lerp(c1.r, c2.r, t)
-    o.oColorG = math.lerp(c1.g, c2.g, t)
-    o.oColorB = math.lerp(c1.b, c2.b, t)
-end
-
 ---@param o Object
 local function bhv_scuttlebug_render96_loop(o)
-    pulse_cycle(o, COLORS_SCUTTLE, 50)
+    r96lib.pulse_ramp(o, COLORS_SCUTTLE, 50)
 end
 
 id_bhvRender96Scuttlebug = hook_render96_behavior(id_bhvScuttlebug, false, nil, bhv_scuttlebug_render96_loop, OBJ_LIST_SURFACE)

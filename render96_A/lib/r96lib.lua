@@ -355,9 +355,9 @@ function r96lib.pulse_cycle(o, colors, framesPerColor)
     local i = math.floor(frame / framesPerColor) + 1
     local c1, c2 = colors[i], colors[(i % #colors) + 1]
     local t = (frame % framesPerColor) / framesPerColor
-    o.oColorR = math.floor(math.lerp(c1.r, c2.r, t))
-    o.oColorG = math.floor(math.lerp(c1.g, c2.g, t))
-    o.oColorB = math.floor(math.lerp(c1.b, c2.b, t))
+    o.oColorR = math.lerp(c1.r, c2.r, t)
+    o.oColorG = math.lerp(c1.g, c2.g, t)
+    o.oColorB = math.lerp(c1.b, c2.b, t)
 end
 
 ---@param o Object
@@ -376,6 +376,18 @@ function r96lib.pulse_ramp(o, colors, t, timeMax)
         o.oColorG = c1.g
         o.oColorB = c1.b
     end
+end
+
+---@param o Object
+---@param colors table
+---@param t number
+---@param speed number?
+function r96lib.pulse_rapid(o, colors, t, speed)
+    local s = math.sin(t * speed) * 0.5 + 0.5
+    local c1, c2 = colors[1], colors[2]
+    o.oColorR = math.lerp(c1.r, c2.r, s)
+    o.oColorG = math.lerp(c1.g, c2.g, s)
+    o.oColorB = math.lerp(c1.b, c2.b, s)
 end
 
 hook_event(HOOK_ON_OBJECT_UNLOAD, on_object_unload)
