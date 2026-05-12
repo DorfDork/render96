@@ -3,6 +3,9 @@ r96lib = {}
 local m = gMarioStates[0]
 define_custom_obj_fields({
     oAudioPrevDistToMario = 'f32',
+    oColorR               = 'f32',
+    oColorG               = 'f32',
+    oColorB               = 'f32'
 })
 
 function r96lib.spawn_object(modelId, bhvId, x, y, z, rx, ry, rz, func)
@@ -341,6 +344,37 @@ local function on_object_unload(o)
         if dl  then gfx_delete(dl)  end
         local mat = gfx_get_from_name(prefix .. "_mat_" .. id)
         if mat then gfx_delete(mat) end
+    end
+end
+
+---@param o Object
+---@param colors table
+---@param framesPerColor number?
+function r96lib.pulse_cycle(o, colors, framesPerColor)
+    local frame = o.oTimer % (#colors * framesPerColor)
+    local i = math.floor(frame / framesPerColor) + 1
+    local c1, c2 = colors[i], colors[(i % #colors) + 1]
+    local t = (frame % framesPerColor) / framesPerColor
+    o.oColorR = math.floor(math.lerp(c1.r, c2.r, t))
+    o.oColorG = math.floor(math.lerp(c1.g, c2.g, t))
+    o.oColorB = math.floor(math.lerp(c1.b, c2.b, t))
+end
+
+---@param o Object
+---@param colors table
+---@param t number
+---@param timeMax number?
+function r96lib.pulse_ramp(o, colors, t, timeMax)
+    local freq = 0.02 + (t / timeMax) * 0.3
+    local s = math.sin((t * freq) - math.pi * 0.5) * 0.5 + 0.5
+    local c1, c2 = colors[1], colors[2]
+    o.oColorR = math.lerp(c1.r, c2.r, s)
+    o.oColorG = math.lerp(c1.g, c2.g, s)
+    o.oColorB = math.lerp(c1.b, c2.b, s)
+    if t >= timeMax then
+        o.oColorR = c1.r
+        o.oColorG = c1.g
+        o.oColorB = c1.b
     end
 end
 

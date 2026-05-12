@@ -90,10 +90,7 @@ define_custom_obj_fields({
     oThwompSquishDur    = 'f32',
     oThwompBaseScale    = 'f32',
     oWarioHeadBool      = 'f32',
-    oCelebrationStar    = 'f32',
-    oColorR             = 'f32',
-    oColorG             = 'f32',
-    oColorB             = 'f32'
+    oCelebrationStar    = 'f32'
 })
 
 function geo_switch_amp_glow_state(node, matStackIndex) cast_graph_node(node).selectedCase = geo_get_current_object().oSwitchState1 return end
@@ -1780,15 +1777,10 @@ local function pulse_fast(t)
     return math.floor(r), math.floor(g), math.floor(b)
 end
 
-
-local function pulse_ramp_bobomb(o, t, timeMax)
-    local freq = 0.02 + (t / timeMax) * 0.3
-    local s = (math.sin((t * freq) - math.pi*0.5) * 0.5 + 0.5)
-    o.oColorR = math.lerp(13, timeMax, s)
-    o.oColorG = math.lerp(29, 0, s)
-    o.oColorB = math.lerp(52, 0, s)
-    if t >= 150 then o.oColorR = 13 o.oColorG = 29 o.oColorB = 52 end
-end
+local COLORS_BOBOMB = {
+    {r = 13, g = 29, b = 52},
+    {r = 200, g = 0, b = 0}, 
+}
 
 ---@param o Object
 local function bhv_bobomb_render96_loop(o)
@@ -1796,38 +1788,32 @@ local function bhv_bobomb_render96_loop(o)
         o.oSwitchState1 = 1
     else 
         o.oSwitchState1 = 0
-        pulse_ramp_bobomb(o, o.oBobombFuseTimer, 150)
+        r96lib.pulse_ramp(o, COLORS_BOBOMB, o.oBobombFuseTimer, 150)
     end
-
 end
 
 id_bhvRender96Bobomb = hook_render96_behavior(id_bhvBobomb, false, nil, bhv_bobomb_render96_loop, OBJ_LIST_SURFACE)
 
-local CYCLE_COLORS = {
-    {r = 0x40, g = 0x21, b = 0x3B}, -- pink
-    {r = 0x44, g = 0x35, b = 0x00}, -- yellow
-    {r = 0x00, g = 0x00, b = 0x00}, -- black
+local COLORS_SCUTTLE = {
+    {r = 0x40, g = 0x21, b = 0x3B},
+    {r = 0x44, g = 0x35, b = 0x00},
+    {r = 0x00, g = 0x00, b = 0x00},
 }
 
-local function pulse_cycle(o, framesPerColor)
+local function pulse_cycle(o, colors, framesPerColor)
     framesPerColor = framesPerColor or 30
-    local totalFrames = #CYCLE_COLORS * framesPerColor
-    local frame = o.oTimer % totalFrames
-    local colorIndex = math.floor(frame / framesPerColor) + 1
-    local nextIndex = (colorIndex % #CYCLE_COLORS) + 1
-    local lerpT = (frame % framesPerColor) / framesPerColor
-
-    local c1 = CYCLE_COLORS[colorIndex]
-    local c2 = CYCLE_COLORS[nextIndex]
-
-    o.oColorR = math.floor(c1.r + (c2.r - c1.r) * lerpT)
-    o.oColorB = math.floor(c1.g + (c2.g - c1.g) * lerpT)
-    o.oColorG = math.floor(c1.b + (c2.b - c1.b) * lerpT)
+    local frame = o.oTimer % (#colors * framesPerColor)
+    local i = math.floor(frame / framesPerColor) + 1
+    local c1, c2 = colors[i], colors[(i % #colors) + 1]
+    local t = (frame % framesPerColor) / framesPerColor
+    o.oColorR = math.lerp(c1.r, c2.r, t)
+    o.oColorG = math.lerp(c1.g, c2.g, t)
+    o.oColorB = math.lerp(c1.b, c2.b, t)
 end
 
 ---@param o Object
 local function bhv_scuttlebug_render96_loop(o)
-    pulse_cycle(o, 50)
+    pulse_cycle(o, COLORS_SCUTTLE, 50)
 end
 
 id_bhvRender96Scuttlebug = hook_render96_behavior(id_bhvScuttlebug, false, nil, bhv_scuttlebug_render96_loop, OBJ_LIST_SURFACE)
