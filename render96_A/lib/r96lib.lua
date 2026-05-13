@@ -182,7 +182,7 @@ end
 -- Register a spawn entry for a level/area
 -- acts can be nil (all acts), a single number, or a table like {1, 2, 5}
 -- spawnFunc is optional: called with the object after spawn
-function r96lib.addSpawn(level, area, model, bhv, x, y, z, rx, ry, rz, acts, spawnFunc)
+function r96lib.addSpawn(level, area, model, bhv, x, y, z, rx, ry, rz, isSync, acts, spawnFunc)
     sSpawnTable[level] = sSpawnTable[level] or {}
     sSpawnTable[level][area] = sSpawnTable[level][area] or {}
 
@@ -197,10 +197,11 @@ function r96lib.addSpawn(level, area, model, bhv, x, y, z, rx, ry, rz, acts, spa
     end
 
     table.insert(sSpawnTable[level][area], {
-        model     = model,
         bhv       = bhv,
+        model     = model,
         x = x, y = y, z = z,
         rx = rx or 0, ry = ry or 0, rz = rz or 0,
+        isSync = isSync,
         actMask   = actMask,
         spawnFunc = spawnFunc,
     })
