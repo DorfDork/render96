@@ -921,7 +921,7 @@ end
 local function bhv_warp_pipe_render96_red_loop(o)
     load_object_collision_model()
     bhv_warp_loop()
-    r96lib.audio_fade(o, BOO_PIPE_RED, 500, 1200, true)
+    r96lib.audio_fade(o, BOO_PIPE_RED, 650, 1800, true)
 end
 
 id_bhvRender96WarpPipeRed = hook_render96_behavior(nil, false, bhv_warp_pipe_render96_init, bhv_warp_pipe_render96_red_loop, OBJ_LIST_SURFACE, "WarpPipeRed")
@@ -930,7 +930,7 @@ id_bhvRender96WarpPipeRed = hook_render96_behavior(nil, false, bhv_warp_pipe_ren
 local function bhv_warp_pipe_render96_green_loop(o)
     load_object_collision_model()
     bhv_warp_loop()
-    r96lib.audio_fade(o, BOO_PIPE_GREEN, 500, 1200, true)
+    r96lib.audio_fade(o, BOO_PIPE_GREEN, 650, 1800, true)
 end
 
 id_bhvRender96WarpPipeGreen = hook_render96_behavior(nil, false, bhv_warp_pipe_render96_init, bhv_warp_pipe_render96_green_loop, OBJ_LIST_SURFACE, "WarpPipeGreen")
@@ -939,7 +939,7 @@ id_bhvRender96WarpPipeGreen = hook_render96_behavior(nil, false, bhv_warp_pipe_r
 local function bhv_warp_pipe_render96_yellow_loop(o)
     load_object_collision_model()
     bhv_warp_loop()
-    r96lib.audio_fade(o, BOO_PIPE_YELLOW, 500, 1200, true)
+    r96lib.audio_fade(o, BOO_PIPE_YELLOW, 650, 1800, true)
 end
 
 id_bhvRender96WarpPipeYellow = hook_render96_behavior(nil, false, bhv_warp_pipe_render96_init, bhv_warp_pipe_render96_yellow_loop, OBJ_LIST_SURFACE, "WarpPipeYellow")
@@ -1687,7 +1687,7 @@ local function bhv_star_render96_init(o)
 end
 
 local function bhv_star_render96_loop(o)
-    r96lib.audio_fade(o, STAR_AMBIENT, 250, 800, true, 2258, 86840)
+    r96lib.audio_fade(o, STAR_AMBIENT, nil, nil, true, 2258, 86840)
 end
 
 id_bhvRender96Star = hook_render96_behavior(id_bhvStar, false, bhv_star_render96_init, bhv_star_render96_loop)

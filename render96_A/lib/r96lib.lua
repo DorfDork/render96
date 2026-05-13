@@ -2,7 +2,6 @@ r96lib = {}
 
 local m = gMarioStates[0]
 define_custom_obj_fields({
-    oAudioPrevDistToMario = 'f32',
     oColorR               = 'f32',
     oColorG               = 'f32',
     oColorB               = 'f32'
@@ -70,6 +69,8 @@ function r96lib.spawn_object_param(cond, modelId, bhvId, bhvParam, x, y, z, rx, 
     end
 end
 
+local objSoundData = {}
+
 -- Emulates a ModAudio Stream being attached to an object, including doppler effects for non-music
 ---@param o Object The object the audio is from
 ---@param audioStream ModAudio An ModAudio Stream
@@ -78,9 +79,73 @@ end
 ---@param isMusic boolean? Wheather the audio is forced looped and the Doppler Effect is deactivated
 function r96lib.audio_fade(o, audioStream, rangeMin, rangeMax, isMusic, loopingStart, loopingEnd)
     if o == nil or gMarioStates[0] == nil then return end
-    local m = gMarioStates[0]
-    if rangeMax ~= nil and math.sqrt((o.oPosX - m.pos.x)^2 + (o.oPosY - m.pos.y)^2 + (o.oPosZ - m.pos.z)^2) > rangeMax then return end
     if audioStream == nil or not audioStream.isStream then return end
+    local m = gMarioStates[0]
+    local wallInterupt = collision_find_surface_on_ray(m.pos.x, m.pos.y + 70, m.pos.z, o.oPosX - m.pos.x, (o.oPosY + o.hitboxHeight*0.5) - (m.pos.y + 70), o.oPosZ - m.pos.z, 128).surface ~= nil
+    local objDist = math.sqrt((o.oPosX - m.pos.x)^2 + (o.oPosY - m.pos.y)^2 + (o.oPosZ - m.pos.z)^2) * (wallInterupt and 2 or 1)
+
+    if not objSoundData[audioStream._pointer] then
+        objSoundData[audioStream._pointer] = {
+            audioStream = audioStream,
+            volume = 0,
+            nearestObj = nil,
+            nearestDist = 0,
+            prevDist = 0,
+            nearestMin = 0,
+            nearestMax = 0,
+            isMusic = isMusic,
+            loopStart = loopingStart,
+            loopEnd = loopingEnd,
+        }
+    end
+
+    local hitbox = math.max(math.sqrt(o.hitboxRadius^2 + o.hitboxHeight^2), math.sqrt(o.hurtboxRadius^2 + o.hurtboxHeight^2))
+    rangeMin = rangeMin or hitbox*5
+    rangeMax = rangeMax or hitbox*25
+
+    local audioData = objSoundData[audioStream._pointer]
+    if audioData.nearestObj == nil or (objDist < audioData.nearestDist) then
+        audioData.nearestObj = o
+        audioData.nearestDist = objDist
+        audioData.nearestMin = rangeMin
+        audioData.nearestMax = rangeMax
+    end
+end
+
+local function update_obj_audio()
+    for _, audioData in pairs(objSoundData) do
+        if audioData.isMusic then
+            if not audio_stream_get_looping(audioData.audioStream) then
+                audio_stream_set_looping(audioData.audioStream, true)
+                if audioData.loopStart and audioData.loopEnd then
+                    audio_stream_set_loop_points(audioData.audioStream, audioData.loopStart, audioData.loopEnd)
+                end
+            end
+        else
+            -- Update Doppler effect
+            if not audioData.isMusic then
+                audio_stream_set_frequency(audioData.audioStream, 1 - (audioData.nearestDist - audioData.prevDist)/math.lerp(audioData.nearestMin, audioData.nearestMax, 0.1))
+                audioData.prevDist = audioData.nearestDist
+            end
+        end
+
+        local volume = 1 - math.clamp((audioData.nearestDist - audioData.nearestMin)/(audioData.nearestMax), 0, 1)
+        if not audioData.nearestObj then
+            volume = 0
+        elseif volume > 0 then
+            audio_stream_play(audioData.audioStream, false, 0)
+        end
+        audioData.volume = math.lerp(audioData.volume, volume, 0.2)
+        audio_stream_set_volume(audioData.audioStream, audioData.volume)
+
+        djui_chat_message_create(tostring(audioData.nearestDist))
+        audioData.nearestObj = nil
+        audioData.nearestDist = 0
+        audioData.nearestMin = 0
+        audioData.nearestMax = 0
+    end
+
+    --[[
     if not audio_stream_get_looping(audioStream) and isMusic then
         audio_stream_set_looping(audioStream, true)
         if loopingEnd ~= nil then
@@ -110,6 +175,7 @@ function r96lib.audio_fade(o, audioStream, rangeMin, rangeMax, isMusic, loopingS
         audio_stream_set_frequency(audioStream, 1 - (distanceToPlayer - o.oAudioPrevDistToMario)/math.lerp(rangeMin, rangeMax, 0.1))
         o.oAudioPrevDistToMario = distanceToPlayer
     end
+    ]]
 end
 
 function r96lib.save_render96_data(name, index)
@@ -229,6 +295,9 @@ function r96lib.addModelLevelOverride(bhv, model, level, area, acts)
 end
 
 local function update()
+    -- Also update audio teehee
+    update_obj_audio()
+
     local level  = networkPlayers[0].currLevelNum
     local area   = networkPlayers[0].currAreaIndex
     local actNum = networkPlayers[0].currActNum
@@ -287,7 +356,6 @@ local function update()
             end
         end
     end
-
 end
 
 local sGfxColorPatches = {}
