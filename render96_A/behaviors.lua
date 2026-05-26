@@ -114,6 +114,12 @@ function geo_switch_tuxie_mother(node, matStackIndex) cast_graph_node(node).sele
 function geo_switch_bubba_body(node, matStackIndex) cast_graph_node(node).selectedCase = geo_get_current_object().oSwitchState1 return end
 function geo_switch_whomp_king(node, matStackIndex) cast_graph_node(node).selectedCase = geo_get_current_object().oSwitchState1 return end
 function geo_switch_bobomb_angry(node, matStackIndex) cast_graph_node(node).selectedCase = geo_get_current_object().oSwitchState1 return end
+function geo_switch_pipe_color(node, matStackIndex) cast_graph_node(node).selectedCase = geo_get_current_object().oSwitchState1 return end
+function geo_function_door_switch(node, matStackIndex) cast_graph_node(node).selectedCase = geo_get_current_object().oSwitchState1 return end
+function geo_switch_fire_spitter(node, matStackIndex) cast_graph_node(node).selectedCase = geo_get_current_object().oSwitchState1 return end
+function geo_switch_spindle(node, matStackIndex) cast_graph_node(node).selectedCase = geo_get_current_object().oSwitchState1 return end
+
+
 
 function geo_function_chuckya_spin(node, matStackIndex) 
     local o = geo_get_current_object()
@@ -133,6 +139,80 @@ function geo_function_scuttle_body(node, matStackIndex)
     rotN.rotation.z = rot
 
     return
+end
+
+function geo_function_bowser_left_eye(node, matStackIndex) 
+    local o = geo_get_current_object()
+    if o == nil then return end
+    
+    local model = obj_get_model_id_extended(o)
+
+    local player = nearest_player_to_object(o)
+    if player == nil then return end
+
+    local rotN = cast_graph_node(node.next) ---@type GraphNodeRotation
+
+    -- Get the angle from object to player
+    local angleToPlayerYaw   = obj_angle_to_object(o, player)
+    local angleToPlayerPitch = obj_pitch_to_object(o, player)
+
+    local limitYaw   = 0x2000 -- 45 degrees
+    local limitPitch = 0x2000 -- ~22 degrees
+
+    -- Calculate yaw relative to object's current facing
+    local yaw = angleToPlayerYaw - o.oFaceAngleYaw
+    -- Normalize to -32768..32767
+    if yaw >  32767 then yaw = yaw - 65536 end
+    if yaw < -32768 then yaw = yaw + 65536 end
+
+    local pitch = angleToPlayerPitch
+    if pitch >  32767 then pitch = pitch - 65536 end
+    if pitch < -32768 then pitch = pitch + 65536 end
+
+    yaw = math.max(-limitYaw, math.min(limitYaw, yaw))
+    pitch = math.max(-limitPitch, math.min(limitPitch, pitch))
+
+    pitch = -pitch
+    rotN.rotation.x = pitch & 0xFFFF -- eye up and down
+    rotN.rotation.y = 0
+    rotN.rotation.z = yaw & 0xFFFF
+end
+
+function geo_function_bowser_right_eye(node, matStackIndex) 
+    local o = geo_get_current_object()
+    if o == nil then return end
+    
+    local model = obj_get_model_id_extended(o)
+
+    local player = nearest_player_to_object(o)
+    if player == nil then return end
+
+    local rotN = cast_graph_node(node.next) ---@type GraphNodeRotation
+
+    -- Get the angle from object to player
+    local angleToPlayerYaw   = obj_angle_to_object(o, player)
+    local angleToPlayerPitch = obj_pitch_to_object(o, player)
+
+    local limitYaw   = 0x2000 -- 45 degrees
+    local limitPitch = 0x2000 -- ~22 degrees
+
+    -- Calculate yaw relative to object's current facing
+    local yaw = angleToPlayerYaw - o.oFaceAngleYaw
+    -- Normalize to -32768..32767
+    if yaw >  32767 then yaw = yaw - 65536 end
+    if yaw < -32768 then yaw = yaw + 65536 end
+
+    local pitch = angleToPlayerPitch
+    if pitch >  32767 then pitch = pitch - 65536 end
+    if pitch < -32768 then pitch = pitch + 65536 end
+
+    yaw = math.max(-limitYaw, math.min(limitYaw, yaw))
+    pitch = math.max(-limitPitch, math.min(limitPitch, pitch))
+
+    pitch = -pitch
+    rotN.rotation.x = pitch & 0xFFFF -- eye up and down
+    rotN.rotation.y = 0
+    rotN.rotation.z = yaw & 0xFFFF
 end
 
 function geo_function_eyerok(node, matStackIndex) 
@@ -205,22 +285,22 @@ end
 
 function geo_function_bowser_color(node, matStackIndex)
 
-    r96lib.gfxColorPatchBowserRainbow({
-        prefix = "bowser",
-        materials = {
-            {
-                origMat     = "mat_bowser_mouth",
-                primIndex = 7,
-                dls = {
-                    { name = "bowser_head_mesh_layer_1", cmdIndexes = {3} },
-                    { name = "bowser_jaw_skinned_mesh_layer_1", cmdIndexes = {0} },
-                    { name = "bowser_jaw_mesh_layer_1", cmdIndexes = {0, 6} },
-                    { name = "bowser_jaw_lower_skinned_mesh_layer_1", cmdIndexes = {0}},
-                    { name = "bowser_jaw_lower_mesh_layer_1", cmdIndexes = {0, 7}},
-                },
-            },
-        },
-    })
+   -- r96lib.gfxColorPatchBowserRainbow({
+   --     prefix = "bowser",
+   --     materials = {
+   --         {
+   --             origMat     = "mat_bowser_mouth",
+   --             primIndex = 7,
+   --             dls = {
+   --                 { name = "bowser_head_mesh_layer_1", cmdIndexes = {3} },
+   --                 { name = "bowser_jaw_skinned_mesh_layer_1", cmdIndexes = {0} },
+   --                 { name = "bowser_jaw_mesh_layer_1", cmdIndexes = {0, 6} },
+   --                 { name = "bowser_jaw_lower_skinned_mesh_layer_1", cmdIndexes = {0}},
+   --                 { name = "bowser_jaw_lower_mesh_layer_1", cmdIndexes = {0, 7}},
+   --             },
+   --         },
+   --     },
+   -- })
 end
 
 function geo_function_bowser_tail(node, matStackIndex)
@@ -959,9 +1039,22 @@ local function bhv_warp_pipe_render96_init(o)
 end
 
 ---@param o Object
+local function bhv_warp_pipe_locked_render96_init(o)
+    o.oFlags = OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE
+    o.oInteractType = INTERACT_WARP
+    o.oDrawingDistance = 16000
+    o.oIntangibleTimer = 0
+    o.hitboxRadius = 70
+    o.hitboxHeight = 50
+    o.oInteractStatus = 0
+    o.collisionData = smlua_collision_util_get("pipe_collision")
+end
+
+---@param o Object
 local function bhv_warp_pipe_render96_red_loop(o)
     load_object_collision_model()
     bhv_warp_loop()
+    o.oSwitchState1 = 1
     r96lib.audio_fade(o, BOO_PIPE_RED, 650, 1800, true)
 end
 
@@ -971,19 +1064,23 @@ id_bhvRender96WarpPipeRed = hook_render96_behavior(nil, false, bhv_warp_pipe_ren
 local function bhv_warp_pipe_render96_green_loop(o)
     load_object_collision_model()
     bhv_warp_loop()
+    o.oSwitchState1 = 2
     r96lib.audio_fade(o, BOO_PIPE_GREEN, 650, 1800, true)
 end
 
-id_bhvRender96WarpPipeGreen = hook_render96_behavior(nil, false, bhv_warp_pipe_render96_init, bhv_warp_pipe_render96_green_loop, OBJ_LIST_SURFACE, "WarpPipeGreen")
+id_bhvRender96WarpPipeGreenUnlock = hook_render96_behavior(nil, false, bhv_warp_pipe_render96_init, bhv_warp_pipe_render96_green_loop, OBJ_LIST_SURFACE, "WarpPipeGreenUnlock")
+id_bhvRender96WarpPipeGreenLock = hook_render96_behavior(nil, false, bhv_warp_pipe_locked_render96_init, bhv_warp_pipe_render96_green_loop, OBJ_LIST_SURFACE, "WarpPipeGreenLock")
 
 ---@param o Object
 local function bhv_warp_pipe_render96_yellow_loop(o)
     load_object_collision_model()
     bhv_warp_loop()
+    o.oSwitchState1 = 3
     r96lib.audio_fade(o, BOO_PIPE_YELLOW, 650, 1800, true)
 end
 
-id_bhvRender96WarpPipeYellow = hook_render96_behavior(nil, false, bhv_warp_pipe_render96_init, bhv_warp_pipe_render96_yellow_loop, OBJ_LIST_SURFACE, "WarpPipeYellow")
+id_bhvRender96WarpPipeYellowUnlock = hook_render96_behavior(nil, false, bhv_warp_pipe_render96_init, bhv_warp_pipe_render96_yellow_loop, OBJ_LIST_SURFACE, "WarpPipeYellowUnlock")
+id_bhvRender96WarpPipeYellowLock = hook_render96_behavior(nil, false, bhv_warp_pipe_locked_render96_init, bhv_warp_pipe_render96_yellow_loop, OBJ_LIST_SURFACE, "WarpPipeYellowLock")
 
 ---@param o Object
 local function bhv_luigi_key_init(o)
@@ -1848,3 +1945,77 @@ local function bhv_bowser_render96_loop(o)
 end
 
 id_bhvRender96Bowser = hook_render96_behavior(id_bhvBowser, false, nil, bhv_bowser_render96_loop, OBJ_LIST_GENACTOR)
+
+---@param o Object
+local function bhv_snowball_render96_init(o)
+    o.header.gfx.node.flags = o.header.gfx.node.flags & ~GRAPH_RENDER_BILLBOARD
+end
+
+id_bhvRender96MrBlizzardSnowball = hook_render96_behavior(id_bhvMrBlizzardSnowball, false, bhv_snowball_render96_init, nil, OBJ_LIST_GENACTOR)
+
+---@param o Object
+local function bhv_tree_render96_loop(o)
+    o.header.gfx.node.flags = o.header.gfx.node.flags & ~GRAPH_RENDER_BILLBOARD
+end
+
+id_bhvRender96Tree = hook_render96_behavior(id_bhvTree, false, nil, bhv_tree_render96_loop, OBJ_LIST_POLELIKE)
+
+---@param o Object
+local function bhv_cloudpart_render96_init(o)
+    if obj_has_model_extended(o, E_MODEL_MIST) ~= 0 then
+        print(o.oPosX, o.oPosY, o.oPosZ)
+        obj_mark_for_deletion(o)
+    end
+end
+
+id_bhvRender96CloudPart = hook_render96_behavior(id_bhvCloudPart, false, bhv_cloudpart_render96_init, nil, OBJ_LIST_DEFAULT)
+
+---@param o Object
+local function bhv_cloud_render96_init(o)
+    if (o.oBehParams2ndByte ~= CLOUD_BP_FWOOSH) then
+        obj_mark_for_deletion(o)
+    end
+end
+
+id_bhvRender96Cloud = hook_render96_behavior(id_bhvCloud, false, bhv_cloud_render96_init, nil, OBJ_LIST_DEFAULT)
+
+---@param o Object
+local function bhv_fire_spitter_render96_init(o)
+    o.header.gfx.node.flags = o.header.gfx.node.flags & ~GRAPH_RENDER_BILLBOARD
+end
+
+---@param o Object
+local function bhv_fire_spitter_render96_loop(o)
+    local player = nearest_player_to_object(o)
+    local angleToPlayer = obj_angle_to_object(o, player)
+    o.oFaceAngleYaw =  angleToPlayer
+
+    if o.oAction == FIRE_SPITTER_ACT_IDLE then
+        if o.oTimer < 30 then
+            o.oSwitchState1 = 3
+        else
+            o.oSwitchState1 = 0
+        end
+    end
+    if o.oAction == FIRE_SPITTER_ACT_SPIT_FIRE then
+        if o.oTimer < 10 then
+            o.oSwitchState1 = 1
+        elseif o.oTimer == 10 then
+            o.oSwitchState1 = 2
+        end
+    end
+end
+
+id_bhvRender96FireSpitter = hook_render96_behavior(id_bhvFireSpitter, false, bhv_fire_spitter_render96_init, bhv_fire_spitter_render96_loop, OBJ_LIST_GENACTOR)
+
+---@param o Object
+local function bhv_spindel_render96_loop(o)
+    if (math.abs(o.oMoveAnglePitch & 0x7fff) < 8000.0 and o.oAngleVelPitch ~= 0) then
+        o.oSwitchState1 = 0
+    else
+        o.oSwitchState1 = 1
+    end
+end
+
+--id_bhvRender96Spindel = hook_render96_behavior(id_bhvSpindel, false, nil, bhv_spindel_render96_loop, OBJ_LIST_GENACTOR)
+

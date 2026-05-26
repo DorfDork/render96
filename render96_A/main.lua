@@ -23,6 +23,10 @@ r96lib.addModelOverride(id_bhvSLWalkingPenguin,    E_MODEL_PENGUIN_SL)
 r96lib.addModelOverride(id_bhvFirePiranhaPlant,    E_MODEL_PIRANHA_PLANT_FIRE)
 r96lib.addModelOverride(id_bhvWhompKingBoss,       E_MODEL_WHOMP_KING)
 r96lib.addModelOverride(id_bhvSignOnWall,          E_MODEL_SIGN_ON_WALL)
+r96lib.addModelOverride(id_bhvStarDoor,            E_MODEL_STAR_DOOR)
+r96lib.addModelOverride(id_bhvToxBox,              E_MODEL_TOXBOX)
+r96lib.addModelOverride(id_bhvCapSwitchBase,       E_MODEL_CAP_SWITCH_BASE_HD)
+r96lib.addModelOverride(id_bhvFireSpitter,         E_MODEL_FIRE_SPITTER)
 
 r96lib.addModelParamOverride(id_bhvKoopa, 0x01020000, E_MODEL_KOOPA_QUICK_BOB)
 r96lib.addModelParamOverride(id_bhvKoopa, 0x02030000, E_MODEL_KOOPA_QUICK_BOB)
@@ -64,11 +68,6 @@ r96lib.addSpawn(LEVEL_PSS,   1, E_MODEL_LUIGI_KEY, id_bhvLuigiKeys, 6094,  6144,
 r96lib.addSpawn(LEVEL_BITDW, 1, E_MODEL_LUIGI_KEY, id_bhvLuigiKeys, -4560, 1126,  -179,  0, 0, 0, false, nil, function(o) o.oBehParams2ndByte = 7 end)
 
 local function entity_cleanup()
-local cloud = obj_get_nearest_object_with_behavior_id(gMarioStates[0].marioObj, id_bhvCloud)
-    if cloud ~= nil then
-        print(cloud.oPosX, cloud.oPosY, cloud.oPosZ)
-        obj_mark_for_deletion(cloud)
-    end
     local mrI = obj_get_nearest_object_with_behavior_id(gMarioStates[0].marioObj, id_bhvMrI)
     if mrI ~= nil then
         --print(mrI.oPosX, mrI.oPosY, mrI.oPosZ)
@@ -91,6 +90,14 @@ function wario_head_spawner()
     ----print("spawned head")
     --end
     --print(levelNum)
+
+    if levelNum ~= LEVEL_CASTLE then 
+        local door = obj_get_first_with_behavior_id(id_bhvDoor)
+        while door ~= nil and door.oSwitchState1 ~= 1 and obj_has_model_extended(door, E_MODEL_HMC_WOODEN_DOOR) ~= 0 do
+            door.oSwitchState1 = 1
+            door = obj_get_next_with_same_behavior_id(door)
+        end
+    end
 end
 
  --REPLACE WITH C CODE?
