@@ -140,7 +140,7 @@ local function act_wario_pile_driver(m)
         if stepResult == AIR_STEP_LANDED then
             play_mario_heavy_landing_sound(m, SOUND_ACTION_TERRAIN_HEAVY_LANDING)
             m.particleFlags = m.particleFlags | PARTICLE_MIST_CIRCLE | PARTICLE_HORIZONTAL_STAR
-            set_camera_shake_from_hit(SHAKE_GROUND_POUND)
+            set_camera_shake_from_hit(SHAKE_LARGE_DAMAGE)
             set_mario_action(m, ACT_WARIO_PILE_DRIVER_LAND, 0)
 
         elseif stepResult == AIR_STEP_HIT_WALL then
