@@ -5,8 +5,6 @@
 local r96lib = require("/lib/r96lib")
 local charSelect = _G.charSelect
 
--- Warps
-
 -- Models
 r96lib.addModelOverride(id_bhvBalconyBigBoo,       E_MODEL_BOO_BIG)
 r96lib.addModelOverride(id_bhvMerryGoRoundBigBoo,  E_MODEL_BOO_BIG)
@@ -32,11 +30,13 @@ r96lib.addModelOverride(id_bhvMantaRay,            E_MODEL_MANTA)
 r96lib.addModelParamOverride(id_bhvKoopa, 0x01020000, E_MODEL_KOOPA_QUICK_BOB)
 r96lib.addModelParamOverride(id_bhvKoopa, 0x02030000, E_MODEL_KOOPA_QUICK_BOB)
 
-r96lib.addModelLevelOverride(id_bhvGoomba, E_MODEL_GOOMBA_SSL, LEVEL_SSL, 1, nil)
-r96lib.addModelLevelOverride(id_bhvGoomba, E_MODEL_GOOMBA_UNDERGROUND, LEVEL_SSL, 2, nil)
-r96lib.addModelLevelOverride(id_bhvGoomba, E_MODEL_GOOMBA_BOXART, LEVEL_BITDW, 1, nil)
-r96lib.addModelLevelOverride(id_bhvGoomba, E_MODEL_GOOMBA_BOXART, LEVEL_BITFS, 1, nil)
-r96lib.addModelLevelOverride(id_bhvGoomba, E_MODEL_GOOMBA_BOXART, LEVEL_BITS, 1, nil)
+r96lib.addModelLevelOverride(id_bhvGoomba, E_MODEL_GOOMBA_SSL,         E_MODEL_GOOMBA,     LEVEL_SSL, 1, nil)
+r96lib.addModelLevelOverride(id_bhvGoomba, E_MODEL_GOOMBA_UNDERGROUND, E_MODEL_GOOMBA,     LEVEL_SSL, 2, nil)
+r96lib.addModelLevelOverride(id_bhvGoomba, E_MODEL_GOOMBA_BOXART,      E_MODEL_GOOMBA,     LEVEL_BITDW, 1, nil)
+r96lib.addModelLevelOverride(id_bhvGoomba, E_MODEL_GOOMBA_BOXART,      E_MODEL_GOOMBA,     LEVEL_BITFS, 1, nil)
+r96lib.addModelLevelOverride(id_bhvGoomba, E_MODEL_GOOMBA_BOXART,      E_MODEL_GOOMBA,     LEVEL_BITS, 1, nil)
+r96lib.addModelLevelOverride(id_bhvFlame,  E_MODEL_RED_FLAME_TORCH,    E_MODEL_RED_FLAME,  LEVEL_CASTLE, 3, nil)
+r96lib.addModelLevelOverride(id_bhvFlame,  E_MODEL_BLUE_FLAME_TORCH,   E_MODEL_BLUE_FLAME, LEVEL_CASTLE, 3, nil)
 
 -- Enemies
 r96lib.addSpawn(LEVEL_LLL,  1, E_MODEL_BLARGG, id_bhvRender96Blargg, -6766, 0,  3033, 0, 0, 0, false)
@@ -117,15 +117,21 @@ end
 
 hook_event(HOOK_MARIO_UPDATE, squishtest)
 
-
+--gLevelValues.entryLevel             = SPECIAL_WARP_TITLE
 local function mario_update(m)
    --if m.playerIndex ~= 0 then return end
-   --if m.controller.buttonPressed & X_BUTTON ~= 0 then
-   -- spawn_non_sync_object(id_bhv1Up, E_MODEL_SPINY, m.pos.x + 200, m.pos.y, m.pos.z, nil)
+   -- if m.controller.buttonPressed & X_BUTTON ~= 0 then
+    --spawn_non_sync_object(id_bhvRender96YoshiRideable, E_MODEL_YOSHI_RIDEABLE, m.pos.x + 200, m.pos.y, m.pos.z, nil)
+    -- spawn_non_sync_object(id_bhv1Up, E_MODEL_1UP, m.pos.x + 200, m.pos.y, m.pos.z, nil)
    --end
-   --if m.action == ACT_BACKFLIP then
-   --    warp_to_level(LEVEL_RR, 1, 1)
-   --end
+   if m.action == ACT_BACKFLIP then
+       warp_to_level(LEVEL_CASTLE, 3, 1)
+   end
+   --SPECIAL_WARP_CAKE
+   --WARP_NODE_CREDITS_START
+   --SPECIAL_WARP_TITLE
+   --SPECIAL_WARP_LEVEL_SELECT
+   --SPECIAL_WARP_GODDARD
 end
 
 hook_event(HOOK_MARIO_UPDATE, mario_update)

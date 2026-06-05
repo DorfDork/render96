@@ -15,6 +15,12 @@ function r96lib.spawn_object(modelId, bhvId, x, y, z, rx, ry, rz, func)
     return childObj
 end
 
+function r96lib.convert_s16(num)
+    while num < -32768 do num = 32767 + (num + 32768) end
+    while num >  32767 do num = -32768 + (num - 32767) end
+    return num
+end
+
 function r96lib.squish_apply(o, timer, duration, intensityX, intensityY, intensityZ, baseScale, sound)
     if o == nil then return 0 end
     if duration == nil or duration <= 0 then
@@ -240,7 +246,7 @@ function r96lib.addModelParamOverride(bhv, param, model)
     })
 end
 
-function r96lib.addModelLevelOverride(bhv, model, level, area, acts)
+function r96lib.addModelLevelOverride(bhv, model, model2, level, area, acts)
 
     local actMask = ACT_ALL
     if type(acts) == "number" then
@@ -255,11 +261,87 @@ function r96lib.addModelLevelOverride(bhv, model, level, area, acts)
     table.insert(sModelOverrides, {
         bhv     = bhv,
         model   = model,
+        model2  = model2,
         level   = level,
         area    = area,
         actMask = actMask,
     })
 end
+
+local function update()
+    -- Also update audio teehee
+    update_obj_audio()
+
+    local level  = networkPlayers[0].currLevelNum
+    local area   = networkPlayers[0].currAreaIndex
+    local actNum = networkPlayers[0].currActNum
+
+    -- Loop 1: addModelOverride
+    for _, entry in ipairs(sModelOverrides) do
+        if not entry.level and not entry.param then
+            local o = obj_get_first_with_behavior_id(entry.bhv)
+            while o ~= nil do
+                obj_set_model_extended(o, entry.model)
+                o = obj_get_next_with_same_behavior_id(o)
+            end
+        end
+    end
+
+    -- Loop 2: addModelParamOverride
+    for _, entry in ipairs(sModelOverrides) do
+        if entry.param and not entry.level then
+            local o = obj_get_first_with_behavior_id(entry.bhv)
+            while o ~= nil do
+                if entry.param == o.oBehParams then
+                    obj_set_model_extended(o, entry.model)
+                end
+                o = obj_get_next_with_same_behavior_id(o)
+            end
+        end
+    end
+
+    -- Loop 3: addModelLevelOverride
+    for _, entry in ipairs(sModelOverrides) do
+        if entry.level and entry.level == level
+        and entry.area  and entry.area  == area
+        and entry.actMask and act_matches(entry.actMask, actNum) then
+            local o = obj_get_first_with_behavior_id(entry.bhv)
+            while o ~= nil do
+                if obj_get_model_id_extended(o) == entry.model2 then
+                    print(obj_get_model_id_extended(o))
+                    obj_set_model_extended(o, entry.model)
+                    o = obj_get_next_with_same_behavior_id(o)
+                else
+                    o = obj_get_next_with_same_behavior_id(o)
+                end
+            end
+        end
+    end
+end
+
+local function on_sync_valid()
+    local level  = networkPlayers[0].currLevelNum
+    local area   = networkPlayers[0].currAreaIndex
+    local actNum = networkPlayers[0].currActNum
+    local entries = sSpawnTable[level] and sSpawnTable[level][area]
+    if not entries then return end
+    for i, entry in ipairs(entries) do
+        if act_matches(entry.actMask, actNum) then
+            local key = make_key(level, area, actNum, i)
+            if not sSpawnedObjects[key] then
+                sSpawnedObjects[key] = true
+                local spawnFn = entry.isSync and spawn_sync_object or spawn_non_sync_object
+                spawnFn(entry.bhv, entry.model,
+                    entry.x, entry.y, entry.z,
+                    function(o)
+                        obj_set_angle(o, entry.rx, entry.ry, entry.rz)
+                        if entry.spawnFunc then entry.spawnFunc(o) end
+                    end)
+            end
+        end
+    end
+end
+
 
 ---@param o Object
 ---@param colors table
@@ -304,71 +386,35 @@ function r96lib.pulse_rapid(o, colors, t, speed)
     o.oColorB = math.lerp(c1.b, c2.b, s)
 end
 
-local function update()
-    -- Also update audio teehee
-    update_obj_audio()
+function r96lib.push_mario_out_of_object(mario, o, padding)
+    local minDistance = o.hitboxRadius + mario.marioObj.hitboxRadius + padding
 
-    local level  = networkPlayers[0].currLevelNum
-    local area   = networkPlayers[0].currAreaIndex
-    local actNum = networkPlayers[0].currActNum
+    local offsetX = mario.pos.x - o.oPosX
+    local offsetZ = mario.pos.z - o.oPosZ
+    local distance = math.sqrt(offsetX * offsetX + offsetZ * offsetZ)
 
-    -- Loop 1: addModelOverride
-    for _, entry in ipairs(sModelOverrides) do
-        if not entry.level and not entry.param then
-            local o = obj_get_first_with_behavior_id(entry.bhv)
-            while o ~= nil do
-                obj_set_model_extended(o, entry.model)
-                o = obj_get_next_with_same_behavior_id(o)
-            end
+    if (distance < minDistance) then
+        local floor = mario.floor
+        local pushAngle = 0
+        local newMarioX = 0
+        local newMarioZ = 0
+
+        if (distance == 0) then
+            pushAngle = mario.faceAngle.y
+        else
+            pushAngle = atan2s(offsetZ, offsetX)
         end
-    end
 
-    -- Loop 2: addModelParamOverride
-    for _, entry in ipairs(sModelOverrides) do
-        if entry.param and not entry.level then
-            local o = obj_get_first_with_behavior_id(entry.bhv)
-            while o ~= nil do
-                if entry.param == o.oBehParams then
-                    obj_set_model_extended(o, entry.model)
-                end
-                o = obj_get_next_with_same_behavior_id(o)
-            end
-        end
-    end
+        newMarioX = o.oPosX + minDistance * sins(pushAngle)
+        newMarioZ = o.oPosZ + minDistance * coss(pushAngle)
 
-    -- Loop 3: addModelLevelOverride
-    for _, entry in ipairs(sModelOverrides) do
-        if entry.level and entry.level == level
-        and entry.area  and entry.area  == area
-        and entry.actMask and act_matches(entry.actMask, actNum) then
-            local o = obj_get_first_with_behavior_id(entry.bhv)
-            while o ~= nil do
-                obj_set_model_extended(o, entry.model)
-                o = obj_get_next_with_same_behavior_id(o)
-            end
-        end
-    end
-end
 
-local function on_sync_valid()
-    local level  = networkPlayers[0].currLevelNum
-    local area   = networkPlayers[0].currAreaIndex
-    local actNum = networkPlayers[0].currActNum
-    local entries = sSpawnTable[level] and sSpawnTable[level][area]
-    if not entries then return end
-    for i, entry in ipairs(entries) do
-        if act_matches(entry.actMask, actNum) then
-            local key = make_key(level, area, actNum, i)
-            if not sSpawnedObjects[key] then
-                sSpawnedObjects[key] = true
-                local spawnFn = entry.isSync and spawn_sync_object or spawn_non_sync_object
-                spawnFn(entry.bhv, entry.model,
-                    entry.x, entry.y, entry.z,
-                    function(o)
-                        obj_set_angle(o, entry.rx, entry.ry, entry.rz)
-                        if entry.spawnFunc then entry.spawnFunc(o) end
-                    end)
-            end
+        if (floor ~= nil) then
+            --! Doesn't update Mario's referenced floor (allows oob death when
+            -- an object pushes you into a steep slope while in a ground action)
+            --  <Fixed when gLevelValues.fixCollisionBugs != 0>
+            m.pos.x = newMarioX
+            m.pos.z = newMarioZ
         end
     end
 end
@@ -377,7 +423,7 @@ local sGfxColorPatches = {}
 
 ---@param node GraphNode
 ---@param opts table
-function r96lib.gfxColorPatch(node, opts)
+function r96lib.gfx_color_patch(node, opts)
     local o = geo_get_current_object()
     if o == nil then return end
 
@@ -418,60 +464,6 @@ function r96lib.gfxColorPatch(node, opts)
     if matdisplayList == nil or matdisplayList.displayList == nil then return end
     local cmd_display_list = gfx_get_command(matdisplayList.displayList, 0)
     gfx_set_command(cmd_display_list, "gsSPDisplayList(%g)", gfx_mat)
-end
-
----@param opts table
-function r96lib.gfxColorPatchBowserRainbow(opts)
-    local o = geo_get_current_object()
-    if o == nil then return end
-
-    local prefix = opts.prefix
-    sGfxColorPatches[prefix] = true
-
-    local id = tostring(o._pointer)
-
-    for _, matEntry in ipairs(opts.materials) do
-        local origMat    = matEntry.origMat
-        local primIndex = matEntry.primIndex
-        local dlEntries  = matEntry.dls
-
-        local mat_name = prefix .. "_mat_" .. origMat .. "_" .. id
-        local gfx_mat = gfx_get_from_name(mat_name)
-        if gfx_mat == nil then
-            local orig = gfx_get_from_name(origMat)
-            local len = gfx_get_length(orig)
-            gfx_mat = gfx_create(mat_name, len)
-            gfx_copy(gfx_mat, orig, len)
-
-            print("original: " .. origMat)
-            for i = 0, len - 1 do
-                local cmd = gfx_get_command(orig, i)
-                print(i, "op:", gfx_get_op(cmd), string.format("w0:0x%08X w1:0x%08X", cmd.w0, cmd.w1))
-            end
-            print("clone: " .. mat_name)
-            for i = 0, len - 1 do
-                local cmd = gfx_get_command(gfx_mat, i)
-                print(i, "op:", gfx_get_op(cmd), string.format("w0:0x%08X w1:0x%08X", cmd.w0, cmd.w1))
-            end
-        end
-
-        local cmd_prim = gfx_get_command(gfx_mat, primIndex)
-        gfx_set_command(cmd_prim, "gsDPSetPrimColor(0, 0, %i, %i, %i, 255)",
-            o.oColorR, o.oColorG, o.oColorB)
-
-        -- Redirect all DLs that use this material
-        for _, dlEntry in ipairs(dlEntries) do
-            local dl_name  = dlEntry.name
-            local cmdIndexes = dlEntry.cmdIndexes
-
-            local gfx = gfx_get_from_name(dl_name)
-
-            for _, cmdIndex in ipairs(cmdIndexes) do
-                local cmd = gfx_get_command(gfx, cmdIndex)
-                gfx_set_command(cmd, "gsSPDisplayList(%g)", gfx_mat)
-            end
-        end
-    end
 end
 
 -- Internal: free all cloned GFX resources for a single object when it unloads.
@@ -585,6 +577,21 @@ function r96lib.npcGrabHandler(o, opts)
     if (m.action == ACT_HOLD_WATER_IDLE or m.action == ACT_HOLD_WATER_ACTION_END)
     and m.heldObj == o then
         mario_drop_held_object(m)
+    end
+end
+
+function r96lib.yoshiRun(o)
+    cur_obj_update_floor_and_walls()
+    cur_obj_move_standard(-78)
+
+    o.oFaceAngleYaw = o.oFaceAngleYaw + 0x1000
+    o.oGravity = -2.5
+    o.oFriction = 0.99
+    o.oBuoyancy = 1.4
+
+    if (o.oMoveFlags & OBJ_MOVE_HIT_EDGE) ~= 0 or o.oMoveFlags & OBJ_MOVE_HIT_WALL ~= 0 then
+        o.oMoveAngleYaw = obj_angle_to_object(o, nearest_player_to_object(o))
+        return
     end
 end
 

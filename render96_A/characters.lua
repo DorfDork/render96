@@ -12,228 +12,6 @@ _G.charSelect.character_add_costume(CT_WARIO, "Vanilla Wario", nil, nil, nil, E_
 _G.charSelect.character_edit(CT_WARIO, nil, nil, "Render96", nil, E_MODEL_R96_WARIO)
 ]]
 
-eyeStateCustom = {
-    EYES_OPEN = 0,
-    EYES_HALF_CLOSED = 1,
-    EYES_CLOSED = 2,
-    EYES_HALF_OPEN = 3,
-    EYES_ANGRY = 4,
-    EYES_HAPPY = 5,
-    EYES_EXHAUSTED = 6,
-    EYES_DEAD = 7,
-    EYES_HURT = 8
-}
-
-faceStateCustom = {
-    FACE_DEFAULT = 0,
-    FACE_HAPPY = 3,
-    FACE_ANGRY = 4,
-    FACE_OPEN = 5
-}
-
-local blinkFrame = 1
-local blinkTimer = 0
-
-local sleepFrame = 1
-local sleepTimer = 1
-
-local longJumpTimer = 0
-local gMarioBlinkAnimation = { 0, 1, 2, 1, 0, 1, 2, 1, 0}
-
-function geo_switch_mario_face(node, matStackIndex)
-    local m = gMarioStates[0]
-    local switchCase = cast_graph_node(node) ---@type GraphNodeSwitchCase
-    local marioAction = m.action
-    local marioHurtCounter = m.hurtCounter
-    local marioHealth = m.health
-
-    switchCase.selectedCase = faceStateCustom.FACE_DEFAULT
-
-    if marioAction == ACT_IDLE or
-    marioAction == ACT_HOLD_IDLE or
-    marioAction == ACT_HOLD_HEAVY_IDLE or
-    marioAction == ACT_CRAWLING or
-    marioAction == ACT_WALKING or
-    marioAction == ACT_HOLD_WALKING or
-    marioAction == ACT_HOLD_HEAVY_WALKING or
-    marioAction == ACT_LONG_JUMP_LAND or
-    marioAction == ACT_JUMP_LAND or
-    marioAction == ACT_JUMP_LAND_STOP or
-    marioAction == ACT_DOUBLE_JUMP_LAND or
-    marioAction == ACT_DOUBLE_JUMP_LAND_STOP then
-        longJumpTimer = 0
-        switchCase.selectedCase = faceStateCustom.FACE_DEFAULT end
-    
-    if (marioAction & ACT_FLAG_ATTACKING) ~= 0 then switchCase.selectedCase = faceStateCustom.FACE_ANGRY end
-
-    if (marioAction & ACT_FLAG_SWIMMING) ~= 0 then switchCase.selectedCase = faceStateCustom.FACE_DEFAULT end
-    
-    if marioAction == ACT_LONG_JUMP then
-        longJumpTimer = longJumpTimer + 1
-        if longJumpTimer < 15 then switchCase.selectedCase = faceStateCustom.FACE_HAPPY
-        else switchCase.selectedCase = faceStateCustom.FACE_OPEN end
-    end
-
-    if marioAction == ACT_DOUBLE_JUMP or
-    marioAction == ACT_TRIPLE_JUMP then
-        switchCase.selectedCase = faceStateCustom.FACE_DEFAULT end
-
-    if marioAction == ACT_DOUBLE_JUMP_LAND or
-    marioAction == ACT_DOUBLE_JUMP_LAND_STOP then
-        switchCase.selectedCase = faceStateCustom.FACE_DEFAULT end
-
-    if marioAction == ACT_JUMP or
-    marioAction == ACT_TRIPLE_JUMP_LAND or
-    marioAction == ACT_TRIPLE_JUMP_LAND_STOP or
-    marioAction == ACT_BACKFLIP_LAND or
-    marioAction == ACT_BACKFLIP_LAND_STOP then
-        switchCase.selectedCase = faceStateCustom.FACE_HAPPY end
-    
-    if marioAction == ACT_BURNING_GROUND or
-    marioAction == ACT_BURNING_JUMP or
-    marioAction == ACT_BURNING_FALL or
-    marioAction == ACT_LAVA_BOOST or
-    marioAction == ACT_LAVA_BOOST_LAND then
-        switchCase.selectedCase = faceStateCustom.FACE_OPEN end 
-
-    if marioAction == ACT_DEATH_EXIT or
-    marioAction == ACT_DEATH_EXIT_LAND or
-    marioAction == ACT_DEATH_ON_STOMACH or
-    marioAction == ACT_DEATH_ON_BACK or
-    marioAction == ACT_QUICKSAND_DEATH or
-    marioAction == ACT_ELECTROCUTION or
-    marioAction == ACT_SUFFOCATION then
-        switchCase.selectedCase = faceStateCustom.FACE_DEFAULT end
-
-    if marioAction == ACT_START_SLEEPING then
-		switchCase.selectedCase = faceStateCustom.FACE_DEFAULT end
-
-	if marioAction == ACT_SLEEPING then
-        if sleepTimer % 3 == 0 then 
-            switchCase.selectedCase = faceStateCustom.FACE_OPEN
-        else switchCase.selectedCase = faceStateCustom.FACE_DEFAULT end
-    end
-
-    if marioAction ~= ACT_SLEEPING then sleepTimer = 0 end
-
-    if marioHurtCounter ~= nil and marioHurtCounter > 0 then
-        switchCase.selectedCase = faceStateCustom.FACE_ANGRY end
-
-    if marioHealth ~= nil and marioHealth <= 0xFF then
-        switchCase.selectedCase = faceStateCustom.FACE_ANGRY end
-
-    if marioAction == ACT_PANTING then
-        switchCase.selectedCase = faceStateCustom.FACE_OPEN end
-
-end
-
-function geo_switch_mario_eye_custom(node, matStackIndex)
-    --local bodyState = geo_get_body_state()
-    local m = gMarioStates[0]
-    local switchCase = cast_graph_node(node) ---@type GraphNodeSwitchCase
-    local marioAction = m.action
-    local marioHurtCounter = m.hurtCounter
-    local marioHealth = m.health
-
-    blinkTimer = blinkTimer + 1
-
-    if blinkFrame == 5 then
-        if blinkTimer % 20 == 0 then
-            blinkFrame = blinkFrame + 1
-            blinkTimer = 0
-        end
-    elseif blinkFrame == 9 then
-        if blinkTimer % 50 == 0 then 
-            blinkFrame = 1
-            blinkTimer = 0
-        end
-    elseif (blinkFrame < 5 and blinkFrame >= 1) or (blinkFrame < 9 and blinkFrame > 5) then
-        if blinkTimer % 2 == 0 then 
-            blinkFrame = blinkFrame + 1
-        end
-    end
-
-    if marioAction ~= ACT_IDLE and 
-    marioAction ~= ACT_HOLD_IDLE and
-    marioAction ~= ACT_HOLD_HEAVY_IDLE and
-    marioAction ~= ACT_JUMP_LAND and 
-    marioAction ~= ACT_JUMP_LAND_STOP and 
-    marioAction ~= ACT_DOUBLE_JUMP_LAND and 
-    marioAction ~= ACT_DOUBLE_JUMP_LAND_STOP then
-        blinkFrame = 1
-        blinkTimer = 0
-        switchCase.selectedCase = eyeStateCustom.EYES_OPEN end
-
-    if marioAction == ACT_IDLE or
-    marioAction == ACT_HOLD_IDLE or
-    marioAction == ACT_HOLD_HEAVY_IDLE or
-    marioAction == ACT_JUMP_LAND or
-    marioAction == ACT_JUMP_LAND_STOP or
-    marioAction == ACT_DOUBLE_JUMP_LAND or
-    marioAction == ACT_DOUBLE_JUMP_LAND_STOP then
-        switchCase.selectedCase = gMarioBlinkAnimation[blinkFrame] end
-
-    if (marioAction & ACT_FLAG_ATTACKING) ~= 0 or
-    (marioAction & ACT_FLAG_SWIMMING) ~= 0 then
-        switchCase.selectedCase = eyeStateCustom.EYES_ANGRY end
-
-    if marioAction == ACT_WALKING or
-    marioAction == ACT_HOLD_WALKING or
-    marioAction == ACT_HOLD_HEAVY_WALKING then
-        local speed = 0
-        if m.forwardVel ~= nil then
-            speed = math.abs(m.forwardVel)
-        end
-        if speed < 16 then switchCase.selectedCase = eyeStateCustom.EYES_HALF_OPEN
-        else switchCase.selectedCase = eyeStateCustom.EYES_OPEN end
-    end
-
-    if marioAction == ACT_START_SLEEPING then
-		switchCase.selectedCase = eyeStateCustom.EYES_HALF_CLOSED end
-
-	if marioAction == ACT_SLEEPING then
-		switchCase.selectedCase = eyeStateCustom.EYES_CLOSED end
-
-    if marioAction == ACT_CRAWLING then
-        switchCase.selectedCase = eyeStateCustom.EYES_HALF_OPEN end
-
-    if marioAction == ACT_JUMP or
-    marioAction == ACT_DOUBLE_JUMP or
-    marioAction == ACT_TRIPLE_JUMP or
-    marioAction == ACT_TRIPLE_JUMP_LAND or
-    marioAction == ACT_TRIPLE_JUMP_LAND_STOP or
-    marioAction == ACT_BACKFLIP_LAND or
-    marioAction == ACT_BACKFLIP_LAND_STOP then
-        switchCase.selectedCase = eyeStateCustom.EYES_HAPPY end
-
-    if marioAction == ACT_BURNING_GROUND or
-    marioAction == ACT_BURNING_JUMP or
-    marioAction == ACT_BURNING_FALL or
-    marioAction == ACT_LAVA_BOOST or
-    marioAction == ACT_LAVA_BOOST_LAND then
-        switchCase.selectedCase = eyeStateCustom.EYES_DEAD end
-
-    if marioAction == ACT_DEATH_EXIT or
-    marioAction == ACT_DEATH_EXIT_LAND or
-    marioAction == ACT_DEATH_ON_STOMACH or
-    marioAction == ACT_DEATH_ON_BACK or
-    marioAction == ACT_QUICKSAND_DEATH or
-    marioAction == ACT_ELECTROCUTION or
-    marioAction == ACT_SUFFOCATION then
-        switchCase.selectedCase = eyeStateCustom.EYES_DEAD end
-
-    if marioHurtCounter ~= nil and marioHurtCounter > 0 then
-        switchCase.selectedCase = eyeStateCustom.EYES_HURT end
-
-    if marioHealth ~= nil and marioHealth <= 0xFF then
-        switchCase.selectedCase = eyeStateCustom.EYES_HURT end
-
-    if marioAction == ACT_PANTING then
-        switchCase.selectedCase = eyeStateCustom.EYES_EXHAUSTED end
-
-end
-
-
 
 local sWarioWalkSpin = false
 
@@ -788,7 +566,8 @@ local function act_wario_swing_fling_held(m)
         wario_swing_fling_spin(m)
         sWarioSpinCount = sWarioSpinCount + 1
         if sWarioSpinCount % 5 == 0 then
-            spawn_non_sync_object(id_bhvWarioCoins, sWarioCoinRand[math.random(1, 6)], m.marioObj.oPosX +(random_float() * 20), m.marioObj.oPosY + 100, m.marioObj.oPosZ + (random_float() * 20), nil)
+            --spawn_non_sync_object(id_bhvWarioCoins, sWarioCoinRand[math.random(1, 6)], m.marioObj.oPosX +(random_float() * 20), m.marioObj.oPosY + 100, m.marioObj.oPosZ + (random_float() * 20), nil)
+            spawn_non_sync_object(id_bhvWarioCoins, E_MODEL_GREEN_COIN, m.marioObj.oPosX +(random_float() * 20), m.marioObj.oPosY + 100, m.marioObj.oPosZ + (random_float() * 20), nil)
         end
         set_mario_particle_flags(m, PARTICLE_SPARKLES, 0)
         if sWarioSpinCount >= 135 then
@@ -885,8 +664,9 @@ local function act_wario_ground_pound(m)
         end
     end
 
-    return 0
+    return false
 end
+
 
 ---@param m MarioState
 ---@param incomingAct integer
@@ -1112,3 +892,141 @@ hook_event(HOOK_ON_MODS_LOADED, function ()
         _G.charSelect.character_hook_moveset(CT_WARIO, HOOK_ON_SET_MARIO_ACTION, wario_current_actions)
     end
 end)
+
+local function yoshi_dismount(m)
+    if (m.controller.buttonPressed & Z_TRIG) ~= 0 then
+        mario_stop_riding_object(m)
+        m.pos.y = m.marioObj.header.gfx.pos.y
+        set_mario_action(m, ACT_TRIPLE_JUMP, 0)
+    end
+end
+
+local function yoshi_walk_speed(m)
+    local targetSpeed = (m.floor ~= nil and m.floor.type == SURFACE_SLOW) and 32.0 or 48.0
+    if m.intendedMag < 24 then targetSpeed = m.intendedMag end
+    if m.quicksandDepth > 10.0 then targetSpeed = targetSpeed * (6.25 / m.quicksandDepth) end
+
+    if     m.forwardVel <= 0.0        then m.forwardVel = m.forwardVel + 1.1
+    elseif m.forwardVel <= targetSpeed then m.forwardVel = m.forwardVel + (1.1 - m.forwardVel / targetSpeed)
+    elseif m.floor ~= nil and m.floor.normal.y >= 0.95 then m.forwardVel = m.forwardVel - 1.0 end
+
+    if m.forwardVel > 64.0 then m.forwardVel = 64.0 end
+
+    m.faceAngle.y = m.intendedYaw - approach_s32(r96lib.convert_s16(m.intendedYaw - m.faceAngle.y), 0, 0x800, 0x800)
+    apply_slope_accel(m)
+end
+
+local function act_yoshi_ride_idle(m)
+    set_mario_animation(m, MARIO_ANIM_SLIDING_ON_BOTTOM_WITH_LIGHT_OBJ)
+    smlua_anim_util_set_animation(m.marioObj, "MARIO_RIDING_YOSHI_IDLE")
+    yoshi_dismount(m)
+
+    if stationary_ground_step(m) == GROUND_STEP_LEFT_GROUND then
+        return set_mario_action(m, ACT_YOSHI_RIDE_FALL, 0)
+    end
+    if (m.input & INPUT_A_PRESSED) ~= 0 then
+        return set_mario_action(m, ACT_YOSHI_RIDE_JUMP, 0)
+    end
+    if (m.input & INPUT_NONZERO_ANALOG) ~= 0 then
+        m.faceAngle.y = m.intendedYaw
+        return set_mario_action(m, ACT_YOSHI_RIDE_WALK, 0)
+    end
+    mario_set_forward_vel(m, 0)
+end
+
+local function act_yoshi_ride_walk(m)
+    set_mario_animation(m, MARIO_ANIM_SLIDING_ON_BOTTOM_WITH_LIGHT_OBJ)
+    smlua_anim_util_set_animation(m.marioObj, "MARIO_RIDING_YOSHI_RUN")
+    yoshi_walk_speed(m)
+
+    local step = perform_ground_step(m)
+    if step == GROUND_STEP_LEFT_GROUND then
+        return set_mario_action(m, ACT_YOSHI_RIDE_FALL, 1)
+    elseif step == GROUND_STEP_HIT_WALL then
+        m.forwardVel = 6
+        if (m.input & INPUT_ZERO_MOVEMENT) ~= 0 then
+            return set_mario_action(m, ACT_YOSHI_RIDE_IDLE, 0)
+        end
+    elseif step == GROUND_STEP_NONE then
+        if m.intendedMag - m.forwardVel > 16.0 then
+            m.particleFlags = m.particleFlags | PARTICLE_DUST
+        end
+    end
+
+    if (m.input & INPUT_A_PRESSED) ~= 0 then return set_mario_action(m, ACT_YOSHI_RIDE_JUMP, 0) end
+    if math.abs(m.forwardVel) <= 1 then return set_mario_action(m, ACT_YOSHI_RIDE_IDLE, 0) end
+    if (m.input & INPUT_NONZERO_ANALOG) ~= 0 and m.forwardVel <= 5 then mario_set_forward_vel(m, 5) end
+    yoshi_dismount(m)
+end
+
+local function act_yoshi_ride_jump(m)
+    if m.actionTimer == 0 then play_character_sound(m, CHAR_SOUND_YAH_WAH_HOO) end
+    if m.actionTimer > 0 and (m.controller.buttonDown & A_BUTTON) ~= 0 then
+        return set_mario_action(m, ACT_YOSHI_RIDE_FLUTTER, 0)
+    end
+
+    update_air_without_turn(m)
+    if perform_air_step(m, 0) == AIR_STEP_LANDED then
+        return set_mario_action(m, ACT_YOSHI_RIDE_WALK, 0)
+    end
+
+    yoshi_dismount(m)
+    set_mario_animation(m, MARIO_ANIM_SLIDING_ON_BOTTOM_WITH_LIGHT_OBJ)
+    smlua_anim_util_set_animation(m.marioObj, "MARIO_RIDING_YOSHI_JUMP")
+    m.actionTimer = m.actionTimer + 1
+end
+
+local function act_yoshi_ride_flutter(m)
+    if m.actionTimer == 0 then
+        m.vel.y = math.max(math.min(m.vel.y, 0), -10)
+    end
+
+    if m.actionTimer <= 20 and (m.controller.buttonDown & A_BUTTON) ~= 0 then
+        m.vel.y = m.vel.y + ((m.flags & MARIO_WING_CAP) ~= 0 and 10 or 5)
+    else
+        set_mario_action(m, ACT_YOSHI_RIDE_FALL, 1)
+    end
+
+    update_air_without_turn(m)
+    if perform_air_step(m, 0) == AIR_STEP_LANDED then
+        return set_mario_action(m, ACT_YOSHI_RIDE_WALK, 0)
+    end
+
+    yoshi_dismount(m)
+    set_mario_animation(m, MARIO_ANIM_SLIDING_ON_BOTTOM_WITH_LIGHT_OBJ)
+    smlua_anim_util_set_animation(m.marioObj, "MARIO_RIDING_YOSHI_FLUTTER")
+
+    if (m.flags & MARIO_WING_CAP) ~= 0 then
+        m.actionTimer = 0
+        m.faceAngle.y = m.intendedYaw - approach_s32(r96lib.convert_s16(m.intendedYaw - m.faceAngle.y), 0, 0x800, 0x800)
+    else
+        m.actionTimer = m.actionTimer + 1
+    end
+end
+
+local function act_yoshi_ride_fall(m)
+    if m.actionTimer > 0 and (m.controller.buttonDown & A_BUTTON) ~= 0 then
+        return set_mario_action(m, ACT_YOSHI_RIDE_FLUTTER, 0)
+    end
+
+    update_air_without_turn(m)
+    if perform_air_step(m, 0) == AIR_STEP_LANDED then
+        return set_mario_action(m, ACT_YOSHI_RIDE_WALK, 0)
+    end
+
+    yoshi_dismount(m)
+    set_mario_animation(m, MARIO_ANIM_SLIDING_ON_BOTTOM_WITH_LIGHT_OBJ)
+    smlua_anim_util_set_animation(m.marioObj, "MARIO_RIDING_YOSHI_FALL")
+    m.actionTimer = m.actionTimer + 1
+end
+
+hook_event(HOOK_ON_SET_MARIO_ACTION, function(m)
+    if m.action == ACT_YOSHI_RIDE_JUMP then m.vel.y = 50 end
+end)
+
+
+hook_mario_action(ACT_YOSHI_RIDE_IDLE,    act_yoshi_ride_idle )
+hook_mario_action(ACT_YOSHI_RIDE_WALK,    act_yoshi_ride_walk )
+hook_mario_action(ACT_YOSHI_RIDE_JUMP,    act_yoshi_ride_jump )
+hook_mario_action(ACT_YOSHI_RIDE_FLUTTER, act_yoshi_ride_flutter )
+hook_mario_action(ACT_YOSHI_RIDE_FALL,    act_yoshi_ride_fall )

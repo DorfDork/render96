@@ -91,8 +91,236 @@ define_custom_obj_fields({
     oThwompSquishDur    = 'f32',
     oThwompBaseScale    = 'f32',
     oWarioHeadBool      = 'f32',
-    oCelebrationStar    = 'f32'
+    oCelebrationStar    = 'f32',
+    oYoshiIdleTimer = "f32",
+    oYoshiCustomBlinkTimer = "s32"
 })
+
+eyeStateCustom = {
+    EYES_OPEN = 0,
+    EYES_HALF_CLOSED = 1,
+    EYES_CLOSED = 2,
+    EYES_HALF_OPEN = 3,
+    EYES_ANGRY = 4,
+    EYES_HAPPY = 5,
+    EYES_EXHAUSTED = 6,
+    EYES_DEAD = 7,
+    EYES_HURT = 8
+}
+
+faceStateCustom = {
+    FACE_DEFAULT = 0,
+    FACE_HAPPY = 3,
+    FACE_ANGRY = 4,
+    FACE_OPEN = 5
+}
+
+local blinkFrame = 1
+local blinkTimer = 0
+
+local sleepFrame = 1
+local sleepTimer = 1
+
+local longJumpTimer = 0
+local gMarioBlinkAnimation = { 0, 1, 2, 1, 0, 1, 2, 1, 0}
+
+function geo_switch_mario_face(node, matStackIndex)
+    local m = gMarioStates[0]
+    local switchCase = cast_graph_node(node) ---@type GraphNodeSwitchCase
+    local marioAction = m.action
+    local marioHurtCounter = m.hurtCounter
+    local marioHealth = m.health
+
+    switchCase.selectedCase = faceStateCustom.FACE_DEFAULT
+
+    if marioAction == ACT_IDLE or
+    marioAction == ACT_HOLD_IDLE or
+    marioAction == ACT_HOLD_HEAVY_IDLE or
+    marioAction == ACT_CRAWLING or
+    marioAction == ACT_WALKING or
+    marioAction == ACT_HOLD_WALKING or
+    marioAction == ACT_HOLD_HEAVY_WALKING or
+    marioAction == ACT_LONG_JUMP_LAND or
+    marioAction == ACT_JUMP_LAND or
+    marioAction == ACT_JUMP_LAND_STOP or
+    marioAction == ACT_DOUBLE_JUMP_LAND or
+    marioAction == ACT_DOUBLE_JUMP_LAND_STOP then
+        longJumpTimer = 0
+        switchCase.selectedCase = faceStateCustom.FACE_DEFAULT end
+    
+    if (marioAction & ACT_FLAG_ATTACKING) ~= 0 then switchCase.selectedCase = faceStateCustom.FACE_ANGRY end
+
+    if (marioAction & ACT_FLAG_SWIMMING) ~= 0 then switchCase.selectedCase = faceStateCustom.FACE_DEFAULT end
+    
+    if marioAction == ACT_LONG_JUMP then
+        longJumpTimer = longJumpTimer + 1
+        if longJumpTimer < 15 then switchCase.selectedCase = faceStateCustom.FACE_HAPPY
+        else switchCase.selectedCase = faceStateCustom.FACE_OPEN end
+    end
+
+    if marioAction == ACT_DOUBLE_JUMP or
+    marioAction == ACT_TRIPLE_JUMP then
+        switchCase.selectedCase = faceStateCustom.FACE_DEFAULT end
+
+    if marioAction == ACT_DOUBLE_JUMP_LAND or
+    marioAction == ACT_DOUBLE_JUMP_LAND_STOP then
+        switchCase.selectedCase = faceStateCustom.FACE_DEFAULT end
+
+    if marioAction == ACT_JUMP or
+    marioAction == ACT_TRIPLE_JUMP_LAND or
+    marioAction == ACT_TRIPLE_JUMP_LAND_STOP or
+    marioAction == ACT_BACKFLIP_LAND or
+    marioAction == ACT_BACKFLIP_LAND_STOP then
+        switchCase.selectedCase = faceStateCustom.FACE_HAPPY end
+    
+    if marioAction == ACT_BURNING_GROUND or
+    marioAction == ACT_BURNING_JUMP or
+    marioAction == ACT_BURNING_FALL or
+    marioAction == ACT_LAVA_BOOST or
+    marioAction == ACT_LAVA_BOOST_LAND then
+        switchCase.selectedCase = faceStateCustom.FACE_OPEN end 
+
+    if marioAction == ACT_DEATH_EXIT or
+    marioAction == ACT_DEATH_EXIT_LAND or
+    marioAction == ACT_DEATH_ON_STOMACH or
+    marioAction == ACT_DEATH_ON_BACK or
+    marioAction == ACT_QUICKSAND_DEATH or
+    marioAction == ACT_ELECTROCUTION or
+    marioAction == ACT_SUFFOCATION then
+        switchCase.selectedCase = faceStateCustom.FACE_DEFAULT end
+
+    if marioAction == ACT_START_SLEEPING then
+		switchCase.selectedCase = faceStateCustom.FACE_DEFAULT end
+
+	if marioAction == ACT_SLEEPING then
+        if sleepTimer % 3 == 0 then 
+            switchCase.selectedCase = faceStateCustom.FACE_OPEN
+        else switchCase.selectedCase = faceStateCustom.FACE_DEFAULT end
+    end
+
+    if marioAction ~= ACT_SLEEPING then sleepTimer = 0 end
+
+    if marioHurtCounter ~= nil and marioHurtCounter > 0 then
+        switchCase.selectedCase = faceStateCustom.FACE_ANGRY end
+
+    if marioHealth ~= nil and marioHealth <= 0xFF then
+        switchCase.selectedCase = faceStateCustom.FACE_ANGRY end
+
+    if marioAction == ACT_PANTING then
+        switchCase.selectedCase = faceStateCustom.FACE_OPEN end
+
+end
+
+function geo_switch_mario_eye_custom(node, matStackIndex)
+    --local bodyState = geo_get_body_state()
+    local m = gMarioStates[0]
+    local switchCase = cast_graph_node(node) ---@type GraphNodeSwitchCase
+    local marioAction = m.action
+    local marioHurtCounter = m.hurtCounter
+    local marioHealth = m.health
+
+    blinkTimer = blinkTimer + 1
+
+    if blinkFrame == 5 then
+        if blinkTimer % 20 == 0 then
+            blinkFrame = blinkFrame + 1
+            blinkTimer = 0
+        end
+    elseif blinkFrame == 9 then
+        if blinkTimer % 50 == 0 then 
+            blinkFrame = 1
+            blinkTimer = 0
+        end
+    elseif (blinkFrame < 5 and blinkFrame >= 1) or (blinkFrame < 9 and blinkFrame > 5) then
+        if blinkTimer % 2 == 0 then 
+            blinkFrame = blinkFrame + 1
+        end
+    end
+
+    if marioAction ~= ACT_IDLE and 
+    marioAction ~= ACT_HOLD_IDLE and
+    marioAction ~= ACT_HOLD_HEAVY_IDLE and
+    marioAction ~= ACT_JUMP_LAND and 
+    marioAction ~= ACT_JUMP_LAND_STOP and 
+    marioAction ~= ACT_DOUBLE_JUMP_LAND and 
+    marioAction ~= ACT_DOUBLE_JUMP_LAND_STOP then
+        blinkFrame = 1
+        blinkTimer = 0
+        switchCase.selectedCase = eyeStateCustom.EYES_OPEN end
+
+    if marioAction == ACT_IDLE or
+    marioAction == ACT_HOLD_IDLE or
+    marioAction == ACT_HOLD_HEAVY_IDLE or
+    marioAction == ACT_JUMP_LAND or
+    marioAction == ACT_JUMP_LAND_STOP or
+    marioAction == ACT_DOUBLE_JUMP_LAND or
+    marioAction == ACT_DOUBLE_JUMP_LAND_STOP then
+        switchCase.selectedCase = gMarioBlinkAnimation[blinkFrame] end
+
+    if (marioAction & ACT_FLAG_ATTACKING) ~= 0 or
+    (marioAction & ACT_FLAG_SWIMMING) ~= 0 then
+        switchCase.selectedCase = eyeStateCustom.EYES_ANGRY end
+
+    if marioAction == ACT_WALKING or
+    marioAction == ACT_HOLD_WALKING or
+    marioAction == ACT_HOLD_HEAVY_WALKING then
+        local speed = 0
+        if m.forwardVel ~= nil then
+            speed = math.abs(m.forwardVel)
+        end
+        if speed < 16 then switchCase.selectedCase = eyeStateCustom.EYES_HALF_OPEN
+        else switchCase.selectedCase = eyeStateCustom.EYES_OPEN end
+    end
+
+    if marioAction == ACT_START_SLEEPING then
+		switchCase.selectedCase = eyeStateCustom.EYES_HALF_CLOSED end
+
+	if marioAction == ACT_SLEEPING then
+		switchCase.selectedCase = eyeStateCustom.EYES_CLOSED end
+
+    if marioAction == ACT_CRAWLING then
+        switchCase.selectedCase = eyeStateCustom.EYES_HALF_OPEN end
+
+    if marioAction == ACT_JUMP or
+    marioAction == ACT_DOUBLE_JUMP or
+    marioAction == ACT_TRIPLE_JUMP or
+    marioAction == ACT_TRIPLE_JUMP_LAND or
+    marioAction == ACT_TRIPLE_JUMP_LAND_STOP or
+    marioAction == ACT_BACKFLIP_LAND or
+    marioAction == ACT_BACKFLIP_LAND_STOP then
+        switchCase.selectedCase = eyeStateCustom.EYES_HAPPY end
+
+    if marioAction == ACT_BURNING_GROUND or
+    marioAction == ACT_BURNING_JUMP or
+    marioAction == ACT_BURNING_FALL or
+    marioAction == ACT_LAVA_BOOST or
+    marioAction == ACT_LAVA_BOOST_LAND then
+        switchCase.selectedCase = eyeStateCustom.EYES_DEAD end
+
+    if marioAction == ACT_DEATH_EXIT or
+    marioAction == ACT_DEATH_EXIT_LAND or
+    marioAction == ACT_DEATH_ON_STOMACH or
+    marioAction == ACT_DEATH_ON_BACK or
+    marioAction == ACT_QUICKSAND_DEATH or
+    marioAction == ACT_ELECTROCUTION or
+    marioAction == ACT_SUFFOCATION then
+        switchCase.selectedCase = eyeStateCustom.EYES_DEAD end
+
+    if marioHurtCounter ~= nil and marioHurtCounter > 0 then
+        switchCase.selectedCase = eyeStateCustom.EYES_HURT end
+
+    if marioHealth ~= nil and marioHealth <= 0xFF then
+        switchCase.selectedCase = eyeStateCustom.EYES_HURT end
+
+    if marioAction == ACT_PANTING then
+        switchCase.selectedCase = eyeStateCustom.EYES_EXHAUSTED end
+
+end
+
+function geo_function_disable_billboard(node, matStackIndex)
+    local o = geo_get_current_object()
+    o.header.gfx.node.flags = o.header.gfx.node.flags & ~GRAPH_RENDER_BILLBOARD
+ end
 
 function geo_switch_amp_glow_state(node, matStackIndex) cast_graph_node(node).selectedCase = geo_get_current_object().oSwitchState1 return end
 function geo_switch_amp_state(node, matStackIndex) cast_graph_node(node).selectedCase = geo_get_current_object().oSwitchState2 return end
@@ -117,9 +345,30 @@ function geo_switch_bobomb_angry(node, matStackIndex) cast_graph_node(node).sele
 function geo_switch_pipe_color(node, matStackIndex) cast_graph_node(node).selectedCase = geo_get_current_object().oSwitchState1 return end
 function geo_function_door_switch(node, matStackIndex) cast_graph_node(node).selectedCase = geo_get_current_object().oSwitchState1 return end
 function geo_switch_fire_spitter(node, matStackIndex) cast_graph_node(node).selectedCase = geo_get_current_object().oSwitchState1 return end
-function geo_switch_spindle(node, matStackIndex) cast_graph_node(node).selectedCase = geo_get_current_object().oSwitchState1 return end
+function geo_switch_wiggler(node, matStackIndex) cast_graph_node(node).selectedCase = geo_get_current_object().oSwitchState1 return end
 
+function geo_switch_wiggler_color(node, matStackIndex)
+    local o = obj_get_nearest_object_with_behavior_id(gMarioStates[0].marioObj, id_bhvWigglerHead)
+    local switch = cast_graph_node(node)
+    if o.oHealth == 4 then switch.selectedCase = 0 end
+    if o.oHealth == 4 and o.oAction == WIGGLER_ACT_JUMPED_ON then switch.selectedCase = 1 end
+    if o.oHealth == 3 and o.oAction == WIGGLER_ACT_JUMPED_ON then switch.selectedCase = 1 end
+    if o.oHealth == 2 and o.oAction == WIGGLER_ACT_JUMPED_ON then switch.selectedCase = 0 end
+    if o.oHealth == 1 then switch.selectedCase = 0 end
+    return
+end
 
+function geo_switch_spindle(node, matStackIndex) 
+    local o = geo_get_current_object()
+    local switchCase = 0
+    if (math.abs(o.oMoveAnglePitch & 0x7fff) < 8000.0 and o.oAngleVelPitch ~= 0) then
+        switchCase = 0
+    else
+        switchCase = 1
+    end
+    cast_graph_node(node).selectedCase = switchCase
+    return 
+end
 
 function geo_function_chuckya_spin(node, matStackIndex) 
     local o = geo_get_current_object()
@@ -139,80 +388,6 @@ function geo_function_scuttle_body(node, matStackIndex)
     rotN.rotation.z = rot
 
     return
-end
-
-function geo_function_bowser_left_eye(node, matStackIndex) 
-    local o = geo_get_current_object()
-    if o == nil then return end
-    
-    local model = obj_get_model_id_extended(o)
-
-    local player = nearest_player_to_object(o)
-    if player == nil then return end
-
-    local rotN = cast_graph_node(node.next) ---@type GraphNodeRotation
-
-    -- Get the angle from object to player
-    local angleToPlayerYaw   = obj_angle_to_object(o, player)
-    local angleToPlayerPitch = obj_pitch_to_object(o, player)
-
-    local limitYaw   = 0x2000 -- 45 degrees
-    local limitPitch = 0x2000 -- ~22 degrees
-
-    -- Calculate yaw relative to object's current facing
-    local yaw = angleToPlayerYaw - o.oFaceAngleYaw
-    -- Normalize to -32768..32767
-    if yaw >  32767 then yaw = yaw - 65536 end
-    if yaw < -32768 then yaw = yaw + 65536 end
-
-    local pitch = angleToPlayerPitch
-    if pitch >  32767 then pitch = pitch - 65536 end
-    if pitch < -32768 then pitch = pitch + 65536 end
-
-    yaw = math.max(-limitYaw, math.min(limitYaw, yaw))
-    pitch = math.max(-limitPitch, math.min(limitPitch, pitch))
-
-    pitch = -pitch
-    rotN.rotation.x = pitch & 0xFFFF -- eye up and down
-    rotN.rotation.y = 0
-    rotN.rotation.z = yaw & 0xFFFF
-end
-
-function geo_function_bowser_right_eye(node, matStackIndex) 
-    local o = geo_get_current_object()
-    if o == nil then return end
-    
-    local model = obj_get_model_id_extended(o)
-
-    local player = nearest_player_to_object(o)
-    if player == nil then return end
-
-    local rotN = cast_graph_node(node.next) ---@type GraphNodeRotation
-
-    -- Get the angle from object to player
-    local angleToPlayerYaw   = obj_angle_to_object(o, player)
-    local angleToPlayerPitch = obj_pitch_to_object(o, player)
-
-    local limitYaw   = 0x2000 -- 45 degrees
-    local limitPitch = 0x2000 -- ~22 degrees
-
-    -- Calculate yaw relative to object's current facing
-    local yaw = angleToPlayerYaw - o.oFaceAngleYaw
-    -- Normalize to -32768..32767
-    if yaw >  32767 then yaw = yaw - 65536 end
-    if yaw < -32768 then yaw = yaw + 65536 end
-
-    local pitch = angleToPlayerPitch
-    if pitch >  32767 then pitch = pitch - 65536 end
-    if pitch < -32768 then pitch = pitch + 65536 end
-
-    yaw = math.max(-limitYaw, math.min(limitYaw, yaw))
-    pitch = math.max(-limitPitch, math.min(limitPitch, pitch))
-
-    pitch = -pitch
-    rotN.rotation.x = pitch & 0xFFFF -- eye up and down
-    rotN.rotation.y = 0
-    rotN.rotation.z = yaw & 0xFFFF
 end
 
 function geo_function_eyerok(node, matStackIndex) 
@@ -257,7 +432,7 @@ function geo_function_eyerok(node, matStackIndex)
 end
 
 function geo_function_kingbob_pulse(node, matStackIndex)
-    r96lib.gfxColorPatch(node, {
+    r96lib.gfx_color_patch(node, {
         prefix    = "kingbob",
         origDl    = "king_bobomb_004_offset_mesh_layer_1",
         origMat   = "mat_king_bobomb_king_bobomb_body",
@@ -266,7 +441,7 @@ function geo_function_kingbob_pulse(node, matStackIndex)
 end
 
 function geo_function_scuttle_body_color(node, matStackIndex)
-    r96lib.gfxColorPatch(node, {
+    r96lib.gfx_color_patch(node, {
         prefix    = "scuttle",
         origDl    = "scuttlebug_scuttle_body_dl_mesh_layer_1",
         origMat   = "mat_scuttlebug_scuttlebug_body",
@@ -275,49 +450,239 @@ function geo_function_scuttle_body_color(node, matStackIndex)
 end
 
 function geo_function_bobomb_angry(node, matStackIndex)
-    r96lib.gfxColorPatch(node, {
+    r96lib.gfx_color_patch(node, {
         prefix    = "bobomb_angry",
         origDl    = "black_bobomb_body_mesh_layer_1_mat_override_bobomb_blue2_0",
         origMat   = "mat_black_bobomb_bobomb_blue2",
         primIndex = 8,
     })
 end
+function apply_color(mat, o)
+    local function parse_dl(cmd, op)
+        if op == G_SETPRIMCOLOR then
+            gfx_set_command(cmd, "gsDPSetPrimColor(0, 0, %i, %i, %i, 255)", o.oColorR, o.oColorG, o.oColorB)
+        end
+    end
+
+    gfx_parse(mat, parse_dl)
+end
 
 function geo_function_bowser_color(node, matStackIndex)
+    local levelNum = gNetworkPlayers[0].currLevelNum
+    if levelNum == LEVEL_BOWSER_3 then
+        local o = geo_get_current_object()
+        if o == nil then return end
 
-   -- r96lib.gfxColorPatchBowserRainbow({
-   --     prefix = "bowser",
-   --     materials = {
-   --         {
-   --             origMat     = "mat_bowser_mouth",
-   --             primIndex = 7,
-   --             dls = {
-   --                 { name = "bowser_head_mesh_layer_1", cmdIndexes = {3} },
-   --                 { name = "bowser_jaw_skinned_mesh_layer_1", cmdIndexes = {0} },
-   --                 { name = "bowser_jaw_mesh_layer_1", cmdIndexes = {0, 6} },
-   --                 { name = "bowser_jaw_lower_skinned_mesh_layer_1", cmdIndexes = {0}},
-   --                 { name = "bowser_jaw_lower_mesh_layer_1", cmdIndexes = {0, 7}},
-   --             },
-   --         },
-   --     },
-   -- })
+        local t = o.oMrIDizzyTimer
+        o.oColorR = math.floor((math.sin(t * 0.05)         * 0.5 + 0.5) * 100)
+        o.oColorG = math.floor((math.sin(t * 0.05 + 2.094) * 0.5 + 0.5) * 100)
+        o.oColorB = math.floor((math.sin(t * 0.05 + 4.189) * 0.5 + 0.5) * 100)
+
+        local gfx = gfx_get_from_name("bowser_spine_mesh_layer_1")
+        apply_color(gfx, o)
+        gfx = gfx_get_from_name("bowser_head_mesh_layer_1")
+        apply_color(gfx, o)
+        gfx = gfx_get_from_name("bowser_left_foot_mesh_layer_1")
+        apply_color(gfx, o)
+        gfx = gfx_get_from_name("bowser_jaw_mesh_layer_1")
+        apply_color(gfx, o)
+        gfx = gfx_get_from_name("bowser_right_eye_mesh_layer_1")
+        apply_color(gfx, o)
+        gfx = gfx_get_from_name("bowser_shell_mesh_layer_1")
+        apply_color(gfx, o)
+
+        o.oMrIDizzyTimer = o.oMrIDizzyTimer + 1
+        if (o.oMrIDizzyTimer > 0xFFFF) then
+            o.oMrIDizzyTimer = 0
+        end
+    else
+        local o = geo_get_current_object()
+        if o == nil then return end
+        o.oColorR = 0
+        o.oColorG = 0
+        o.oColorB = 0
+        local gfx = gfx_get_from_name("bowser_spine_mesh_layer_1")
+        apply_color(gfx, o)
+        gfx = gfx_get_from_name("bowser_head_mesh_layer_1")
+        apply_color(gfx, o)
+        gfx = gfx_get_from_name("bowser_left_foot_mesh_layer_1")
+        apply_color(gfx, o)
+        gfx = gfx_get_from_name("bowser_jaw_mesh_layer_1")
+        apply_color(gfx, o)
+        gfx = gfx_get_from_name("bowser_right_eye_mesh_layer_1")
+        apply_color(gfx, o)
+        gfx = gfx_get_from_name("bowser_shell_mesh_layer_1")
+        apply_color(gfx, o)
+    end
 end
 
-function geo_function_bowser_tail(node, matStackIndex)
+function geo_function_bowser_left_eye(node, matStackIndex) 
+    local o = geo_get_current_object()
+    if o == nil then return end
+    
+    local player = nearest_player_to_object(o)
+    if player == nil then return end
 
+    local rotN = cast_graph_node(node.next) ---@type GraphNodeRotation
+
+    -- Get the angle from object to player
+    local angleToPlayerYaw   = obj_angle_to_object(o, player)
+    local angleToPlayerPitch = obj_pitch_to_object(o, player)
+
+    local limitYawMin   = 0x2000
+    local limitYawMax   = 0x0500
+    local limitPitchMin = 0x0500
+    local limitPitchMax = 0x1500
+
+    -- Calculate yaw relative to object's current facing
+    local yaw = angleToPlayerYaw - o.oFaceAngleYaw
+    -- Normalize to -32768..32767
+    if yaw >  32767 then yaw = yaw - 65536 end
+    if yaw < -32768 then yaw = yaw + 65536 end
+
+    local pitch = angleToPlayerPitch
+    if pitch >  32767 then pitch = pitch - 65536 end
+    if pitch < -32768 then pitch = pitch + 65536 end
+
+    yaw = math.max(-limitYawMax, math.min(limitYawMin, yaw))
+    pitch = math.max(-limitPitchMax, math.min(limitPitchMin, pitch))
+
+    pitch = -pitch
+    rotN.rotation.x = pitch & 0xFFFF -- eye up and down
+    rotN.rotation.y = 0
+    rotN.rotation.z = yaw & 0xFFFF
 end
 
+function geo_function_bowser_right_eye(node, matStackIndex) 
+    local o = geo_get_current_object()
+    if o == nil then return end
+    
+    local player = nearest_player_to_object(o)
+    if player == nil then return end
+
+    local rotN = cast_graph_node(node.next) ---@type GraphNodeRotation
+
+    -- Get the angle from object to player
+    local angleToPlayerYaw   = obj_angle_to_object(o, player)
+    local angleToPlayerPitch = obj_pitch_to_object(o, player)
+
+    local limitYawMin   = 0x0500
+    local limitYawMax   = 0x2000
+    local limitPitchMin = 0x0500
+    local limitPitchMax = 0x1500
+
+    -- Calculate yaw relative to object's current facing
+    local yaw = angleToPlayerYaw - o.oFaceAngleYaw
+    -- Normalize to -32768..32767
+    if yaw >  32767 then yaw = yaw - 65536 end
+    if yaw < -32768 then yaw = yaw + 65536 end
+
+    local pitch = angleToPlayerPitch
+    if pitch >  32767 then pitch = pitch - 65536 end
+    if pitch < -32768 then pitch = pitch + 65536 end
+
+    yaw = math.max(-limitYawMax, math.min(limitYawMin, yaw))
+    pitch = math.max(-limitPitchMax, math.min(limitPitchMin, pitch))
+
+    pitch = -pitch
+    rotN.rotation.x = pitch & 0xFFFF -- eye up and down
+    rotN.rotation.y = 0
+    rotN.rotation.z = yaw & 0xFFFF
+end
 
 function geo_function_bowser_hair(node, matStackIndex)
 
 end
 
-function geo_function_bowser_right_hand(node, matStackIndex)
+function geo_function_wiggler_rotate(node, matStackIndex)
+    local id = geo_get_current_object()._pointer
+    cast_graph_node(node.next).rotation.x = (((id >> 11) % 4) + 1) * 0x1500
+    cast_graph_node(node.next).rotation.y = (((id >> 11) % 4) + 1) * 0x1500
+    cast_graph_node(node.next).rotation.z = (((id >> 11) % 4) + 1) * 0x1500
+end
 
+local sBowserState = {
+    DEFAULT                     = { action = 0,  subAction = nil },
+    THROWN_BOUNCING             = { action = 1,  subAction = 0   },
+    THROWN_RECOVERY             = { action = 1,  subAction = 1   },
+    JUMP_STAGE_SPINNING         = { action = 2,  subAction = 0   },
+    JUMP_STAGE_LAUNCH           = { action = 2,  subAction = 1   },
+    JUMP_STAGE_FLYING           = { action = 2,  subAction = 2   },
+    JUMP_STAGE_LANDING          = { action = 2,  subAction = 3   },
+    DANCE                       = { action = 3,  subAction = nil },
+    DEAD_FLYBACK                = { action = 4,  subAction = 0   },
+    DEAD_BOUNCING               = { action = 4,  subAction = 1   },
+    DEAD_WAITING_MARIO          = { action = 4,  subAction = 2   },
+    DEAD_DIALOG                 = { action = 4,  subAction = 3   },
+    DEAD_DONE                   = { action = 4,  subAction = 4   },
+    DEAD_BITS_DIALOG            = { action = 4,  subAction = 10  },
+    DEAD_BITS_DONE              = { action = 4,  subAction = 11  },
+    TEXT_WAIT                   = { action = 5,  subAction = nil },
+    INTRO_LOOK_UP               = { action = 6,  subAction = 0   },
+    INTRO_SLOW_GAIT             = { action = 6,  subAction = 1   },
+    INTRO_LOOK_DOWN             = { action = 6,  subAction = 2   },
+    CHARGE_WINDUP               = { action = 7,  subAction = 0   },
+    CHARGE_RUNNING              = { action = 7,  subAction = 1   },
+    CHARGE_BRAKING              = { action = 7,  subAction = 3   },
+    CHARGE_STOPPED              = { action = 7,  subAction = 2   },
+    SPIT_FIRE_SKY               = { action = 8,  subAction = nil },
+    SPIT_FIRE_FLOOR             = { action = 9,  subAction = nil },
+    HIT_EDGE_STUNNED            = { action = 10, subAction = 0   },
+    HIT_EDGE_RECOVERY           = { action = 10, subAction = 1   },
+    TURN_FROM_EDGE              = { action = 11, subAction = nil },
+    HIT_MINE_START              = { action = 12, subAction = 0   },
+    HIT_MINE_BOUNCING           = { action = 12, subAction = 1   },
+    HIT_MINE_GETUP              = { action = 12, subAction = 2   },
+    JUMP_PREJUMP                = { action = 13, subAction = 0   },
+    JUMP_AIRBORNE               = { action = 13, subAction = 1   },
+    JUMP_LANDING                = { action = 13, subAction = 2   },
+    WALK_START                  = { action = 14, subAction = 0   },
+    WALK_APPROACHING            = { action = 14, subAction = 1   },
+    WALK_STOPPING               = { action = 14, subAction = 2   },
+    BREATH_FIRE                 = { action = 15, subAction = nil },
+    TELEPORT_FADEOUT            = { action = 16, subAction = 0   },
+    TELEPORT_FLYING             = { action = 16, subAction = 1   },
+    TELEPORT_FADEIN             = { action = 16, subAction = 2   },
+    JUMP_MARIO_PREJUMP          = { action = 17, subAction = 0   },
+    JUMP_MARIO_AIRBORNE         = { action = 17, subAction = 1   },
+    JUMP_MARIO_LANDING          = { action = 17, subAction = 2   },
+    UNUSED_SLOW_WALK            = { action = 18, subAction = nil },
+    RIDE_TILTING_PLATFORM       = { action = 19, subAction = nil },
+    NOTHING                     = { action = 20, subAction = nil },
+}
+
+-- Helper function to check bowser's current state
+local function bowser_state(o, state)
+    
+end
+
+local function bowser_state(o, ...)
+    for _, state in ipairs({...}) do
+        if o.oAction ~= state.action then return false end
+        if state.subAction ~= nil and o.oSubAction ~= state.subAction then return false end
+        return true
+    end
+    return false
+end
+
+function geo_function_bowser_right_hand(node, matStackIndex)
+    local o = geo_get_current_object()
+    local switchCase = cast_graph_node(node) ---@type GraphNodeSwitchCase
+    if o.oAction == 15 then
+        switchCase.selectedCase = 1
+    else
+        switchCase.selectedCase = 0
+    end
 end
 
 function geo_function_bowser_left_hand(node, matStackIndex)
-
+    local o = geo_get_current_object()
+    local switchCase = cast_graph_node(node) ---@type GraphNodeSwitchCase
+    if o.oAction == 15 then
+        switchCase.selectedCase = 1
+    else
+        switchCase.selectedCase = 0
+    end
 end
 
 -- Scroll the uvs to the right
@@ -328,8 +693,6 @@ local function uv_scroll_right(input_vtx, original_uv, current_uv)
     -- move the UVs to the right
     current_uv[1] = current_uv[1] + speed
 end
-
-UvScroll.hook_scrolling_function('star_particle_001_displaylist_mesh_layer_5_tri_1', uv_scroll_right)
 
 -- Scroll the uvs in a circular motion
 local function uv_scroll_spin(input_vtx, original_uv, current_uv)
@@ -352,10 +715,11 @@ local function uv_scroll_spin(input_vtx, original_uv, current_uv)
     current_uv[2] = center_v + orig_dist * math.sin(orig_theta + t) + offset_v
 end
 
+UvScroll.hook_scrolling_function('star_particle_001_displaylist_mesh_layer_5_tri_1', uv_scroll_right)
 UvScroll.hook_scrolling_function('goomba_eyes_dazed_switch_eyes_dazed_mesh_layer_1_tri_1', uv_scroll_spin)
 UvScroll.hook_scrolling_function('goomba_underground_eyes_dazed_switch_eyes_dazed_mesh_layer_1_tri_1', uv_scroll_spin)
 UvScroll.hook_scrolling_function('goomba_boxart_eyes_dazed_switch_eyes_dazed_mesh_layer_1_tri_2', uv_scroll_spin)
-
+UvScroll.hook_scrolling_function('wiggler_head_switch_opt1_000_displaylist5_mesh_layer_1_tri_3', uv_scroll_spin)
 
 ---@param o Object
 local function bhv_blargg_render96_init(o)
@@ -1160,7 +1524,7 @@ end
 
 
 ---@param o Object
-function bhv_wario_coin_loop(o)
+local function bhv_wario_coin_loop(o)
     cur_obj_update_floor_and_walls()
     cur_obj_move_standard(-78)
     o.oGravity = -2.5
@@ -1910,6 +2274,11 @@ end
 
 ---@param o Object
 local function bhv_king_bobomb_render96_loop(o)
+    if o.oHealth == 3 then   
+        o.oColorR = 24
+        o.oColorG = 24
+        o.oColorB = 42
+    end
     if o.oHealth == 2 then r96lib.pulse_rapid(o, COLORS_KINGBOBOMB, o.oTimer, 0.1) end
     if o.oHealth == 1 then r96lib.pulse_rapid(o, COLORS_KINGBOBOMB, o.oTimer, 0.3) end
 end
@@ -1934,7 +2303,7 @@ local function bhv_bowser_render96_loop(o)
     r96lib.pulse_cycle(o, COLORS_BOBOMB, 50)
 end
 
-id_bhvRender96Bowser = hook_render96_behavior(id_bhvBowser, false, nil, bhv_bowser_render96_loop, OBJ_LIST_GENACTOR)
+--id_bhvRender96Bowser = hook_render96_behavior(id_bhvBowser, false, nil, bhv_bowser_render96_loop, OBJ_LIST_GENACTOR)
 
 ---@param o Object
 local function bhv_snowball_render96_init(o)
@@ -1946,6 +2315,7 @@ id_bhvRender96MrBlizzardSnowball = hook_render96_behavior(id_bhvMrBlizzardSnowba
 ---@param o Object
 local function bhv_tree_render96_loop(o)
     o.header.gfx.node.flags = o.header.gfx.node.flags & ~GRAPH_RENDER_BILLBOARD
+    o.header.gfx.node.flags = o.header.gfx.node.flags & ~GRAPH_RENDER_CYLBOARD
 end
 
 id_bhvRender96Tree = hook_render96_behavior(id_bhvTree, false, nil, bhv_tree_render96_loop, OBJ_LIST_POLELIKE)
@@ -1971,18 +2341,31 @@ id_bhvRender96Cloud = hook_render96_behavior(id_bhvCloud, false, bhv_cloud_rende
 ---@param o Object
 local function bhv_fire_spitter_render96_init(o)
     o.header.gfx.node.flags = o.header.gfx.node.flags & ~GRAPH_RENDER_BILLBOARD
+    o.header.gfx.scale.x = 0.2
+    o.oThwompBaseScale = o.header.gfx.scale.x
 end
 
 ---@param o Object
 local function bhv_fire_spitter_render96_loop(o)
     local player = nearest_player_to_object(o)
     local angleToPlayer = obj_angle_to_object(o, player)
-    o.oFaceAngleYaw =  angleToPlayer
-
+    o.oFaceAngleYaw = angleToPlayer
     if o.oAction == FIRE_SPITTER_ACT_IDLE then
-        if o.oTimer < 30 then
+        if o.oTimer < 20 then o.oSwitchState1 = 2 o.header.gfx.scale.x = 0.15 end
+        if o.oTimer > 20 and o.oTimer < 50 then
             o.oSwitchState1 = 3
-        else
+            if o.oTimer % 5 == 0 then
+                o.oThwompSquishTimer = 0
+                o.oThwompSquishDur = 5
+                o.header.gfx.scale.x = 0.10
+            else
+                o.header.gfx.scale.x = 0.2
+            end
+            if (o.oThwompSquishDur or 0) > 0 and (o.oThwompSquishTimer or 0) <= o.oThwompSquishDur then
+                r96lib.squish_apply(o, o.oThwompSquishTimer, o.oThwompSquishDur, 0.15, -0.3, -0.3, o.oThwompBaseScale, nil)
+                o.oThwompSquishTimer = o.oThwompSquishTimer + 1
+            end
+        elseif o.oTimer == 51 then
             o.oSwitchState1 = 0
         end
     end
@@ -1997,14 +2380,156 @@ end
 
 id_bhvRender96FireSpitter = hook_render96_behavior(id_bhvFireSpitter, false, bhv_fire_spitter_render96_init, bhv_fire_spitter_render96_loop, OBJ_LIST_GENACTOR)
 
----@param o Object
-local function bhv_spindel_render96_loop(o)
-    if (math.abs(o.oMoveAnglePitch & 0x7fff) < 8000.0 and o.oAngleVelPitch ~= 0) then
-        o.oSwitchState1 = 0
+local YOSHI_RIDING_ACTIONS = {
+    [ACT_YOSHI_RIDE_IDLE]    = true,
+    [ACT_YOSHI_RIDE_WALK]    = true,
+    [ACT_YOSHI_RIDE_JUMP]    = true,
+    [ACT_YOSHI_RIDE_FLUTTER] = true,
+    [ACT_YOSHI_RIDE_FALL]    = true,
+}
+
+
+local function bhv_yoshi_rideable_render96_init(o)
+    cur_obj_init_animation(0)
+    o.oFlags = OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE
+    o.oGravity = -3
+    o.oFriction = 1
+    o.activeFlags = o.activeFlags | ACTIVE_FLAG_UNK9
+    o.oAnimations = gObjectAnimations.yoshi_seg5_anims_05024100
+    o.oHealth = 1
+    o.oIntangibleTimer = 0
+    o.oYoshiBlinkTimer = 0
+    o.oYoshiIdleTimer = 0
+    o.hitboxRadius = 50
+    o.hitboxHeight = 40
+end
+
+local function yoshi_update_blink(o)
+    if o.oYoshiBlinkTimer ~= 0 then
+        o.oYoshiBlinkTimer = o.oYoshiBlinkTimer - 1
     else
-        o.oSwitchState1 = 1
+        o.oYoshiBlinkTimer = random_linear_offset(30, 60)
+    end
+    o.oAnimState = (o.oYoshiBlinkTimer <= 4) and 1 or 0
+end
+
+local function bhv_yoshi_unridden(o)
+    local player = nearest_mario_state_to_object(o)
+    local dist = dist_between_objects(o, player.marioObj)
+
+    o.oYoshiIdleTimer = o.oYoshiIdleTimer + 1
+    r96lib.yoshiRun(o)
+    if dist < 100 then r96lib.push_mario_out_of_object(player, o, 2) end
+
+    if o.oYoshiIdleTimer >= 600 then
+        spawn_mist_particles_with_sound(SOUND_OBJ_DYING_ENEMY1)
+        obj_mark_for_deletion(o)
+    end
+
+    o.oInteractStatus = 0
+    -- Mount check
+    if not YOSHI_RIDING_ACTIONS[player.action] then
+        local airborne = (player.action & ACT_FLAG_AIR) ~= 0
+            and (player.action & ACT_FLAG_SWIMMING_OR_FLYING) == 0
+            and player.vel.y <= 0
+            and dist < 85
+        if airborne then
+            player.pos.x = o.oPosX
+            player.pos.z = o.oPosZ
+            player.faceAngle.y = o.oMoveAngleYaw
+            cur_obj_play_sound_2(SOUND_GENERAL_YOSHI_TALK)
+            player.interactObj = o
+            player.usedObj = o
+            player.riddenObj = o
+            o.oAction = 1
+            o.heldByPlayerIndex = player.playerIndex
+            set_mario_action(player, ACT_YOSHI_RIDE_FALL, 0)
+        end
     end
 end
 
---id_bhvRender96Spindel = hook_render96_behavior(id_bhvSpindel, false, nil, bhv_spindel_render96_loop, OBJ_LIST_GENACTOR)
+local function bhv_yoshi_rideable_render96_loop(o)
+    yoshi_update_blink(o)
 
+    if o.oAction == 0 then
+        cur_obj_init_animation(0)
+        o.oForwardVel = 0
+        return bhv_yoshi_unridden(o)
+    elseif o.oAction == 2 then
+        cur_obj_init_animation_with_accel_and_sound(1, 3)
+        cur_obj_play_sound_at_anim_range(0, 15, SOUND_GENERAL_YOSHI_WALK)
+        o.oForwardVel = 30
+        return bhv_yoshi_unridden(o)
+    elseif o.oAction == 1 then
+        -- Ridden
+        local rider = gMarioStates[o.heldByPlayerIndex]
+        local animInfo = o.header.gfx.animInfo
+        o.oYoshiIdleTimer = 0
+        obj_copy_pos(o, rider.marioObj)
+        rider.marioObj.header.gfx.pos.y = rider.marioObj.header.gfx.pos.y - 30
+        o.oMoveAngleYaw = rider.faceAngle.y
+        o.oFaceAnglePitch = 0
+        o.oFaceAngleRoll = 0
+
+        local action = rider.action
+        if action == ACT_YOSHI_RIDE_IDLE then
+            cur_obj_init_animation(0)
+        elseif action == ACT_YOSHI_RIDE_WALK then
+            cur_obj_init_animation_with_accel_and_sound(1, math.abs(rider.forwardVel) / 14)
+            cur_obj_play_sound_at_anim_range(0, 15, SOUND_GENERAL_YOSHI_WALK)
+        elseif action == ACT_YOSHI_RIDE_JUMP then
+            if rider.vel.y >= -21 then
+                cur_obj_init_animation(2)
+                if o.header.gfx.animInfo.animFrame >= 4 then
+                    o.header.gfx.animInfo.animFrame = 4
+                end
+            else
+                smlua_anim_util_set_animation(o, "YOSHI_FALL")
+            end
+        elseif action == ACT_YOSHI_RIDE_FALL then
+            smlua_anim_util_set_animation(o, "YOSHI_FALL_STATIC")
+        elseif action == ACT_YOSHI_RIDE_FLUTTER then
+            smlua_anim_util_set_animation(o, "YOSHI_FLUTTER")
+        else
+            mario_stop_riding_object(rider)
+        end
+
+        if (o.oInteractStatus & INT_STATUS_STOP_RIDING) ~= 0 then
+            o.heldByPlayerIndex = 0
+            if rider.hurtCounter ~= 0 then
+                cur_obj_play_sound_2(SOUND_GENERAL_YOSHI_TALK)
+                o.oAction = 2
+            else
+                o.oAction = 0
+            end
+            o.oInteractStatus = 0
+        end
+        return
+    end
+end
+
+id_bhvRender96YoshiRideable = hook_render96_behavior(nil, true, bhv_yoshi_rideable_render96_init, bhv_yoshi_rideable_render96_loop, OBJ_LIST_PUSHABLE)
+
+local function bhv_star_door_frame_render96_init(o)
+    o.activeFlags = o.activeFlags | ACTIVE_FLAG_ACTIVE
+end
+
+id_bhvRender96StarDoorFrame = hook_render96_behavior(nil, true, bhv_star_door_frame_render96_init, nil, OBJ_LIST_SURFACE)
+
+local function bhv_star_door_render96_init(o)
+    local frame = spawn_non_sync_object(id_bhvRender96StarDoorFrame, E_MODEL_STAR_DOOR_FRAME, o.oPosX, o.oPosY, o.oPosZ, nil)
+    obj_set_angle(frame, o.oFaceAnglePitch, o.oFaceAngleYaw, o.oFaceAngleRoll)
+end
+
+id_bhvRender96StarDoor = hook_render96_behavior(id_bhvStarDoor, false, bhv_star_door_render96_init, nil, OBJ_LIST_SURFACE)
+
+local function bhv_wiggler_head_render96_loop(o)
+    if o.oHealth == 4 then o.oSwitchState1 = 0 end
+    if m.pos.y >= 1650 and o.oHealth == 4 then o.oSwitchState1 = 1 end
+    if o.oHealth == 4 and o.oAction == WIGGLER_ACT_JUMPED_ON then o.oSwitchState1 = 2 end
+    if o.oHealth == 3 and o.oAction == WIGGLER_ACT_JUMPED_ON then o.oSwitchState1 = 3 end
+    if o.oHealth == 2 and o.oAction == WIGGLER_ACT_JUMPED_ON then o.oSwitchState1 = 4 end
+    if o.oHealth == 1 then o.oSwitchState1 = 4 end
+end
+
+id_bhvRender96WigglerHead = hook_render96_behavior(id_bhvWigglerHead, false, nil, bhv_wiggler_head_render96_loop, OBJ_LIST_GENACTOR)

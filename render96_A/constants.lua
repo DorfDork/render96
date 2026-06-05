@@ -21,6 +21,13 @@ ACT_WARIO_SWING_FLING_HELD = allocate_mario_action(ACT_FLAG_STATIONARY | ACT_FLA
 ACT_WARIO_SWING_FLING_THROW = allocate_mario_action(ACT_FLAG_STATIONARY | ACT_FLAG_ATTACKING | ACT_FLAG_INVULNERABLE)
 ACT_WARIO_GROUND_POUND = allocate_mario_action(ACT_GROUP_AIRBORNE |ACT_FLAG_AIR | ACT_FLAG_ATTACKING)
 
+-- Rideable Yoshi: description: Run around with a Yoshi friend with this mod. Original mod by steven, edited by DorfDork
+ACT_YOSHI_RIDE_IDLE = allocate_mario_action(ACT_GROUP_STATIONARY | ACT_FLAG_STATIONARY | ACT_FLAG_IDLE)
+ACT_YOSHI_RIDE_WALK = allocate_mario_action(ACT_GROUP_MOVING | ACT_FLAG_MOVING)
+ACT_YOSHI_RIDE_JUMP = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_AIR | ACT_FLAG_CONTROL_JUMP_HEIGHT)
+ACT_YOSHI_RIDE_FLUTTER = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_AIR | ACT_FLAG_CONTROL_JUMP_HEIGHT)
+ACT_YOSHI_RIDE_FALL = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_AIR | ACT_FLAG_MOVING)
+
 -- Models
 E_MODEL_GOOMBA_SSL = smlua_model_util_get_id("goomba_ssl_geo")
 E_MODEL_GOOMBA_BOXART = smlua_model_util_get_id("goomba_boxart_geo")
@@ -58,6 +65,10 @@ E_MODEL_FIRE_SPITTER = smlua_model_util_get_id("fire_spitter_geo")
 E_MODEL_GREEN_COIN = smlua_model_util_get_id("green_coin_geo")
 E_MODEL_GREEN_COIN_NO_SHADOW = smlua_model_util_get_id("green_coin_no_shadow_geo")
 E_MODEL_MANTA = smlua_model_util_get_id("manta_geo")
+E_MODEL_YOSHI_RIDEABLE = smlua_model_util_get_id("yoshi_geo")
+E_MODEL_STAR_DOOR_FRAME = smlua_model_util_get_id("star_door_frame_geo")
+E_MODEL_RED_FLAME_TORCH = smlua_model_util_get_id("red_flame_torch_geo")
+E_MODEL_BLUE_FLAME_TORCH = smlua_model_util_get_id("blue_flame_torch_geo")
 
 -- Levels
 LEVEL_INNER_WORKINGS = level_register("level_inner_workings_entry", COURSE_NONE, "Inner Workings", "inner_workings", 28000, 0x28, 0x28, 0x28)
