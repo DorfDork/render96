@@ -2533,3 +2533,30 @@ local function bhv_wiggler_head_render96_loop(o)
 end
 
 id_bhvRender96WigglerHead = hook_render96_behavior(id_bhvWigglerHead, false, nil, bhv_wiggler_head_render96_loop, OBJ_LIST_GENACTOR)
+
+local function bhv_torch_find_wall(o)
+    -- Note, add whatever check is needed for this to only happen for torches
+    -- or not, i'm not your mom - Squishy
+    if o.oTimer > 2 then return end
+    local nWallAngle = nil
+    local nWallX = 0
+    local nWallZ = 0
+    for i = 0, 3 do
+        local ray = collision_find_surface_on_ray(o.oPosX, o.oPosY, o.oPosZ, sins(i*0x4000)*500, 0, coss(i*0x4000)*500, 128)
+        local dist = math.sqrt((ray.hitPos.x - o.oPosX)^2 + (ray.hitPos.z - o.oPosZ)^2)
+        local nDist = math.sqrt((nWallX - o.oPosX)^2 + (nWallZ - o.oPosZ)^2)
+        if (dist < nDist or not nWallAngle) and ray.surface then
+            nWallX = ray.hitPos.x
+            nWallZ = ray.hitPos.z
+            nWallAngle = atan2s(ray.surface.normal.z, ray.surface.normal.x)
+        end
+    end
+
+    o.oPosX = nWallX
+    o.oPosZ = nWallZ
+
+    o.oFaceAngleYaw = nWallAngle
+    o.oMoveAngleYaw = nWallAngle
+end
+
+id_bhvRender96Flame = hook_render96_behavior(id_bhvFlame, false, bhv_torch_find_wall)
