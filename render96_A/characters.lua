@@ -667,7 +667,6 @@ local function act_wario_ground_pound(m)
     return false
 end
 
-
 ---@param m MarioState
 ---@param incomingAct integer
 local function wario_before_actions(m, incomingAct)
@@ -700,7 +699,7 @@ hook_mario_action(ACT_WARIO_PILE_DRIVER_LAND, act_wario_pile_driver_land)
 hook_mario_action(ACT_WARIO_SWING_FLING_START, act_wario_swing_fling_start)
 hook_mario_action(ACT_WARIO_SWING_FLING_HELD, act_wario_swing_fling_held)
 hook_mario_action(ACT_WARIO_SWING_FLING_THROW, act_wario_swing_fling_throw)
-hook_mario_action(ACT_WARIO_GROUND_POUND, act_wario_ground_pound)
+hook_mario_action(ACT_WARIO_GROUND_POUND, act_wario_ground_pound, INT_GROUND_POUND)
 
 
 
