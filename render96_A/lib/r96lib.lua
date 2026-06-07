@@ -308,7 +308,6 @@ local function update()
             local o = obj_get_first_with_behavior_id(entry.bhv)
             while o ~= nil do
                 if obj_get_model_id_extended(o) == entry.model2 then
-                    print(obj_get_model_id_extended(o))
                     obj_set_model_extended(o, entry.model)
                     o = obj_get_next_with_same_behavior_id(o)
                 else

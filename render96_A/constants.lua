@@ -69,6 +69,12 @@ E_MODEL_YOSHI_RIDEABLE = smlua_model_util_get_id("yoshi_geo")
 E_MODEL_STAR_DOOR_FRAME = smlua_model_util_get_id("star_door_frame_geo")
 E_MODEL_RED_FLAME_TORCH = smlua_model_util_get_id("red_flame_torch_geo")
 E_MODEL_BLUE_FLAME_TORCH = smlua_model_util_get_id("blue_flame_torch_geo")
+E_MODEL_RED_FLAME_BOWSER = smlua_model_util_get_id("red_flame_bowser_geo")
+E_MODEL_BLUE_FLAME_BOWSER = smlua_model_util_get_id("blue_flame_bowser_geo")
+E_MODEL_EXCLAMATION_POINT_HD = smlua_model_util_get_id("exclamation_box_point_hd_geo")
+E_MODEL_BBH_COFFIN = smlua_model_util_get_id("bbh_coffin_geo")
+E_MODEL_SNOWMAN_HEAD = smlua_model_util_get_id("ccm_snowman_head_geo")
+E_MODEL_SNOWMAN_BODY = smlua_model_util_get_id("ccm_snowman_body_geo")
 
 -- Levels
 LEVEL_INNER_WORKINGS = level_register("level_inner_workings_entry", COURSE_NONE, "Inner Workings", "inner_workings", 28000, 0x28, 0x28, 0x28)

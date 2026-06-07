@@ -92,8 +92,11 @@ define_custom_obj_fields({
     oThwompBaseScale    = 'f32',
     oWarioHeadBool      = 'f32',
     oCelebrationStar    = 'f32',
-    oYoshiIdleTimer = "f32",
-    oYoshiCustomBlinkTimer = "s32"
+    oYoshiIdleTimer     = "f32",
+    oYoshiCustomBlinkTimer = "s32",
+    oWallAngle          = "f32",
+    oWallX              = "f32",
+    oWallZ              = "f32"
 })
 
 eyeStateCustom = {
@@ -346,6 +349,16 @@ function geo_switch_pipe_color(node, matStackIndex) cast_graph_node(node).select
 function geo_function_door_switch(node, matStackIndex) cast_graph_node(node).selectedCase = geo_get_current_object().oSwitchState1 return end
 function geo_switch_fire_spitter(node, matStackIndex) cast_graph_node(node).selectedCase = geo_get_current_object().oSwitchState1 return end
 function geo_switch_wiggler(node, matStackIndex) cast_graph_node(node).selectedCase = geo_get_current_object().oSwitchState1 return end
+
+function geo_function_wall_align(node, matStackIndex)
+    local o = geo_get_current_object()
+    -- Note, add whatever check is needed for this to only happen for torches
+    -- or not, i'm not your mom - Squishy
+
+
+    return
+end
+
 
 function geo_switch_wiggler_color(node, matStackIndex)
     local o = obj_get_nearest_object_with_behavior_id(gMarioStates[0].marioObj, id_bhvWigglerHead)
@@ -2534,29 +2547,46 @@ end
 
 id_bhvRender96WigglerHead = hook_render96_behavior(id_bhvWigglerHead, false, nil, bhv_wiggler_head_render96_loop, OBJ_LIST_GENACTOR)
 
-local function bhv_torch_find_wall(o)
-    -- Note, add whatever check is needed for this to only happen for torches
-    -- or not, i'm not your mom - Squishy
-    if o.oTimer > 2 then return end
-    local nWallAngle = nil
-    local nWallX = 0
-    local nWallZ = 0
+local function bhv_flame_render96_init(o)
+    o.oWallAngle = 0
+    o.oWallX = 0
+    o.oWallZ = 0
     for i = 0, 3 do
         local ray = collision_find_surface_on_ray(o.oPosX, o.oPosY, o.oPosZ, sins(i*0x4000)*500, 0, coss(i*0x4000)*500, 128)
         local dist = math.sqrt((ray.hitPos.x - o.oPosX)^2 + (ray.hitPos.z - o.oPosZ)^2)
-        local nDist = math.sqrt((nWallX - o.oPosX)^2 + (nWallZ - o.oPosZ)^2)
-        if (dist < nDist or not nWallAngle) and ray.surface then
-            nWallX = ray.hitPos.x
-            nWallZ = ray.hitPos.z
-            nWallAngle = atan2s(ray.surface.normal.z, ray.surface.normal.x)
+        local nDist = math.sqrt((o.oWallX - o.oPosX)^2 + (o.oWallZ - o.oPosZ)^2)
+        if (dist < nDist or not o.oWallAngle) and ray.surface then
+            o.oWallX = ray.hitPos.x
+            o.oWallZ = ray.hitPos.z
+            o.oWallAngle = atan2s(ray.surface.normal.z, ray.surface.normal.x)
         end
     end
-
-    o.oPosX = nWallX
-    o.oPosZ = nWallZ
-
-    o.oFaceAngleYaw = nWallAngle
-    o.oMoveAngleYaw = nWallAngle
 end
 
-id_bhvRender96Flame = hook_render96_behavior(id_bhvFlame, false, bhv_torch_find_wall)
+local function bhv_flame_render96_loop(o)
+    local model = obj_get_model_id_extended(o)
+    if o.oTimer < 2 then
+        if model == E_MODEL_RED_FLAME_TORCH or model == E_MODEL_BLUE_FLAME_TORCH then
+            o.oPosX = o.oWallX
+            o.oPosZ = o.oWallZ
+            o.oFaceAngleYaw = o.oWallAngle
+            o.oMoveAngleYaw = o.oWallAngle
+        end
+    end
+end
+
+id_bhvRender96Flame = hook_render96_behavior(id_bhvFlame, false, bhv_flame_render96_init, bhv_flame_render96_loop, OBJ_LIST_LEVEL)
+
+local function bhv_snowmans_head_render96_loop(o)
+    local model = obj_get_model_id_extended(o)
+    if o.oTimer < 2 then
+        if model == E_MODEL_SNOWMAN_HEAD then
+            o.oFaceAngleYaw = 0x1000
+            --o.oMoveAngleYaw = 0x4000
+            --o.oFaceAnglePitch = 0x1000
+            o.oFaceAngleRoll = 0x4000
+        end
+    end
+end
+
+id_bhvRender96SnowmansHead = hook_render96_behavior(id_bhvSnowmansHead, false, nil, bhv_snowmans_head_render96_loop, OBJ_LIST_DEFAULT)
