@@ -71,7 +71,7 @@ local function act_wario_charge(m)
                 m.marioObj.header.gfx.cameraToObject)
 
             set_mario_particle_flags(m, PARTICLE_VERTICAL_STAR, 0)
-            set_mario_action(m, ACT_BRAKING_STOP, 0)
+            set_mario_action(m, ACT_SOFT_BACKWARD_GROUND_KB, 0)
 
         elseif step == GROUND_STEP_NONE then
             set_mario_particle_flags(m, PARTICLE_DUST, 0)

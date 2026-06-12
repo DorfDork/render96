@@ -972,7 +972,7 @@ end
 id_bhvRender96BlarggFriendly = hook_render96_behavior(nil, false, bhv_blargg_friendly_render96_init, bhv_blargg_friendly_render96_loop, OBJ_LIST_LEVEL, "BlarggFriendly")
 
 local function bhv_breakable_box_render96_loop(o)
-    if (m.action == ACT_WARIO_CHARGE and dist_between_objects(o, m.marioObj) <= 200) then
+    if (m.action == ACT_WARIO_CHARGE and dist_between_objects(o, m.marioObj) <= 240) then
         obj_explode_and_spawn_coins(46, 1)
         create_sound_spawner(SOUND_GENERAL_BREAK_BOX)
     end
@@ -1025,7 +1025,7 @@ local function bhv_goomba_render96_loop(o)
 
     if get_character(m).type == CT_WARIO then
         if o.oAction == OBJ_ACT_SQUISHED then
-            if m.action ~= ACT_GROUND_POUND and m.action ~= ACT_GROUND_POUND_LAND then
+            if m.action ~= ACT_WARIO_GROUND_POUND and m.action ~= ACT_GROUND_POUND_LAND then
                 set_mario_particle_flags(m, PARTICLE_HORIZONTAL_STAR, 0)
                 o.oInteractType = INTERACT_GRABBABLE
                 o.oAction = GOOMBA_ACT_STUN
@@ -1034,7 +1034,7 @@ local function bhv_goomba_render96_loop(o)
                 o.oTimer = 0
                 cur_obj_init_animation_with_accel_and_sound(0, 0) 
             end
-            if m.action == ACT_GROUND_POUND or m.action == ACT_GROUND_POUND_LAND then
+            if m.action == ACT_WARIO_GROUND_POUND or m.action == ACT_GROUND_POUND_LAND then
                 bhv_goomba_render96_death(o)
             end
         end
