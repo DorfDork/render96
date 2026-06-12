@@ -1126,7 +1126,7 @@ id_bhvRender96KoopaShell = hook_render96_behavior(id_bhvKoopaShell, false, nil, 
 local function bhv_thwomp_render96_init(o)
     o.oSwitchState2 = TWHOMP_FACE_BASE
     o.oThwompShakeTicks = 18
-    o.oThwompPosMag = 10.0
+    o.oThwompPosMag = 25.0
     o.oThwompAngleMag = 0x120
 
     o.oThwompPrevAction = o.oAction or 0
@@ -1143,35 +1143,19 @@ end
 local function bhv_thwomp_render96_shake(o)
     if o == nil then return end
 
-    -- Thwomp action state machine:
     -- 0 = rising, 1 = waiting (pre-fall), 2 = falling, 3 = landed, 4 = cooldown
-    if o.oAction ~= 1 then
-        return
-    end
-
-    if o.oThwompRandomTimer == nil or o.oTimer == nil then
-        return
-    end
+    if o.oAction ~= 1 then return end
+    if o.oThwompRandomTimer == nil or o.oTimer == nil then return end
 
     local remaining = o.oThwompRandomTimer - o.oTimer
     if remaining > (o.oThwompShakeTicks + 0.5) or remaining < 0 then
+        o.oThwompShakeTimer = 0
         return
     end
 
-    local t = o.oTimer
+    r96lib.shake_apply(o, o.oThwompShakeTimer, o.oThwompShakeTicks, o.oThwompPosMag, o.oThwompPosMag, o.oThwompPosMag)
 
-    -- Visual-only shake (does not affect collision)
-    local ox = (math.sin(t * 6.9) + math.sin(t * 15.3)) * 0.5 * o.oThwompPosMag
-    local oz = (math.cos(t * 8.1) + math.cos(t * 14.1)) * 0.5 * o.oThwompPosMag
-
-    o.oPosX = o.oHomeX + ox
-    o.oPosZ = o.oHomeZ + oz
-
-    local yawJitter = math.floor(math.sin(t * 18.0) * o.oThwompAngleMag)
-    local rollJitter = math.floor(math.cos(t * 21.0) * (o.oThwompAngleMag / 2))
-
-    o.oFaceAngleYaw = o.oMoveAngleYaw + yawJitter
-    o.oFaceAngleRoll = rollJitter
+    o.oThwompShakeTimer = o.oThwompShakeTimer + 1
 end
 
 ---@param o Object

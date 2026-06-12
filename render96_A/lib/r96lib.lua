@@ -2,9 +2,13 @@ r96lib = {}
 
 local m = gMarioStates[0]
 define_custom_obj_fields({
-    oColorR               = 'f32',
-    oColorG               = 'f32',
-    oColorB               = 'f32'
+    oColorR      = 'f32',
+    oColorG      = 'f32',
+    oColorB      = 'f32',
+    oThwompShakeTimer = 'f32',
+    oShakeBasePosX = 'f32',
+    oShakeBasePosY = 'f32',
+    oShakeBasePosZ = 'f32'
 })
 
 function r96lib.spawn_object(modelId, bhvId, x, y, z, rx, ry, rz, func)
@@ -60,6 +64,45 @@ function r96lib.squish_apply(o, timer, duration, intensityX, intensityY, intensi
     local sz = baseScale * (1.0 + (intensityZ * peak))
 
     vec3f_set(o.header.gfx.scale, sx, sy, sz)
+
+    return peak
+end
+
+function r96lib.shake_apply(o, timer, duration, intensityX, intensityY, intensityZ)
+    if o == nil then return 0 end
+    if duration == nil or duration <= 0 then return 0 end
+
+    timer = timer or 0
+
+    intensityX = intensityX or 0
+    intensityY = intensityY or 0
+    intensityZ = intensityZ or 0
+
+    -- Store base position on first call of shake sequence
+    if timer == 0 then
+        o.oShakeBasePosX = o.oPosX
+        o.oShakeBasePosY = o.oPosY
+        o.oShakeBasePosZ = o.oPosZ
+    end
+
+    local basePosX = o.oShakeBasePosX or o.oPosX
+    local basePosY = o.oShakeBasePosY or o.oPosY
+    local basePosZ = o.oShakeBasePosZ or o.oPosZ
+
+    -- Normalize the time so that it outputs correctly
+    local t = timer / duration
+    if t < 0 then t = 0 end
+    if t > 1 then t = 1 end
+
+    local peak = math.sin(math.pi * t)
+
+    local ox = (math.sin(timer * 6.9) + math.sin(timer * 15.3)) * 0.5 * intensityX * peak
+    local oy = (math.sin(timer * 7.2) + math.sin(timer * 13.7)) * 0.5 * intensityY * peak
+    local oz = (math.sin(timer * 8.1) + math.sin(timer * 14.1)) * 0.5 * intensityZ * peak
+
+    o.oPosX = basePosX + ox
+    o.oPosY = basePosY + oy
+    o.oPosZ = basePosZ + oz
 
     return peak
 end
