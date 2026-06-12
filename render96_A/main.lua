@@ -183,9 +183,9 @@ local function mario_update(m)
     --spawn_non_sync_object(id_bhvRender96YoshiRideable, E_MODEL_YOSHI_RIDEABLE, m.pos.x + 200, m.pos.y, m.pos.z, nil)
     -- spawn_non_sync_object(id_bhv1Up, E_MODEL_1UP, m.pos.x + 200, m.pos.y, m.pos.z, nil)
    --end
-   --if m.action == ACT_BACKFLIP then
-   --    warp_to_level(LEVEL_CCM, 1, 1)
-   --end
+    if m.action == ACT_BACKFLIP then
+        warp_to_level(LEVEL_BOWSER_3, 1, 1)
+    end
    --SPECIAL_WARP_CAKE
    --WARP_NODE_CREDITS_START
    --SPECIAL_WARP_TITLE
