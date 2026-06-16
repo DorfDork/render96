@@ -220,7 +220,7 @@ local function act_wario_hold_idle(m)
         return drop_and_set_mario_action(m, ACT_IN_QUICKSAND, 0)
     end
 
-    if check_common_hold_idle_cancels(m) then
+    if check_common_hold_idle_cancels(m) ~= 0 then
         return true
     end
 
