@@ -1327,6 +1327,35 @@ end
 id_bhvRender96TowerDoor = hook_render96_behavior(id_bhvTowerDoor, false, nil, bhv_tower_door_render96_loop)
 
 ---@param o Object
+local function bhv_pit_bowling_ball(o)
+    if m.action == ACT_WARIO_CHARGE and dist_between_objects(o, m.marioObj) <= 200 then
+        spawn_mist_particles_variable(0, 0, 100.0)
+        spawn_triangle_break_particles(20, 138, 3.0, 4)
+		set_camera_shake_from_point(SHAKE_POS_MEDIUM, m.pos.x, m.pos.y, m.pos.z)
+        spawn_sync_object(id_bhvBlueCoinJumping, E_MODEL_BLUE_COIN, o.oPosX, o.oPosY, o.oPosZ, nil)
+        create_sound_spawner(SOUND_GENERAL2_BOBOMB_EXPLOSION)
+        o.activeFlags = ACTIVE_FLAG_DEACTIVATED
+        obj_mark_for_deletion(o)
+    end
+end
+
+id_bhvRender96PitBowlingBall = hook_render96_behavior(id_bhvPitBowlingBall, false, nil, bhv_pit_bowling_ball)
+
+---@param o Object
+local function bhv_bowling_ball(o)
+    if m.action == ACT_WARIO_CHARGE and dist_between_objects(o, m.marioObj) <= 200 then
+        spawn_mist_particles_variable(0, 0, 100.0)
+        spawn_triangle_break_particles(20, 138, 3.0, 4)
+		set_camera_shake_from_point(SHAKE_POS_MEDIUM, m.pos.x, m.pos.y, m.pos.z)
+        create_sound_spawner(SOUND_GENERAL2_BOBOMB_EXPLOSION)
+        o.activeFlags = ACTIVE_FLAG_DEACTIVATED
+        obj_mark_for_deletion(o)
+    end
+end
+
+id_bhvRender96BowlingBall = hook_render96_behavior(id_bhvBowlingBall, false, nil, bhv_bowling_ball)
+
+---@param o Object
 local function bhv_whomp_render96_loop(o)
     local prevAction = o.oThwompPrevAction or o.oAction
     if prevAction ~= 5 and o.oAction == 5 then
@@ -2292,12 +2321,15 @@ id_bhvRender96CelebrationStar = hook_render96_behavior(id_bhvCelebrationStar, fa
 ---@param o Object
 local function bhv_pokey_render96_init(o)
     o.header.gfx.node.flags = o.header.gfx.node.flags & ~GRAPH_RENDER_BILLBOARD
+
 end
 
 local function bhv_pokey_render96_loop(o)
     local player = nearest_player_to_object(o)
     local angleToPlayer = obj_angle_to_object(o, player)
     o.oFaceAngleYaw =  angleToPlayer
+    if o.oBehParams2ndByte == 0 and o.oPosX < -2000 then obj_set_model_extended(o, E_MODEL_POKEY_HEAD_BOXART) end
+    if o.oBehParams2ndByte ~= 0 and o.oPosX < -2000 then obj_set_model_extended(o, E_MODEL_POKEY_BODY_PART_BOXART) end
 end
 
 id_bhvRender96Pokey = hook_render96_behavior(id_bhvPokey, false, bhv_pokey_render96_init, bhv_pokey_render96_loop, OBJ_LIST_SURFACE)
@@ -2352,6 +2384,36 @@ end
 
 id_bhvRender96TuxiesMother = hook_render96_behavior(id_bhvTuxiesMother, false, nil, bhv_tuxie_mother_render96_loop, OBJ_LIST_SURFACE)
 
+---@param o Object
+local function bhv_chuckya_render96_loop(o)
+    if m.action == ACT_WARIO_CHARGE and dist_between_objects(o, m.marioObj) <= 200 then
+        spawn_mist_particles_variable(0, 0, 100.0)
+        spawn_triangle_break_particles(20, 138, 3.0, 4)
+		set_camera_shake_from_point(SHAKE_POS_MEDIUM, m.pos.x, m.pos.y, m.pos.z)
+        spawn_sync_object(id_bhvBlueCoinJumping, E_MODEL_BLUE_COIN, o.oPosX, o.oPosY, o.oPosZ, nil)
+        create_sound_spawner(SOUND_OBJ_CHUCKYA_DEATH)
+        o.activeFlags = ACTIVE_FLAG_DEACTIVATED
+        obj_mark_for_deletion(o)
+    end
+end
+
+id_bhvRender96Chuckya = hook_render96_behavior(id_bhvChuckya, false, nil, bhv_chuckya_render96_loop, OBJ_LIST_GENACTOR)
+
+---@param o Object
+local function bhv_heaveho_render96_loop(o)
+    if m.action == ACT_WARIO_CHARGE and dist_between_objects(o, m.marioObj) <= 200 then
+        spawn_mist_particles_variable(0, 0, 100.0)
+        spawn_triangle_break_particles(20, 138, 3.0, 4)
+		set_camera_shake_from_point(SHAKE_POS_MEDIUM, m.pos.x, m.pos.y, m.pos.z)
+        spawn_sync_object(id_bhvBlueCoinJumping, E_MODEL_BLUE_COIN, o.oPosX, o.oPosY, o.oPosZ, nil)
+        create_sound_spawner(SOUND_OBJ_CHUCKYA_DEATH)
+        o.activeFlags = ACTIVE_FLAG_DEACTIVATED
+        obj_mark_for_deletion(o)
+    end
+end
+
+id_bhvRender96HeaveHo = hook_render96_behavior(id_bhvHeaveHo, false, nil, bhv_heaveho_render96_loop, OBJ_LIST_GENACTOR)
+
 local COLORS_BOBOMB = {
     {r = 13, g = 29, b = 52},
     {r = 200, g = 0, b = 0}, 
@@ -2366,14 +2428,15 @@ end
 
 ---@param o Object
 local function bhv_bobomb_render96_loop(o)
-    if get_character(m).type == CT_WARIO and sGoombaWarioDeath[m.action] and dist_between_objects(o, m.marioObj) <= 150 then
-        --o.oBobombFuseTimer = 150
-    end
     if o.oBobombFuseTimer == 0 then 
         o.oSwitchState1 = 0
     else 
         o.oSwitchState1 = 1
         r96lib.pulse_ramp(o, COLORS_BOBOMB, o.oBobombFuseTimer, 150)
+    end
+    if m.action == ACT_WARIO_CHARGE and dist_between_objects(o, m.marioObj) <= 200 then
+		set_camera_shake_from_point(SHAKE_POS_MEDIUM, m.pos.x, m.pos.y, m.pos.z)
+        o.oBobombFuseTimer = 152
     end
 end
 
@@ -2741,14 +2804,6 @@ local function bhv_wooden_post_render96_loop(o)
 end
 
 id_bhvRender96WoodenPost = hook_render96_behavior(id_bhvWoodenPost, false, nil, bhv_wooden_post_render96_loop, OBJ_LIST_SURFACE)
-
-local function bhv_lakitu_loop(o)
-   --if o.oAction >= 100 then obj_set_model_extended(o, E_MODEL_LAKITU_ENDING) end
-   --if o.oAction < 100 then obj_set_model_extended(o, E_MODEL_LAKITU) end
-   o.oOpacity = 255
-end
-
-id_bhvRender96BeginningLakitu = hook_render96_behavior(id_bhvBeginningLakitu, false, nil, bhv_lakitu_loop, OBJ_LIST_DEFAULT)
 
 ---@param o Object
 local function bhv_yoshi_tongue(o)

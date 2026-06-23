@@ -6,7 +6,7 @@ ACT_LUIGI_SCUTTLE_RUN_HOLD      = allocate_mario_action(ACT_FLAG_AIR | ACT_FLAG_
 ACT_LUIGI_BACKFLIP              = allocate_mario_action(ACT_FLAG_AIR | ACT_FLAG_AIR | ACT_GROUP_AIRBORNE | ACT_FLAG_ALLOW_VERTICAL_WIND_ACTION)
 ACT_LUIGI_TWIRLING              = allocate_mario_action(ACT_FLAG_AIR | ACT_GROUP_AIRBORNE | ACT_FLAG_ATTACKING | ACT_FLAG_SWIMMING_OR_FLYING)
 ACT_LUIGI_TWIRLING_DOWN         = allocate_mario_action(ACT_FLAG_AIR | ACT_GROUP_AIRBORNE | ACT_FLAG_ATTACKING | ACT_FLAG_SWIMMING_OR_FLYING)
-ACT_WARIO_CHARGE                = allocate_mario_action(ACT_FLAG_MOVING | ACT_FLAG_ATTACKING)
+ACT_WARIO_CHARGE                = allocate_mario_action(ACT_FLAG_MOVING | ACT_FLAG_ATTACKING | ACT_FLAG_INVULNERABLE)
 ACT_WARIO_TRIPLE_JUMP           = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_AIR | ACT_FLAG_ALLOW_VERTICAL_WIND_ACTION | ACT_FLAG_CONTROL_JUMP_HEIGHT)
 ACT_WARIO_HOLD_IDLE             = allocate_mario_action(0x007 | ACT_FLAG_STATIONARY | ACT_FLAG_PAUSE_EXIT)
 ACT_WARIO_HOLD_HEAVY_IDLE       = allocate_mario_action(0x008 | ACT_FLAG_STATIONARY | ACT_FLAG_PAUSE_EXIT)
@@ -80,7 +80,8 @@ E_MODEL_BBH_COFFIN                  = smlua_model_util_get_id("bbh_coffin_geo")
 E_MODEL_SNOWMAN_HEAD                = smlua_model_util_get_id("ccm_snowman_head_geo")
 E_MODEL_SNOWMAN_BODY                = smlua_model_util_get_id("ccm_snowman_body_geo")
 E_MODEL_YOSHI_TONGUE                = smlua_model_util_get_id("yoshi_tongue_geo")
---E_MODEL_LAKITU_ENDING               = smlua_model_util_get_id("lakitu_ending_geo")
+E_MODEL_POKEY_HEAD_BOXART           = smlua_model_util_get_id("pokey_head_boxart_geo")
+E_MODEL_POKEY_BODY_PART_BOXART      = smlua_model_util_get_id("pokey_body_part_boxart_geo")
 
 -- Levels
 LEVEL_INNER_WORKINGS = level_register("level_inner_workings_entry", COURSE_NONE, "Inner Workings", "inner_workings", 28000, 0x28, 0x28, 0x28)

@@ -1245,13 +1245,10 @@ local function wario_before_actions(m, incomingAct)
 end
 
 ---@param m MarioState
-local function wario_current_actions(m)
+local function wario_update(m)
     if (m.action == ACT_WALKING) and m.forwardVel >= 29 and m.floor ~= nil then
-        local step = perform_ground_step(m)
-        if step == GROUND_STEP_NONE then
             set_mario_particle_flags(m, PARTICLE_DUST, 0)
-        end
-     end
+    end
 end
 
 local sLuigiJumpActions = {
@@ -1359,7 +1356,7 @@ hook_event(HOOK_ON_MODS_LOADED, function ()
         -- Wario
         _G.charSelect.character_set_locked(CT_WARIO, wario_bool, true)
         _G.charSelect.character_hook_moveset(CT_WARIO, HOOK_BEFORE_SET_MARIO_ACTION, wario_before_actions)
-        _G.charSelect.character_hook_moveset(CT_WARIO, HOOK_ON_SET_MARIO_ACTION, wario_current_actions)
+        _G.charSelect.character_hook_moveset(CT_WARIO, HOOK_MARIO_UPDATE, wario_update)
     end
 end)
 
