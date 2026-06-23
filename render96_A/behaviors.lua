@@ -2332,7 +2332,6 @@ local function bhv_pokey_render96_loop(o)
     if o.oBehParams2ndByte ~= 0 and o.oPosX < -2000 then obj_set_model_extended(o, E_MODEL_POKEY_BODY_PART_BOXART) end
 end
 
-id_bhvRender96Pokey = hook_render96_behavior(id_bhvPokey, false, bhv_pokey_render96_init, bhv_pokey_render96_loop, OBJ_LIST_SURFACE)
 id_bhvRender96PokeyBodyPart = hook_render96_behavior(id_bhvPokeyBodyPart, false, bhv_pokey_render96_init, bhv_pokey_render96_loop, OBJ_LIST_SURFACE)
 
 ---@param o Object
