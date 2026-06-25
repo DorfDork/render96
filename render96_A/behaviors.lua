@@ -1590,12 +1590,13 @@ local function bhv_luigi_key_init(o)
     o.hitboxHeight = 64
     o.hitboxRadius = 32
     o.oPosY = o.oPosY + 80
+    o.oHomeY = o.oPosY
 end
 
 ---@param o Object
 local function bhv_luigi_key_loop(o)
     o.oFaceAngleYaw = o.oFaceAngleYaw + 0x700
-    o.oPosY = o.oPosY + sins(o.oFaceAngleYaw / (20 * 1000)) * 2
+    o.oPosY = o.oHomeY + sins(o.oTimer * 0x600) * 8
     if dist_between_objects(o, m.marioObj) <= 150 then
         r96lib.save_render96_data("luigi_key", o.oBehParams2ndByte)
         gNumLuigiKeys = select(2, r96lib.load_render96_data("luigi_key"):gsub("1", ""))
