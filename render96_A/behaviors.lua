@@ -338,6 +338,11 @@ function geo_function_door_switch(node, matStackIndex) cast_graph_node(node).sel
 function geo_switch_fire_spitter(node, matStackIndex) cast_graph_node(node).selectedCase = geo_get_current_object().oSwitchState1 return end
 function geo_switch_wiggler(node, matStackIndex) cast_graph_node(node).selectedCase = geo_get_current_object().oSwitchState1 return end
 
+function geo_switch_kug(node, matStackIndex)
+    cast_graph_node(node).selectedCase = (geo_get_current_object().oTimer // 4) % 4
+    return
+end
+
 function geo_switch_peach_lip(node, matStackIndex) 
 
     if m.actionArg == 6 then -- END_PEACH_CUTSCENE_DIALOG_1
@@ -833,10 +838,46 @@ local function uv_scroll_spin(input_vtx, original_uv, current_uv)
     current_uv[2] = center_v + orig_dist * math.sin(orig_theta + t) + offset_v
 end
 
+-- Scroll the uvs in a circular motion
+local function uv_scroll_spin_slow(input_vtx, original_uv, current_uv)
+    -- adjustable constants
+    local speed = 0.01
+
+    -- equation for circular motion
+    local t = get_global_timer() * speed
+    local orig_theta = math.atan2(original_uv[2], original_uv[1])
+    local orig_dist = math.sqrt(math.pow(original_uv[1], 2) + math.pow(original_uv[2], 2))
+    current_uv[1] = orig_dist * math.cos(orig_theta + t)
+    current_uv[2] = orig_dist * math.sin(orig_theta + t)
+end
+
 UvScroll.hook_scrolling_function('star_particle_001_displaylist_mesh_layer_5_tri_1', uv_scroll_right)
+
+UvScroll.hook_scrolling_function('kug_body_mesh_layer_1_tri_0', uv_scroll_spin_slow)
+UvScroll.hook_scrolling_function('kug_foot_L_mesh_layer_1_tri_0', uv_scroll_spin_slow)
+UvScroll.hook_scrolling_function('kug_foot_R_mesh_layer_1_tri_0', uv_scroll_spin_slow)
+
+UvScroll.hook_scrolling_function('kug_switchopt1_body_mesh_layer_1_tri_0', uv_scroll_spin_slow)
+UvScroll.hook_scrolling_function('kug_switchopt1_foot_L_mesh_layer_1_tri_0', uv_scroll_spin_slow)
+UvScroll.hook_scrolling_function('kug_switchopt1_foot_R_mesh_layer_1_tri_0', uv_scroll_spin_slow)
+
+UvScroll.hook_scrolling_function('kug_switchopt2_body_mesh_layer_1_tri_0', uv_scroll_spin_slow)
+UvScroll.hook_scrolling_function('kug_switchopt2_foot_L_mesh_layer_1_tri_0', uv_scroll_spin_slow)
+UvScroll.hook_scrolling_function('kug_switchopt2_foot_R_mesh_layer_1_tri_0', uv_scroll_spin_slow)
+
+UvScroll.hook_scrolling_function('kug_switchopt3_body_mesh_layer_1_tri_0', uv_scroll_spin_slow)
+UvScroll.hook_scrolling_function('kug_switchopt3_foot_L_mesh_layer_1_tri_0', uv_scroll_spin_slow)
+UvScroll.hook_scrolling_function('kug_switchopt3_foot_R_mesh_layer_1_tri_0', uv_scroll_spin_slow)
+
+UvScroll.hook_scrolling_function('kug_mouth_mesh_layer_1_tri_2', uv_scroll_spin_slow)
+UvScroll.hook_scrolling_function('kug_switchopt1_mouth_mesh_layer_1_tri_2', uv_scroll_spin_slow)
+UvScroll.hook_scrolling_function('kug_switchopt2_mouth_mesh_layer_1_tri_2', uv_scroll_spin_slow)
+UvScroll.hook_scrolling_function('kug_switchopt3_mouth_mesh_layer_1_tri_2', uv_scroll_spin_slow)
+
 UvScroll.hook_scrolling_function('goomba_eyes_dazed_switch_eyes_dazed_mesh_layer_1_tri_1', uv_scroll_spin)
 UvScroll.hook_scrolling_function('goomba_underground_eyes_dazed_switch_eyes_dazed_mesh_layer_1_tri_1', uv_scroll_spin)
 UvScroll.hook_scrolling_function('goomba_boxart_eyes_dazed_switch_eyes_dazed_mesh_layer_1_tri_2', uv_scroll_spin)
+UvScroll.hook_scrolling_function('kug_eyes_dazed_switch_eyes_dazed_mesh_layer_1_tri_2', uv_scroll_spin)
 UvScroll.hook_scrolling_function('wiggler_head_switch_opt1_000_displaylist5_mesh_layer_1_tri_3', uv_scroll_spin)
 
 ---@param o Object
@@ -2417,15 +2458,15 @@ end
 id_bhvRender96HeaveHo = hook_render96_behavior(id_bhvHeaveHo, false, nil, bhv_heaveho_render96_loop, OBJ_LIST_GENACTOR)
 
 local COLORS_BOBOMB = {
-    {r = 13, g = 29, b = 52},
+    {r = 4, g = 4, b = 4},
     {r = 200, g = 0, b = 0}, 
 }
 
 ---@param o Object
 local function bhv_bobomb_render96_init(o)
-    o.oColorR = 13
-    o.oColorG = 29
-    o.oColorB = 52
+    o.oColorR = 4
+    o.oColorG = 4
+    o.oColorB = 4
 end
 
 ---@param o Object
@@ -2445,23 +2486,23 @@ end
 id_bhvRender96Bobomb = hook_render96_behavior(id_bhvBobomb, false, bhv_bobomb_render96_init, bhv_bobomb_render96_loop, OBJ_LIST_DESTRUCTIVE)
 
 local COLORS_KINGBOBOMB = {
-    {r = 24, g = 24, b = 42},
+    {r = 4, g = 4, b = 4},
     {r = 150, g = 0,  b = 0},
 }
 
 ---@param o Object
 local function bhv_king_bobomb_render96_init(o)
-    o.oColorR = 24
-    o.oColorG = 24
-    o.oColorB = 42
+    o.oColorR = 4
+    o.oColorG = 4
+    o.oColorB = 4
 end
 
 ---@param o Object
 local function bhv_king_bobomb_render96_loop(o)
     if o.oHealth == 3 then   
-        o.oColorR = 24
-        o.oColorG = 24
-        o.oColorB = 42
+        o.oColorR = 4
+        o.oColorG = 4
+        o.oColorB = 4
     end
     if o.oHealth == 2 then r96lib.pulse_rapid(o, COLORS_KINGBOBOMB, o.oTimer, 0.1) end
     if o.oHealth == 1 then r96lib.pulse_rapid(o, COLORS_KINGBOBOMB, o.oTimer, 0.3) end

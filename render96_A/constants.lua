@@ -82,6 +82,7 @@ E_MODEL_SNOWMAN_BODY                = smlua_model_util_get_id("ccm_snowman_body_
 E_MODEL_YOSHI_TONGUE                = smlua_model_util_get_id("yoshi_tongue_geo")
 E_MODEL_POKEY_HEAD_BOXART           = smlua_model_util_get_id("pokey_head_boxart_geo")
 E_MODEL_POKEY_BODY_PART_BOXART      = smlua_model_util_get_id("pokey_body_part_boxart_geo")
+E_MODEL_KUG                         = smlua_model_util_get_id("kug_geo")
 
 -- Levels
 LEVEL_INNER_WORKINGS = level_register("level_inner_workings_entry", COURSE_NONE, "Inner Workings", "inner_workings", 28000, 0x28, 0x28, 0x28)
