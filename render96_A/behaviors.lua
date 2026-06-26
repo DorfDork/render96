@@ -1620,8 +1620,7 @@ id_bhvRender96WarpPipeYellowLock = hook_render96_behavior(nil, false, bhv_warp_p
 
 ---@param o Object
 local function bhv_luigi_key_init(o)
-    o.activeFlags = ACTIVE_FLAG_ACTIVE
-    o.oFlags = o.oFlags | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE
+    o.oFlags = OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE
     o.oWallHitboxRadius = 30
     o.oGravity = -400
     o.oBounciness = -70
@@ -1630,7 +1629,6 @@ local function bhv_luigi_key_init(o)
     o.oBuoyancy = 200
     o.hitboxHeight = 64
     o.hitboxRadius = 32
-    o.oPosY = o.oPosY + 80
     o.oHomeY = o.oPosY
 end
 
