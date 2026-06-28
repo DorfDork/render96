@@ -1,3 +1,12 @@
+
+local _floor  = math.floor
+local _max    = math.max
+local _sqrt   = math.sqrt
+local _sin    = math.sin
+local _lerp   = math.lerp
+local _clamp  = math.clamp
+local _pi     = math.pi
+
 r96lib = {}
 
 local m = gMarioStates[0]
@@ -45,11 +54,11 @@ function r96lib.squish_apply(o, timer, duration, intensityX, intensityY, intensi
 
     -- Smooth peak-at-middle curve:
     -- I googled this and it works xD
-    local peak = math.sin(math.pi * t)
+    local peak = _sin(_pi * t)
 
     -- Play the sound once at the peak frame.
     if sound ~= nil then
-        local mid = math.floor(duration * 0.5)
+        local mid = _floor(duration * 0.5)
         if timer == mid then
             local audioStream = audio_stream_load(sound)
             if audioStream ~= nil then
@@ -94,11 +103,11 @@ function r96lib.shake_apply(o, timer, duration, intensityX, intensityY, intensit
     if t < 0 then t = 0 end
     if t > 1 then t = 1 end
 
-    local peak = math.sin(math.pi * t)
+    local peak = _sin(_pi * t)
 
-    local ox = (math.sin(timer * 6.9) + math.sin(timer * 15.3)) * 0.5 * intensityX * peak
-    local oy = (math.sin(timer * 7.2) + math.sin(timer * 13.7)) * 0.5 * intensityY * peak
-    local oz = (math.sin(timer * 8.1) + math.sin(timer * 14.1)) * 0.5 * intensityZ * peak
+    local ox = (_sin(timer * 6.9) + _sin(timer * 15.3)) * 0.5 * intensityX * peak
+    local oy = (_sin(timer * 7.2) + _sin(timer * 13.7)) * 0.5 * intensityY * peak
+    local oz = (_sin(timer * 8.1) + _sin(timer * 14.1)) * 0.5 * intensityZ * peak
 
     o.oPosX = basePosX + ox
     o.oPosY = basePosY + oy
@@ -129,9 +138,8 @@ local objSoundData = {}
 function r96lib.audio_fade(o, audioStream, rangeMin, rangeMax, isMusic, loopingStart, loopingEnd)
     if o == nil or gMarioStates[0] == nil then return end
     if audioStream == nil or not audioStream.isStream then return end
-    local m = gMarioStates[0]
     local wallInterupt = collision_find_surface_on_ray(m.pos.x, m.pos.y + 70, m.pos.z, o.oPosX - m.pos.x, (o.oPosY + o.hitboxHeight*0.5) - (m.pos.y + 70), o.oPosZ - m.pos.z, 128).surface ~= nil
-    local objDist = math.sqrt((o.oPosX - m.pos.x)^2 + (o.oPosY - m.pos.y)^2 + (o.oPosZ - m.pos.z)^2) * (wallInterupt and 2 or 1)
+    local objDist = _sqrt((o.oPosX - m.pos.x)^2 + (o.oPosY - m.pos.y)^2 + (o.oPosZ - m.pos.z)^2) * (wallInterupt and 2 or 1)
 
     if not objSoundData[audioStream._pointer] then
         objSoundData[audioStream._pointer] = {
@@ -148,7 +156,7 @@ function r96lib.audio_fade(o, audioStream, rangeMin, rangeMax, isMusic, loopingS
         }
     end
 
-    local hitbox = math.max(math.sqrt(o.hitboxRadius^2 + o.hitboxHeight^2), math.sqrt(o.hurtboxRadius^2 + o.hurtboxHeight^2))
+    local hitbox = _max(_sqrt(o.hitboxRadius^2 + o.hitboxHeight^2), _sqrt(o.hurtboxRadius^2 + o.hurtboxHeight^2))
     rangeMin = rangeMin or hitbox*5
     rangeMax = rangeMax or hitbox*25
 
@@ -173,18 +181,18 @@ local function update_obj_audio()
         else
             -- Update Doppler effect
             if not audioData.isMusic then
-                audio_stream_set_frequency(audioData.audioStream, 1 - (audioData.nearestDist - audioData.prevDist)/math.lerp(audioData.nearestMin, audioData.nearestMax, 0.1))
+                audio_stream_set_frequency(audioData.audioStream, 1 - (audioData.nearestDist - audioData.prevDist)/_lerp(audioData.nearestMin, audioData.nearestMax, 0.1))
                 audioData.prevDist = audioData.nearestDist
             end
         end
 
-        local volume = 1 - math.clamp((audioData.nearestDist - audioData.nearestMin)/(audioData.nearestMax), 0, 1)
+        local volume = 1 - _clamp((audioData.nearestDist - audioData.nearestMin)/(audioData.nearestMax), 0, 1)
         if not audioData.nearestObj then
             volume = 0
         elseif volume > 0 then
             audio_stream_play(audioData.audioStream, false, 0)
         end
-        audioData.volume = math.lerp(audioData.volume, volume, 0.2)
+        audioData.volume = _lerp(audioData.volume, volume, 0.2)
         audio_stream_set_volume(audioData.audioStream, audioData.volume)
 
         audioData.nearestObj = nil
@@ -319,20 +327,21 @@ local function update()
     local area   = networkPlayers[0].currAreaIndex
     local actNum = networkPlayers[0].currActNum
 
-    -- Loop 1: addModelOverride
     for _, entry in ipairs(sModelOverrides) do
-        if not entry.level and not entry.param then
-            local o = obj_get_first_with_behavior_id(entry.bhv)
-            while o ~= nil do
-                obj_set_model_extended(o, entry.model)
-                o = obj_get_next_with_same_behavior_id(o)
+        if entry.level then
+            -- addModelLevelOverride
+            if entry.level == level and entry.area == area
+            and act_matches(entry.actMask, actNum) then
+                local o = obj_get_first_with_behavior_id(entry.bhv)
+                while o ~= nil do
+                    if obj_get_model_id_extended(o) == entry.model2 then
+                        obj_set_model_extended(o, entry.model)
+                    end
+                    o = obj_get_next_with_same_behavior_id(o)
+                end
             end
-        end
-    end
-
-    -- Loop 2: addModelParamOverride
-    for _, entry in ipairs(sModelOverrides) do
-        if entry.param and not entry.level then
+        elseif entry.param then
+            -- addModelParamOverride
             local o = obj_get_first_with_behavior_id(entry.bhv)
             while o ~= nil do
                 if entry.param == o.oBehParams then
@@ -340,22 +349,12 @@ local function update()
                 end
                 o = obj_get_next_with_same_behavior_id(o)
             end
-        end
-    end
-
-    -- Loop 3: addModelLevelOverride
-    for _, entry in ipairs(sModelOverrides) do
-        if entry.level and entry.level == level
-        and entry.area  and entry.area  == area
-        and entry.actMask and act_matches(entry.actMask, actNum) then
+        else
+            -- addModelOverride
             local o = obj_get_first_with_behavior_id(entry.bhv)
             while o ~= nil do
-                if obj_get_model_id_extended(o) == entry.model2 then
-                    obj_set_model_extended(o, entry.model)
-                    o = obj_get_next_with_same_behavior_id(o)
-                else
-                    o = obj_get_next_with_same_behavior_id(o)
-                end
+                obj_set_model_extended(o, entry.model)
+                o = obj_get_next_with_same_behavior_id(o)
             end
         end
     end
@@ -384,18 +383,17 @@ local function on_sync_valid()
     end
 end
 
-
 ---@param o Object
 ---@param colors table
 ---@param framesPerColor number?
 function r96lib.pulse_cycle(o, colors, framesPerColor)
     local frame = o.oTimer % (#colors * framesPerColor)
-    local i = math.floor(frame / framesPerColor) + 1
+    local i = _floor(frame / framesPerColor) + 1
     local c1, c2 = colors[i], colors[(i % #colors) + 1]
     local t = (frame % framesPerColor) / framesPerColor
-    o.oColorR = math.lerp(c1.r, c2.r, t)
-    o.oColorG = math.lerp(c1.g, c2.g, t)
-    o.oColorB = math.lerp(c1.b, c2.b, t)
+    o.oColorR = _lerp(c1.r, c2.r, t)
+    o.oColorG = _lerp(c1.g, c2.g, t)
+    o.oColorB = _lerp(c1.b, c2.b, t)
 end
 
 ---@param o Object
@@ -404,11 +402,11 @@ end
 ---@param timeMax number?
 function r96lib.pulse_ramp(o, colors, t, timeMax)
     local freq = 0.02 + (t / timeMax) * 0.3
-    local s = math.sin((t * freq) - math.pi * 0.5) * 0.5 + 0.5
+    local s = _sin((t * freq) - _pi * 0.5) * 0.5 + 0.5
     local c1, c2 = colors[1], colors[2]
-    o.oColorR = math.lerp(c1.r, c2.r, s)
-    o.oColorG = math.lerp(c1.g, c2.g, s)
-    o.oColorB = math.lerp(c1.b, c2.b, s)
+    o.oColorR = _lerp(c1.r, c2.r, s)
+    o.oColorG = _lerp(c1.g, c2.g, s)
+    o.oColorB = _lerp(c1.b, c2.b, s)
     if t >= timeMax then
         o.oColorR = c1.r
         o.oColorG = c1.g
@@ -421,19 +419,22 @@ end
 ---@param t number
 ---@param speed number?
 function r96lib.pulse_rapid(o, colors, t, speed)
-    local s = math.sin(t * speed) * 0.5 + 0.5
+    local s = _sin(t * speed) * 0.5 + 0.5
     local c1, c2 = colors[1], colors[2]
-    o.oColorR = math.lerp(c1.r, c2.r, s)
-    o.oColorG = math.lerp(c1.g, c2.g, s)
-    o.oColorB = math.lerp(c1.b, c2.b, s)
+    o.oColorR = _lerp(c1.r, c2.r, s)
+    o.oColorG = _lerp(c1.g, c2.g, s)
+    o.oColorB = _lerp(c1.b, c2.b, s)
 end
 
+---@param mario MarioState
+---@param o Object
+---@param padding number?
 function r96lib.push_mario_out_of_object(mario, o, padding)
     local minDistance = o.hitboxRadius + mario.marioObj.hitboxRadius + padding
 
     local offsetX = mario.pos.x - o.oPosX
     local offsetZ = mario.pos.z - o.oPosZ
-    local distance = math.sqrt(offsetX * offsetX + offsetZ * offsetZ)
+    local distance = _sqrt(offsetX * offsetX + offsetZ * offsetZ)
 
     if (distance < minDistance) then
         local floor = mario.floor
@@ -450,13 +451,12 @@ function r96lib.push_mario_out_of_object(mario, o, padding)
         newMarioX = o.oPosX + minDistance * sins(pushAngle)
         newMarioZ = o.oPosZ + minDistance * coss(pushAngle)
 
-
         if (floor ~= nil) then
             --! Doesn't update Mario's referenced floor (allows oob death when
             -- an object pushes you into a steep slope while in a ground action)
             --  <Fixed when gLevelValues.fixCollisionBugs != 0>
-            m.pos.x = newMarioX
-            m.pos.z = newMarioZ
+            mario.pos.x = newMarioX
+            mario.pos.z = newMarioZ
         end
     end
 end

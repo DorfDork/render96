@@ -1,6 +1,16 @@
 local r96lib = require("/lib/r96lib")
 require("constants")
 
+local _floor  = math.floor
+local _abs    = math.abs
+local _max    = math.max
+local _min    = math.min
+local _sqrt   = math.sqrt
+local _random = math.random
+local _sin    = math.sin
+local _cos    = math.cos
+local _pi     = math.pi
+
 -- Config Character Select to add Vanilla models
 --local E_MODEL_R96_MARIO = smlua_model_util_get_id("r96_mario_geo")
 --_G.charSelect.character_add_costume(CT_MARIO, "Vanilla Mario", nil, nil, nil, E_MODEL_MARIO)
@@ -12,23 +22,11 @@ _G.charSelect.character_add_costume(CT_WARIO, "Vanilla Wario", nil, nil, nil, E_
 _G.charSelect.character_edit(CT_WARIO, nil, nil, "Render96", nil, E_MODEL_R96_WARIO)
 ]]
 
-
 local sWarioWalkSpin = false
-
 local sWarioSpinCount = 0
-
 local sWarioChargeCount = 0
 
-local sWarioCoinRand = {
-    E_MODEL_WARIO_PUMPKIN_COIN,
-    E_MODEL_WARIO_HOUSE_COIN,
-    E_MODEL_WARIO_TREE_COIN,
-    E_MODEL_WARIO_KOOPA_COIN,
-    E_MODEL_WARIO_LUNAR_COIN,
-    E_MODEL_WARIO_MARIO_COIN,
-}
-
-function wario_should_begin_sliding(m)
+local function wario_should_begin_sliding(m)
     if m == nil then return false end
 
     if m.input & INPUT_ABOVE_SLIDE ~= 0 then
@@ -43,7 +41,7 @@ function wario_should_begin_sliding(m)
     return false
 end
 
-function wario_update_decelerating_speed(m)
+local function wario_update_decelerating_speed(m)
     if m == nil then return false end
 
     local stopped = false
@@ -60,7 +58,7 @@ function wario_update_decelerating_speed(m)
     return stopped
 end
 
-function wario_check_common_hold_idle_cancels(m)
+local function wario_check_common_hold_idle_cancels(m)
     if m == nil then return false end
 
     if m.floor ~= nil and m.floor.normal.y < 0.29237169 then
@@ -124,7 +122,7 @@ local function act_wario_charge(m)
 
     if sWarioChargeCount < 60 then
         local sYaw = r96lib.convert_s16(m.intendedYaw - m.faceAngle.y)
-        sYaw = math.max(-0x300, math.min(0x300, sYaw))
+        sYaw = _max(-0x300, _min(0x300, sYaw))
         m.intendedYaw = m.faceAngle.y + sYaw
 
         update_shell_speed(m)
@@ -367,7 +365,7 @@ local function wario_anim_and_audio_for_hold_walk(m)
                 if get_character(m).type == CT_WARIO then
                     val0C = 0x60000
                 else
-                    val0C = math.floor(val04 * 0x10000)
+                    val0C = _floor(val04 * 0x10000)
                 end
                 set_character_anim_with_accel(m, CHAR_ANIM_SLOW_WALK_WITH_LIGHT_OBJ, val0C)
                 play_step_sound(m, 12, 62)
@@ -383,7 +381,7 @@ local function wario_anim_and_audio_for_hold_walk(m)
                 if get_character(m).type == CT_WARIO then
                     val0C = 0x60000
                 else
-                    val0C = math.floor(val04 * 0x10000)
+                    val0C = _floor(val04 * 0x10000)
                 end
                 set_character_anim_with_accel(m, CHAR_ANIM_WALK_WITH_LIGHT_OBJ, val0C)
                 play_step_sound(m, 12, 62)
@@ -397,7 +395,7 @@ local function wario_anim_and_audio_for_hold_walk(m)
                 if get_character(m).type == CT_WARIO then
                     val0C = 0x40000
                 else
-                    val0C = math.floor(val04 / 2.0 * 0x10000)
+                    val0C = _floor(val04 / 2.0 * 0x10000)
                 end
                 set_character_anim_with_accel(m, CHAR_ANIM_RUN_WITH_LIGHT_OBJ, val0C)
                 play_step_sound(m, 10, 49)
@@ -465,7 +463,7 @@ local function act_wario_hold_walking(m)
     return 0
 end
 
-function act_wario_hold_decelerating(m)
+local function act_wario_hold_decelerating(m)
     if m == nil then return false end
 
     local slopeClass = mario_get_floor_class(m)
@@ -518,7 +516,7 @@ function act_wario_hold_decelerating(m)
         adjust_sound_for_speed(m)
         set_mario_particle_flags(m, PARTICLE_DUST, false)
     else
-        local val0C = math.floor(m.forwardVel * 0x10000)
+        local val0C = _floor(m.forwardVel * 0x10000)
         if val0C < 0x1000 then
             val0C = 0x1000
         end
@@ -534,7 +532,6 @@ end
 local function act_wario_hold_heavy_walking(m)
 
     if (m.input & INPUT_B_PRESSED) ~= 0 then
-        print("1")
         return set_mario_action(m, ACT_HEAVY_THROW, 0)
     end
 
@@ -547,12 +544,10 @@ local function act_wario_hold_heavy_walking(m)
     end
 
     if (m.input & INPUT_ZERO_MOVEMENT) ~= 0 then
-        print("3")
         return set_mario_action(m, ACT_HOLD_HEAVY_IDLE, 0)
     end
 
     if (m.input & INPUT_Z_PRESSED) ~= 0 then
-        print("4")
         return set_mario_action(m, ACT_WARIO_SWING_FLING_START, 0)
     end
 
@@ -562,7 +557,6 @@ local function act_wario_hold_heavy_walking(m)
 
     local step = perform_ground_step(m)
     if step == GROUND_STEP_LEFT_GROUND then 
-        print("5")
         drop_and_set_mario_action(m, ACT_FREEFALL, 0)
     elseif step == GROUND_STEP_HIT_WALL then
         if m.forwardVel > 10.0 then mario_set_forward_vel(m, 10.0) end
@@ -620,6 +614,7 @@ end
 
 ---@param m MarioState
 local function act_wario_hold_freefall(m)
+    local animation
     if (m.actionArg == 0) then
         animation = CHAR_ANIM_FALL_WITH_LIGHT_OBJ
     else
@@ -795,7 +790,6 @@ local function act_wario_swing_fling_held(m)
         wario_swing_fling_spin(m)
         sWarioSpinCount = sWarioSpinCount + 1
         if sWarioSpinCount % 5 == 0 and not is_skipped_behavior(o) then
-            --spawn_non_sync_object(id_bhvWarioCoins, sWarioCoinRand[math.random(1, 6)], m.marioObj.oPosX +(random_float() * 20), m.marioObj.oPosY + 100, m.marioObj.oPosZ + (random_float() * 20), nil)
             spawn_non_sync_object(id_bhvWarioCoins, E_MODEL_GREEN_COIN, m.marioObj.oPosX +(random_float() * 20), m.marioObj.oPosY + 100, m.marioObj.oPosZ + (random_float() * 20), nil)
         end
         set_mario_particle_flags(m, PARTICLE_SPARKLES, 0)
@@ -1007,7 +1001,6 @@ local sMoveAngle = 0
 local function scuttle_physics(m)
     if sScuttleTimer <= 20 then
         m.vel.y = 2 - (sScuttleTimer * 0.8)
-        print(m.vel.y)
     end
     sScuttleTimer = sScuttleTimer + 1
     if (m.input & INPUT_NONZERO_ANALOG) ~= 0 then
@@ -1176,7 +1169,7 @@ local function act_yoshi_ride_walk(m)
     end
 
     if (m.input & INPUT_A_PRESSED) ~= 0 then return set_mario_action(m, ACT_YOSHI_RIDE_JUMP, 0) end
-    if math.abs(m.forwardVel) <= 1 then return set_mario_action(m, ACT_YOSHI_RIDE_IDLE, 0) end
+    if _abs(m.forwardVel) <= 1 then return set_mario_action(m, ACT_YOSHI_RIDE_IDLE, 0) end
     if (m.input & INPUT_NONZERO_ANALOG) ~= 0 and m.forwardVel <= 5 then mario_set_forward_vel(m, 5) end
     yoshi_dismount(m)
 end
@@ -1184,7 +1177,7 @@ end
 local function act_yoshi_ride_jump(m)
     if m.actionTimer == 0 then 
         play_character_sound(m, CHAR_SOUND_YAH_WAH_HOO) 
-        m.vel.y = math.max(math.min(80.0, 15.0 + math.abs(m.vel.y)), 40.0)
+        m.vel.y = _max(_min(80.0, 15.0 + _abs(m.vel.y)), 40.0)
     end
     update_air_without_turn(m)
     if perform_air_step(m, 0) == AIR_STEP_LANDED then
@@ -1256,13 +1249,12 @@ local function wario_before_actions(m, incomingAct)
     if (incomingAct == ACT_HOLD_WALKING) then return ACT_WARIO_HOLD_WALKING end
     if (incomingAct == ACT_HOLD_HEAVY_IDLE) then return ACT_WARIO_HOLD_HEAVY_IDLE end
     if (incomingAct == ACT_HOLD_HEAVY_WALKING) then return ACT_WARIO_HOLD_HEAVY_WALKING end
-    --print('ANIM ID ' .. m.marioObj.header.gfx.animInfo.animID)
 end
 
 ---@param m MarioState
 local function wario_update(m)
     if (m.action == ACT_WALKING) and m.forwardVel >= 29 and m.floor ~= nil then
-            set_mario_particle_flags(m, PARTICLE_DUST, 0)
+        set_mario_particle_flags(m, PARTICLE_DUST, 0)
     end
 end
 
@@ -1395,7 +1387,7 @@ local function tongue_find_target(m)
         if isEnemy then
             
             local dx, dy, dz = o.oPosX - m.marioObj.oPosX, o.oPosY - m.marioObj.oPosY, o.oPosZ - m.marioObj.oPosZ
-            local dist = math.sqrt(dx*dx + dy*dy + dz*dz)
+            local dist = _sqrt(dx*dx + dy*dy + dz*dz)
             if dist <= bestDist then
                 bestDist, bestObj = dist, o
                 break

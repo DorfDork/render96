@@ -208,41 +208,41 @@ function wario_head_spawner()
         end
     end
     if levelNum == LEVEL_INNER_WORKINGS then 
-        audioStream = INNER_WORKINGS_SONG
-        audio_stream_set_loop_points(audioStream, 15102, 1204316)
-        audio_stream_set_looping(audioStream, true)
-        audio_stream_play(audioStream, true, 0.7)
+        sAudioStream = INNER_WORKINGS_SONG
+        audio_stream_set_loop_points(sAudioStream, 15102, 1204316)
+        audio_stream_set_looping(sAudioStream, true)
+        audio_stream_play(sAudioStream, true, 0.7)
     end
 end
 
-local gWasGameOver = false
+local sWasGameOver = false
 local m = gMarioStates[0]
 
 function quality_of_life()
     local levelNum = gNetworkPlayers[0].currLevelNum
         if levelNum ~= LEVEL_INNER_WORKINGS then
-        if audioStream ~= nil then
-            audio_stream_set_looping(audioStream, false)
-            audio_stream_stop(audioStream)
-            audioStream = nil
+        if sAudioStream ~= nil then
+            audio_stream_set_looping(sAudioStream, false)
+            audio_stream_stop(sAudioStream)
+            sAudioStream = nil
         end
     end
 
     local isGameOver = get_delayed_warp_op() == WARP_OP_GAME_OVER
     if isGameOver then
-        if not gWasGameOver then
+        if not sWasGameOver then
             m.marioObj.oTimer = 0
         end
 
         if m.marioObj.oTimer >= 47 then
-            gWasGameOver = false
+            sWasGameOver = false
             m.numLives = 4
             m.health = 0x880
             warp_special(SPECIAL_WARP_GODDARD_GAMEOVER)
             return
         end
     end
-    gWasGameOver = isGameOver
+    sWasGameOver = isGameOver
     --print("X: " .. gMarioStates[0].marioObj.oPosX .. " Y: " .. gMarioStates[0].marioObj.oPosY .. " Z: " .. gMarioStates[0].marioObj.oPosZ)
     --if gNumLuigiKeys ~= 8 and gMarioStates[0].character.type == CT_LUIGI then _G.charSelect.character_set_current_number(CT_MARIO, 1) end
     --if gNumWarioCoins ~= 6 and gMarioStates[0].character.type == CT_WARIO then _G.charSelect.character_set_current_number(CT_MARIO, 1) end

@@ -90,7 +90,7 @@ LEVEL_INNER_WORKINGS = level_register("level_inner_workings_entry", COURSE_NONE,
 -- Anims
 CHAR_ANIM_MILK_RUNNING = 'mario_milk_run'
 CHAR_ANIM_RUNNING_FAST = 'tanooki_fast'
-sWarioGrabLightAnims = {
+gWarioGrabLightAnims = {
     [CHAR_ANIM_WALK_WITH_LIGHT_OBJ]                  = 'dorf_grab_light_run_loop_16',
     [CHAR_ANIM_RUN_WITH_LIGHT_OBJ]                   = 'dorf_grab_light_run_loop_16',
     [CHAR_ANIM_SLOW_WALK_WITH_LIGHT_OBJ]             = 'dorf_grab_light_run_loop_16',
@@ -109,7 +109,7 @@ sWarioGrabLightAnims = {
     [CHAR_ANIM_STOP_SLIDE_LIGHT_OBJ]                 = 'dorf_grab_light_bellyflop_stand_8B',
 }
 
-sMarioFaceDefaultIdle = {
+gMarioFaceDefaultIdle = {
     [ACT_IDLE] = true,
     [ACT_HOLD_IDLE] = true,
     [ACT_HOLD_HEAVY_IDLE] = true,
@@ -124,7 +124,7 @@ sMarioFaceDefaultIdle = {
     [ACT_DOUBLE_JUMP_LAND_STOP] = true,
 }
 
-sMarioFaceDefaultOther = {
+gMarioFaceDefaultOther = {
     [ACT_DOUBLE_JUMP] = true,
     [ACT_TRIPLE_JUMP] = true,
     [ACT_DEATH_EXIT] = true,
@@ -137,7 +137,7 @@ sMarioFaceDefaultOther = {
     [ACT_START_SLEEPING] = true,
 }
 
-sMarioFaceHappy = {
+gMarioFaceHappy = {
     [ACT_JUMP] = true,
     [ACT_TRIPLE_JUMP_LAND] = true,
     [ACT_TRIPLE_JUMP_LAND_STOP] = true,
@@ -145,7 +145,7 @@ sMarioFaceHappy = {
     [ACT_BACKFLIP_LAND_STOP] = true,
 }
 
-sMarioFaceOpen = {
+gMarioFaceOpen = {
     [ACT_BURNING_GROUND] = true,
     [ACT_BURNING_JUMP] = true,
     [ACT_BURNING_FALL] = true,
@@ -153,7 +153,7 @@ sMarioFaceOpen = {
     [ACT_LAVA_BOOST_LAND] = true,
 }
 
-sMarioEyeBlinkable = {
+gMarioEyeBlinkable = {
     [ACT_IDLE] = true,
     [ACT_HOLD_IDLE] = true,
     [ACT_HOLD_HEAVY_IDLE] = true,
@@ -165,13 +165,13 @@ sMarioEyeBlinkable = {
     [ACT_END_WAVING_CUTSCENE] = true,
 }
 
-sMarioEyeOpenWalking = {
+gMarioEyeOpenWalking = {
     [ACT_WALKING] = true,
     [ACT_HOLD_WALKING] = true,
     [ACT_HOLD_HEAVY_WALKING] = true,
 }
 
-sMarioEyeHappy = {
+gMarioEyeHappy = {
     [ACT_JUMP] = true,
     [ACT_DOUBLE_JUMP] = true,
     [ACT_TRIPLE_JUMP] = true,
@@ -181,7 +181,7 @@ sMarioEyeHappy = {
     [ACT_BACKFLIP_LAND_STOP] = true,
 }
 
-sMarioEyeDead = {
+gMarioEyeDead = {
     [ACT_BURNING_GROUND] = true,
     [ACT_BURNING_JUMP] = true,
     [ACT_BURNING_FALL] = true,
@@ -201,7 +201,7 @@ LIP_A = 1
 LIP_E = 2
 LIP_O = 3
 
-sPeachCutsceneDialog1 = {
+gPeachCutsceneDialog1 = {
     [181] = LIP_O,
     [231] = LIP_CLOSED,
     [234] = LIP_A,
@@ -237,7 +237,7 @@ sPeachCutsceneDialog1 = {
     [365] = LIP_CLOSED,
 }
 
-sPeachCutsceneDialog2 = {
+gPeachCutsceneDialog2 = {
     [27] = LIP_A,
     [30] = LIP_CLOSED,
     [31] = LIP_A,
@@ -286,7 +286,7 @@ sPeachCutsceneDialog2 = {
     [191] = LIP_CLOSED,
 }
 
-sPeachCutsceneDialog3 = {
+gPeachCutsceneDialog3 = {
     [0] = LIP_A,
     [3] = LIP_E,
     [5] = LIP_A,
@@ -328,17 +328,16 @@ sPeachCutsceneDialog3 = {
     [169] = LIP_CLOSED,
 }
 
-
 MARIO_LIP_CLOSED = 0
 MARIO_LIP_A = 3
 MARIO_LIP_E = 6
 MARIO_LIP_O = 5
 
-sMarioLipSwitchEndingKiss = {
+gMarioLipSwitchEndingKiss = {
     [76] = MARIO_LIP_O,
 }
 
-sMarioLipSwitchEndingHereWeGo = {
+gMarioLipSwitchEndingHereWeGo = {
     [0] =   MARIO_LIP_CLOSED,
     [100] = MARIO_LIP_E,
     [104] = MARIO_LIP_A,
@@ -379,7 +378,6 @@ EVENT_THROWN        = audio_stream_load("event_thrown.ogg")
 COLLECTABLE         = audio_stream_load("event_collectible_grab.mp3")
 INNER_WORKINGS_SONG = audio_stream_load("level_fourth_floor.mp3")
 
-
 -- oAction states
 GOOMBA_ACT_STUN = 3
 GOOMBA_ACT_GRAB = 4
@@ -392,23 +390,6 @@ MR_I_IDLE = 0
 MR_I_ATTACK = 1
 MR_I_DIZZY = 2
 MR_I_DEAD = 3
-
--- Eye states
-GOOMBA_EYE_OPEN = 0
-GOOMBA_EYE_CLOSE = 1
-GOOMBA_EYE_DAZED = 2
-MR_I_OPEN = 0
-MR_I_ALMOST_OPEN = 1
-MR_I_HALF_OPEN = 2
-MR_I_ALMOST_CLOSED = 3
-MR_I_CLOSED = 4
-
--- Face states
-GOOMBA_FACE_CLOSE = 0
-GOOMBA_FACE_OPEN = 1
-TWHOMP_FACE_BASE = 0
-TWHOMP_FACE_ANGRY = 1
-TWHOMP_FACE_URGH = 2
 
 -- Anim states
 BLARGG_ANIM_SWIM = 0
