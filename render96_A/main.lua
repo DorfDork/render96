@@ -269,6 +269,43 @@ function quality_of_life()
     if m.action == ACT_JUMBO_STAR_CUTSCENE and m.actionArg == 2 then --JUMBO_STAR_CUTSCENE_FLYING
         m.marioBodyState.handState = MARIO_HAND_OPEN;
     end
+
+    if levelNum == LEVEL_SL then
+        local bully = obj_get_nearest_object_with_behavior_id(gMarioStates[0].marioObj, id_bhvSmallBully)
+        while bully ~= nil and obj_get_model_id_extended(bully) ~= E_MODEL_CHILL_BULLY do
+            obj_set_model_extended(bully, E_MODEL_CHILL_BULLY)
+            bully.oPosX = math.random(167, 315)
+            bully.oPosY = 1331
+            bully.oPosZ =  math.random(-4852,-4314)
+            bully.oHomeX =  bully.oPosX
+            bully.oHomeY =  bully.oPosY
+            bully.oHomeZ =  bully.oPosZ
+            bully.oGravity = 8
+            bully = obj_get_next_with_same_behavior_id(bully)
+        end
+        local chillyChief = obj_get_nearest_object_with_behavior_id(gMarioStates[0].marioObj, id_bhvBigChillBully)
+        local bigBully = obj_get_nearest_object_with_behavior_id(gMarioStates[0].marioObj, id_bhvBigBullyWithMinions)
+        if chillyChief ~= nil and bigBully ~= nil and bigBully.oBullySubtype == 16 then
+            obj_mark_for_deletion(chillyChief)
+            bigBully.oBullySubtype = 17
+        end
+        if bigBully ~= nil and bigBully.oBullySubtype == 17 then
+            if bigBully.oBullyKBTimerAndMinionKOCounter == 3 then
+                obj_mark_for_deletion(bigBully)
+                chillyChief = spawn_non_sync_object(id_bhvBigChillBully, E_MODEL_BIG_CHILL_BULLY, -1273, 1980, 6759, function(o) 
+                    o.oBehParams = 0x01000000 o.oBullySubtype = BULLY_STYPE_CHILL
+                    o.oColorR = 1 play_puzzle_jingle() end)
+            end
+        end
+        if chillyChief ~= nil and chillyChief.oTimer == 5 and chillyChief.oColorR == 1 then
+            chillyChief.oColorR = 0
+            chillyChief.oPosX = 315
+            chillyChief.oPosY = 3000
+            chillyChief.oPosZ = -4852
+            chillyChief.oHomeX = 315 chillyChief.oHomeY = 1352 chillyChief.oHomeZ = -4852
+            chillyChief.oAction = 2
+        end
+    end
     --print("X: " .. gMarioStates[0].marioObj.oPosX .. " Y: " .. gMarioStates[0].marioObj.oPosY .. " Z: " .. gMarioStates[0].marioObj.oPosZ)
 end
 hook_event(HOOK_MARIO_UPDATE, quality_of_life)
