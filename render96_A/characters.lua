@@ -1326,6 +1326,7 @@ end
 ---@param m MarioState
 local function waluigi_update(m)
     if (m.action == ACT_JUMP or m.action == ACT_DOUBLE_JUMP or m.action == ACT_TRIPLE_JUMP) and m.actionTimer > 1 and m.controller.buttonPressed & A_BUTTON ~= 0 then
+        m.faceAngle.y = m.intendedYaw
         set_mario_action(m, ACT_WALUIGI_AIR_SWIM, 0)
         m.vel.y = 35
     end
