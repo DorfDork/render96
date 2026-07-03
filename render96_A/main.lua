@@ -199,6 +199,14 @@ hook_chat_command("hud", "[0|1]", function(msg)
     return false
 end)
 
+local sBullyNum = 1
+
+local sBullySpawns = {
+    {x = 125, y = 1331, z = -4100},
+    {x = 600, y = 1331, z = -4485},
+    {x = 200, y = 1331, z = -4900},
+}
+
 local function entity_cleanup()
     local mrI = obj_get_nearest_object_with_behavior_id(gMarioStates[0].marioObj, id_bhvMrI)
     if mrI ~= nil then
@@ -236,6 +244,7 @@ function wario_head_spawner()
         audio_stream_set_looping(sAudioStream, true)
         audio_stream_play(sAudioStream, true, 0.7)
     end
+    sBullyNum = 1
 end
 
 local sWasGameOver = false
@@ -275,14 +284,15 @@ function quality_of_life()
         local bully = obj_get_nearest_object_with_behavior_id(gMarioStates[0].marioObj, id_bhvSmallBully)
         while bully ~= nil and obj_get_model_id_extended(bully) ~= E_MODEL_CHILL_BULLY do
             obj_set_model_extended(bully, E_MODEL_CHILL_BULLY)
-            bully.oPosX = math.random(167, 315)
-            bully.oPosY = 1331
-            bully.oPosZ =  math.random(-4852,-4314)
+            bully.oPosX = sBullySpawns[sBullyNum].x
+            bully.oPosY = sBullySpawns[sBullyNum].y
+            bully.oPosZ = sBullySpawns[sBullyNum].z
             bully.oHomeX =  bully.oPosX
             bully.oHomeY =  bully.oPosY
             bully.oHomeZ =  bully.oPosZ
             bully.oGravity = 8
             bully = obj_get_next_with_same_behavior_id(bully)
+            sBullyNum = sBullyNum + 1
         end
         local chillyChief = obj_get_nearest_object_with_behavior_id(gMarioStates[0].marioObj, id_bhvBigChillBully)
         local bigBully = obj_get_nearest_object_with_behavior_id(gMarioStates[0].marioObj, id_bhvBigBullyWithMinions)
