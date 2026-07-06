@@ -1,6 +1,6 @@
 local o2oint = require("lib/o2oint")
 local r96lib = require("/lib/r96lib")
-local UvScroll = require("/lib/uv-scroll")
+--local UvScroll = require("/lib/uv-scroll")
 require("constants")
 
 local _floor  = math.floor
@@ -105,7 +105,6 @@ define_custom_obj_fields({
     oCelebrationStar       = 'f32',
     oYoshiIdleTimer        = "f32",
     oYoshiCustomBlinkTimer = "s32",
-    oWallAngle             = "f32",
     oWallX                 = "f32",
     oWallY                 = "f32",
     oWallZ                 = "f32",
@@ -214,17 +213,10 @@ local function bowser_state(o, ...)
     return false
 end]]
 
-local function apply_color(mat, o)
-    local function parse_dl(cmd, op)
-        if op == G_SETPRIMCOLOR then
-            gfx_set_command(cmd, "gsDPSetPrimColor(0, 0, %i, %i, %i, 255)", o.oColorR, o.oColorG, o.oColorB)
-        end
-    end
-    gfx_parse(mat, parse_dl)
-end
 
 local function bowser_eyelid_common(node)
     local o = geo_get_current_object()
+    if o == nil then return end
     local rotN = cast_graph_node(node.next) ---@type GraphNodeRotation
     if o.oAction == 4 then
         rotN.rotation.x = 0
@@ -259,12 +251,16 @@ local function bowser_eye_common(node, yawMin, yawMax, pitchMin, pitchMax)
 end
 
 local function bowser_hand_switch(node)
-    cast_graph_node(node).selectedCase = (geo_get_current_object().oAction == 15) and 1 or 0
+    local o = geo_get_current_object()
+    if o == nil then return end
+    cast_graph_node(node).selectedCase = (o.oAction == 15) and 1 or 0
 end
 
 local function wing_rotate(o) return (coss((o.oTimer & 0xF) << 12) + 1.0) * 4096.0 end
 
 function geo_function_bobomb_angry(node, matStackIndex)
+    local o = geo_get_current_object()
+    if o == nil then return end
     r96lib.gfx_color_patch(node, {
         prefix    = "bobomb_angry",
         origDl    = "black_bobomb_body_mesh_layer_1_mat_override_bobomb_blue2_0",
@@ -273,52 +269,40 @@ function geo_function_bobomb_angry(node, matStackIndex)
     })
 end
 
+local sBowserColorMeshes = {
+    "bowser_spine_mesh_layer_1",
+    "bowser_head_mesh_layer_1",
+    "bowser_left_foot_mesh_layer_1",
+    "bowser_jaw_mesh_layer_1",
+    "bowser_right_eye_mesh_layer_1",
+    "bowser_shell_mesh_layer_1",
+}
+
 function geo_function_bowser_color(node, matStackIndex)
+    local o = geo_get_current_object()
+    if o == nil then return end
+
     local levelNum = gNetworkPlayers[0].currLevelNum
     if levelNum == LEVEL_BOWSER_3 then
-        local o = geo_get_current_object()
-        if o == nil then return end
-
         local t = o.oMrIDizzyTimer
         o.oColorR = _floor((_sin(t * 0.05)         * 0.5 + 0.5) * 100)
         o.oColorG = _floor((_sin(t * 0.05 + 2.094) * 0.5 + 0.5) * 100)
         o.oColorB = _floor((_sin(t * 0.05 + 4.189) * 0.5 + 0.5) * 100)
-
-        local gfx = gfx_get_from_name("bowser_spine_mesh_layer_1")
-        apply_color(gfx, o)
-        gfx = gfx_get_from_name("bowser_head_mesh_layer_1")
-        apply_color(gfx, o)
-        gfx = gfx_get_from_name("bowser_left_foot_mesh_layer_1")
-        apply_color(gfx, o)
-        gfx = gfx_get_from_name("bowser_jaw_mesh_layer_1")
-        apply_color(gfx, o)
-        gfx = gfx_get_from_name("bowser_right_eye_mesh_layer_1")
-        apply_color(gfx, o)
-        gfx = gfx_get_from_name("bowser_shell_mesh_layer_1")
-        apply_color(gfx, o)
 
         o.oMrIDizzyTimer = o.oMrIDizzyTimer + 1
         if (o.oMrIDizzyTimer > 0xFFFF) then
             o.oMrIDizzyTimer = 0
         end
     else
-        local o = geo_get_current_object()
-        if o == nil then return end
         o.oColorR = 0
         o.oColorG = 0
         o.oColorB = 0
-        local gfx = gfx_get_from_name("bowser_spine_mesh_layer_1")
-        apply_color(gfx, o)
-        gfx = gfx_get_from_name("bowser_head_mesh_layer_1")
-        apply_color(gfx, o)
-        gfx = gfx_get_from_name("bowser_left_foot_mesh_layer_1")
-        apply_color(gfx, o)
-        gfx = gfx_get_from_name("bowser_jaw_mesh_layer_1")
-        apply_color(gfx, o)
-        gfx = gfx_get_from_name("bowser_right_eye_mesh_layer_1")
-        apply_color(gfx, o)
-        gfx = gfx_get_from_name("bowser_shell_mesh_layer_1")
-        apply_color(gfx, o)
+    end
+
+    for i = 1, #sBowserColorMeshes do
+        r96lib.gfx_color_patch_by_name(node, {
+            origDl = sBowserColorMeshes[i]
+        })
     end
 end
 
@@ -332,6 +316,7 @@ function geo_function_bowser_right_hand(node, matStackIndex) bowser_hand_switch(
 
 function geo_function_chuckya_spin(node, matStackIndex)
     local o = geo_get_current_object()
+    if o == nil then return end
     local rotN = cast_graph_node(node.next) ---@type GraphNodeRotation
     local rot = (o.oTimer * 0x2000) & 0xFFFF
     rotN.rotation.x = rot
@@ -339,6 +324,7 @@ end
 
 function geo_function_disable_billboard(node, matStackIndex)
     local o = geo_get_current_object()
+    if o == nil then return end
     o.header.gfx.node.flags = o.header.gfx.node.flags & ~GRAPH_RENDER_BILLBOARD
 end
 
@@ -380,16 +366,16 @@ function geo_function_eyerok(node, matStackIndex)
 end
 
 function geo_function_kingbob_pulse(node, matStackIndex)
-    r96lib.gfx_color_patch(node, {
-        prefix    = "kingbob",
-        origDl    = "king_bobomb_004_offset_mesh_layer_1",
-        origMat   = "mat_king_bobomb_king_bobomb_body",
-        primIndex = 8,
+   local o = geo_get_current_object()
+   if o == nil then return end
+    r96lib.gfx_color_patch_by_name(node, {
+        origDl = "king_bobomb_004_offset_mesh_layer_1"
     })
 end
 
 function geo_function_scuttle_body(node, matStackIndex)
     local o = geo_get_current_object()
+    if o == nil then return end
     local rotN = cast_graph_node(node.next) ---@type GraphNodeRotation
     local rot = (o.oTimer * 0x200) & 0xFFFF
     rotN.rotation.x = rot
@@ -407,7 +393,9 @@ function geo_function_scuttle_body_color(node, matStackIndex)
 end
 
 function geo_function_wiggler_rotate(node, matStackIndex)
-    local id = geo_get_current_object()._pointer
+    local o = geo_get_current_object()
+    if o == nil then return end
+    local id = o._pointer
     cast_graph_node(node.next).rotation.x = (((id >> 11) % 4) + 1) * 0x1500
     cast_graph_node(node.next).rotation.y = (((id >> 11) % 4) + 1) * 0x1500
     cast_graph_node(node.next).rotation.z = (((id >> 11) % 4) + 1) * 0x1500
@@ -415,17 +403,21 @@ end
 
 function geo_function_wing1_rotate(node, matStackIndex)
     local o = geo_get_current_object()
+    if o == nil then return end
     local rotN = cast_graph_node(node.next) ---@type GraphNodeRotation
     rotN.rotation.x = wing_rotate(o)
 end
  
 function geo_function_wing2_rotate(node, matStackIndex)
     local o = geo_get_current_object()
+    if o == nil then return end
     local rotN = cast_graph_node(node.next) ---@type GraphNodeRotation
     rotN.rotation.x = -(wing_rotate(o))
 end
  
 function geo_switch_held_obj(node, matStackIndex)
+    local o = geo_get_current_object()
+    if o == nil then return end
     cast_graph_node(node).selectedCase = geo_get_current_object().oSwitchState1
     if gWarioGrabLightAnims[m.marioObj.header.gfx.animInfo.animID] then
         smlua_anim_util_set_animation(m.marioObj, gWarioGrabLightAnims[m.marioObj.header.gfx.animInfo.animID])
@@ -435,7 +427,11 @@ function geo_switch_held_obj(node, matStackIndex)
     end
 end
  
-function geo_switch_kug(node, matStackIndex) cast_graph_node(node).selectedCase = (geo_get_current_object().oTimer // 4) % 4 end
+function geo_switch_kug(node, matStackIndex)
+    local o = geo_get_current_object()
+    if o == nil then return end
+    cast_graph_node(node).selectedCase = (geo_get_current_object().oTimer // 4) % 4
+end
  
 function geo_switch_mario_eye_custom(node, matStackIndex)
     local switchCase = cast_graph_node(node) ---@type GraphNodeSwitchCase
@@ -597,6 +593,8 @@ function geo_switch_mario_face(node, matStackIndex)
 end
  
 function geo_switch_peach_left_hand(node, matStackIndex)
+    local o = geo_get_current_object()
+    if o == nil then return end
     if m.actionArg == 3 or m.actionArg == 4 or m.actionArg == 5 then -- END_PEACH_CUTSCENE_SPAWN_PEACH END_PEACH_CUTSCENE_DESCEND_PEACH END_PEACH_CUTSCENE_RUN_TO_PEACH
         cast_graph_node(node).selectedCase = 1
     end
@@ -620,6 +618,8 @@ function geo_switch_peach_left_hand(node, matStackIndex)
 end
  
 function geo_switch_peach_lip(node, matStackIndex)
+    local o = geo_get_current_object()
+    if o == nil then return end
     if m.actionArg == 6 then -- END_PEACH_CUTSCENE_DIALOG_1
         local lip_sync = gPeachCutsceneDialog1[m.actionTimer]
         if lip_sync then cast_graph_node(node).selectedCase = lip_sync end
@@ -635,6 +635,8 @@ function geo_switch_peach_lip(node, matStackIndex)
 end
  
 function geo_switch_peach_right_hand(node, matStackIndex)
+    local o = geo_get_current_object()
+    if o == nil then return end
     if m.actionArg == 3 or m.actionArg == 4 or m.actionArg == 5 then -- END_PEACH_CUTSCENE_SPAWN_PEACH END_PEACH_CUTSCENE_DESCEND_PEACH END_PEACH_CUTSCENE_RUN_TO_PEACH
         cast_graph_node(node).selectedCase = 1
     end
@@ -659,6 +661,7 @@ end
  
 function geo_switch_spindle(node, matStackIndex)
     local o = geo_get_current_object()
+    if o == nil then return end
     local switchCase = 0
     if (_abs(o.oMoveAnglePitch & 0x7fff) < 8000.0 and o.oAngleVelPitch ~= 0) then
         switchCase = 0
@@ -670,6 +673,7 @@ end
 
 function geo_switch_wiggler_color(node, matStackIndex)
     local o = obj_get_nearest_object_with_behavior_id(gMarioStates[0].marioObj, id_bhvWigglerHead)
+    if o == nil then return end
     local switch = cast_graph_node(node)
     if o.oHealth == 4 then switch.selectedCase = 0 end
     if o.oHealth == 4 and o.oAction == WIGGLER_ACT_JUMPED_ON then switch.selectedCase = 1 end
@@ -681,73 +685,73 @@ end
 function geo_switch_state_1(node, matStackIndex) cast_graph_node(node).selectedCase = geo_get_current_object().oSwitchState1 return end
 function geo_switch_state_2(node, matStackIndex) cast_graph_node(node).selectedCase = geo_get_current_object().oSwitchState2 return end
 
-local function uv_scroll_right(input_vtx, original_uv, current_uv)
-    local speed = 10
-    current_uv[1] = current_uv[1] + speed
-end
-
--- Scroll the uvs in a circular motion
-local function uv_scroll_spin(input_vtx, original_uv, current_uv)
-    local speed    = 0.5
-    local center_u = 500 -- center of rotation in UV space
-    local center_v = 500
-    local offset_u = 0   -- post-rotation translation (right/left)
-    local offset_v = 0   -- post-rotation translation (up/down)
-
-    -- offset from chosen center
-    local rel_u = original_uv[1] - center_u
-    local rel_v = original_uv[2] - center_v
-
-    -- equation for circular motion
-    local t          = get_global_timer() * speed
-    local orig_theta = _atan2(rel_v, rel_u)
-    local orig_dist  = _sqrt(rel_u * rel_u + rel_v * rel_v)
-
-    current_uv[1] = center_u + orig_dist * _cos(orig_theta + t) + offset_u
-    current_uv[2] = center_v + orig_dist * _sin(orig_theta + t) + offset_v
-end
-
--- Scroll the uvs in a circular motion
-local function uv_scroll_spin_slow(input_vtx, original_uv, current_uv)
-    -- adjustable constants
-    local speed = 0.01
-
-    -- equation for circular motion
-    local t = get_global_timer() * speed
-    local orig_theta = _atan2(original_uv[2], original_uv[1])
-    local orig_dist = _sqrt((original_uv[1])*(original_uv[1]) + (original_uv[2])*(original_uv[2]))
-    current_uv[1] = orig_dist * _cos(orig_theta + t)
-    current_uv[2] = orig_dist * _sin(orig_theta + t)
-end
-
-UvScroll.hook_scrolling_function('star_particle_001_displaylist_mesh_layer_5_tri_1', uv_scroll_right)
-
-UvScroll.hook_scrolling_function('kug_body_mesh_layer_1_tri_0', uv_scroll_spin_slow)
-UvScroll.hook_scrolling_function('kug_foot_L_mesh_layer_1_tri_0', uv_scroll_spin_slow)
-UvScroll.hook_scrolling_function('kug_foot_R_mesh_layer_1_tri_0', uv_scroll_spin_slow)
-
-UvScroll.hook_scrolling_function('kug_switchopt1_body_mesh_layer_1_tri_0', uv_scroll_spin_slow)
-UvScroll.hook_scrolling_function('kug_switchopt1_foot_L_mesh_layer_1_tri_0', uv_scroll_spin_slow)
-UvScroll.hook_scrolling_function('kug_switchopt1_foot_R_mesh_layer_1_tri_0', uv_scroll_spin_slow)
-
-UvScroll.hook_scrolling_function('kug_switchopt2_body_mesh_layer_1_tri_0', uv_scroll_spin_slow)
-UvScroll.hook_scrolling_function('kug_switchopt2_foot_L_mesh_layer_1_tri_0', uv_scroll_spin_slow)
-UvScroll.hook_scrolling_function('kug_switchopt2_foot_R_mesh_layer_1_tri_0', uv_scroll_spin_slow)
-
-UvScroll.hook_scrolling_function('kug_switchopt3_body_mesh_layer_1_tri_0', uv_scroll_spin_slow)
-UvScroll.hook_scrolling_function('kug_switchopt3_foot_L_mesh_layer_1_tri_0', uv_scroll_spin_slow)
-UvScroll.hook_scrolling_function('kug_switchopt3_foot_R_mesh_layer_1_tri_0', uv_scroll_spin_slow)
-
-UvScroll.hook_scrolling_function('kug_mouth_mesh_layer_1_tri_2', uv_scroll_spin_slow)
-UvScroll.hook_scrolling_function('kug_switchopt1_mouth_mesh_layer_1_tri_2', uv_scroll_spin_slow)
-UvScroll.hook_scrolling_function('kug_switchopt2_mouth_mesh_layer_1_tri_2', uv_scroll_spin_slow)
-UvScroll.hook_scrolling_function('kug_switchopt3_mouth_mesh_layer_1_tri_2', uv_scroll_spin_slow)
-
-UvScroll.hook_scrolling_function('goomba_eyes_dazed_switch_eyes_dazed_mesh_layer_1_tri_1', uv_scroll_spin)
-UvScroll.hook_scrolling_function('goomba_underground_eyes_dazed_switch_eyes_dazed_mesh_layer_1_tri_1', uv_scroll_spin)
-UvScroll.hook_scrolling_function('goomba_boxart_eyes_dazed_switch_eyes_dazed_mesh_layer_1_tri_2', uv_scroll_spin)
-UvScroll.hook_scrolling_function('kug_eyes_dazed_switch_eyes_dazed_mesh_layer_1_tri_2', uv_scroll_spin)
-UvScroll.hook_scrolling_function('wiggler_head_switch_opt1_000_displaylist5_mesh_layer_1_tri_3', uv_scroll_spin)
+--local function uv_scroll_right(input_vtx, original_uv, current_uv)
+--    local speed = 10
+--    current_uv[1] = current_uv[1] + speed
+--end
+--
+---- Scroll the uvs in a circular motion
+--local function uv_scroll_spin(input_vtx, original_uv, current_uv)
+--    local speed    = 0.5
+--    local center_u = 500 -- center of rotation in UV space
+--    local center_v = 500
+--    local offset_u = 0   -- post-rotation translation (right/left)
+--    local offset_v = 0   -- post-rotation translation (up/down)
+--
+--    -- offset from chosen center
+--    local rel_u = original_uv[1] - center_u
+--    local rel_v = original_uv[2] - center_v
+--
+--    -- equation for circular motion
+--    local t          = get_global_timer() * speed
+--    local orig_theta = _atan2(rel_v, rel_u)
+--    local orig_dist  = _sqrt(rel_u * rel_u + rel_v * rel_v)
+--
+--    current_uv[1] = center_u + orig_dist * _cos(orig_theta + t) + offset_u
+--    current_uv[2] = center_v + orig_dist * _sin(orig_theta + t) + offset_v
+--end
+--
+---- Scroll the uvs in a circular motion
+--local function uv_scroll_spin_slow(input_vtx, original_uv, current_uv)
+--    -- adjustable constants
+--    local speed = 0.01
+--
+--    -- equation for circular motion
+--    local t = get_global_timer() * speed
+--    local orig_theta = _atan2(original_uv[2], original_uv[1])
+--    local orig_dist = _sqrt((original_uv[1])*(original_uv[1]) + (original_uv[2])*(original_uv[2]))
+--    current_uv[1] = orig_dist * _cos(orig_theta + t)
+--    current_uv[2] = orig_dist * _sin(orig_theta + t)
+--end
+--
+--UvScroll.hook_scrolling_function('star_particle_001_displaylist_mesh_layer_5_tri_1', uv_scroll_right)
+--
+--UvScroll.hook_scrolling_function('kug_body_mesh_layer_1_tri_0', uv_scroll_spin_slow)
+--UvScroll.hook_scrolling_function('kug_foot_L_mesh_layer_1_tri_0', uv_scroll_spin_slow)
+--UvScroll.hook_scrolling_function('kug_foot_R_mesh_layer_1_tri_0', uv_scroll_spin_slow)
+--
+--UvScroll.hook_scrolling_function('kug_switchopt1_body_mesh_layer_1_tri_0', uv_scroll_spin_slow)
+--UvScroll.hook_scrolling_function('kug_switchopt1_foot_L_mesh_layer_1_tri_0', uv_scroll_spin_slow)
+--UvScroll.hook_scrolling_function('kug_switchopt1_foot_R_mesh_layer_1_tri_0', uv_scroll_spin_slow)
+--
+--UvScroll.hook_scrolling_function('kug_switchopt2_body_mesh_layer_1_tri_0', uv_scroll_spin_slow)
+--UvScroll.hook_scrolling_function('kug_switchopt2_foot_L_mesh_layer_1_tri_0', uv_scroll_spin_slow)
+--UvScroll.hook_scrolling_function('kug_switchopt2_foot_R_mesh_layer_1_tri_0', uv_scroll_spin_slow)
+--
+--UvScroll.hook_scrolling_function('kug_switchopt3_body_mesh_layer_1_tri_0', uv_scroll_spin_slow)
+--UvScroll.hook_scrolling_function('kug_switchopt3_foot_L_mesh_layer_1_tri_0', uv_scroll_spin_slow)
+--UvScroll.hook_scrolling_function('kug_switchopt3_foot_R_mesh_layer_1_tri_0', uv_scroll_spin_slow)
+--
+--UvScroll.hook_scrolling_function('kug_mouth_mesh_layer_1_tri_2', uv_scroll_spin_slow)
+--UvScroll.hook_scrolling_function('kug_switchopt1_mouth_mesh_layer_1_tri_2', uv_scroll_spin_slow)
+--UvScroll.hook_scrolling_function('kug_switchopt2_mouth_mesh_layer_1_tri_2', uv_scroll_spin_slow)
+--UvScroll.hook_scrolling_function('kug_switchopt3_mouth_mesh_layer_1_tri_2', uv_scroll_spin_slow)
+--
+--UvScroll.hook_scrolling_function('goomba_eyes_dazed_switch_eyes_dazed_mesh_layer_1_tri_1', uv_scroll_spin)
+--UvScroll.hook_scrolling_function('goomba_underground_eyes_dazed_switch_eyes_dazed_mesh_layer_1_tri_1', uv_scroll_spin)
+--UvScroll.hook_scrolling_function('goomba_boxart_eyes_dazed_switch_eyes_dazed_mesh_layer_1_tri_2', uv_scroll_spin)
+--UvScroll.hook_scrolling_function('kug_eyes_dazed_switch_eyes_dazed_mesh_layer_1_tri_2', uv_scroll_spin)
+--UvScroll.hook_scrolling_function('wiggler_head_switch_opt1_000_displaylist5_mesh_layer_1_tri_3', uv_scroll_spin)
 
 local function squish_on_action_enter(o, triggerAction, x, y, z)
     local prev = o.oThwompPrevAction or o.oAction
@@ -1147,9 +1151,13 @@ end
 id_bhvRender96BowlingBall = hook_render96_behavior(id_bhvBowlingBall, false, nil, bhv_bowling_ball)
 
 ---@param o Object
+local function bhv_bowser_render96_init(o)
+    cur_obj_scale(1.1)
+end
+
+---@param o Object
 local function bhv_bowser_render96_loop(o)
-    --r96lib.pulse_cycle(o, COLORS_BOBOMB, 50)
-        obj_set_model_extended(o, E_MODEL_BOWSER)
+    obj_set_model_extended(o, E_MODEL_BOWSER)
     o.oSwitchTimer1 = o.oSwitchTimer1 + 1
 end
 
@@ -2183,9 +2191,19 @@ end
 id_bhvRender96TowerDoor = hook_render96_behavior(id_bhvTowerDoor, false, nil, bhv_tower_door_render96_loop)
 
 ---@param o Object
-local function bhv_tree_render96_loop(o)
+local function bhv_tree_render96_init(o)
+    o.oFlags = OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE
+    o.hitboxHeight = 500
+    o.hitboxRadius = 80
+    o.oInteractType = INTERACT_POLE
+    o.oIntangibleTimer = 0
     o.header.gfx.node.flags = o.header.gfx.node.flags & ~GRAPH_RENDER_BILLBOARD
     o.header.gfx.node.flags = o.header.gfx.node.flags & ~GRAPH_RENDER_CYLBOARD
+end
+
+---@param o Object
+local function bhv_tree_render96_loop(o)
+    bhv_pole_base_loop()
     local model = obj_get_model_id_extended(o)
     if o.oTimer < 2 then
         if model ~= E_MODEL_COURTYARD_SPIKY_TREE or E_MODEL_PALM_TREE then
@@ -2194,7 +2212,7 @@ local function bhv_tree_render96_loop(o)
     end
 end
 
-id_bhvRender96Tree = hook_render96_behavior(id_bhvTree, false, nil, bhv_tree_render96_loop, OBJ_LIST_POLELIKE)
+id_bhvRender96Tree = hook_render96_behavior(id_bhvTree, true, bhv_tree_render96_init, bhv_tree_render96_loop, OBJ_LIST_POLELIKE)
 
 ---@param o Object
 local function bhv_tuxie_mother_render96_loop(o)

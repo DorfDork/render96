@@ -281,12 +281,14 @@ local function on_level_init()
 end
 
 local sModelOverrides = {}
+local sOverridesByBhv = nil
 
 function r96lib.addModelOverride(bhv, model)
     table.insert(sModelOverrides, {
         bhv   = bhv,
         model = model,
     })
+    sOverridesByBhv = nil
 end
 
 function r96lib.addModelParamOverride(bhv, param, model)
@@ -295,6 +297,7 @@ function r96lib.addModelParamOverride(bhv, param, model)
         model = model,
         param = param,
     })
+    sOverridesByBhv = nil
 end
 
 function r96lib.addModelLevelOverride(bhv, model, model2, level, area, acts)
@@ -317,45 +320,68 @@ function r96lib.addModelLevelOverride(bhv, model, model2, level, area, acts)
         area    = area,
         actMask = actMask,
     })
+    sOverridesByBhv = nil
+end
+
+local function rebuildOverrideIndex()
+    sOverridesByBhv = {}
+    for _, entry in ipairs(sModelOverrides) do
+        local list = sOverridesByBhv[entry.bhv]
+        if not list then
+            list = {}
+            sOverridesByBhv[entry.bhv] = list
+        end
+        table.insert(list, entry)
+    end
+end
+
+local function applyEntriesToObject(o, entries, level, area, actNum)
+    local curModel = obj_get_model_id_extended(o)
+
+    for i = 1, #entries do
+        local entry = entries[i]
+
+        if entry.level then
+            -- addModelLevelOverride
+            if entry.level == level and entry.area == area
+            and act_matches(entry.actMask, actNum)
+            and curModel == entry.model2 then
+                obj_set_model_extended(o, entry.model)
+                return
+            end
+        elseif entry.param then
+            -- addModelParamOverride
+            if entry.param == o.oBehParams and curModel ~= entry.model then
+                obj_set_model_extended(o, entry.model)
+                return
+            end
+        else
+            -- addModelOverride
+            if curModel ~= entry.model then
+                obj_set_model_extended(o, entry.model)
+                return
+            end
+        end
+    end
 end
 
 local function update()
     -- Also update audio teehee
     update_obj_audio()
 
+    if not sOverridesByBhv then
+        rebuildOverrideIndex()
+    end
+
     local level  = networkPlayers[0].currLevelNum
     local area   = networkPlayers[0].currAreaIndex
     local actNum = networkPlayers[0].currActNum
 
-    for _, entry in ipairs(sModelOverrides) do
-        if entry.level then
-            -- addModelLevelOverride
-            if entry.level == level and entry.area == area
-            and act_matches(entry.actMask, actNum) then
-                local o = obj_get_first_with_behavior_id(entry.bhv)
-                while o ~= nil do
-                    if obj_get_model_id_extended(o) == entry.model2 then
-                        obj_set_model_extended(o, entry.model)
-                    end
-                    o = obj_get_next_with_same_behavior_id(o)
-                end
-            end
-        elseif entry.param then
-            -- addModelParamOverride
-            local o = obj_get_first_with_behavior_id(entry.bhv)
-            while o ~= nil do
-                if entry.param == o.oBehParams then
-                    obj_set_model_extended(o, entry.model)
-                end
-                o = obj_get_next_with_same_behavior_id(o)
-            end
-        else
-            -- addModelOverride
-            local o = obj_get_first_with_behavior_id(entry.bhv)
-            while o ~= nil do
-                obj_set_model_extended(o, entry.model)
-                o = obj_get_next_with_same_behavior_id(o)
-            end
+    for bhv, entries in pairs(sOverridesByBhv) do
+        local o = obj_get_first_with_behavior_id(bhv)
+        while o ~= nil do
+            applyEntriesToObject(o, entries, level, area, actNum)
+            o = obj_get_next_with_same_behavior_id(o)
         end
     end
 end
@@ -468,16 +494,12 @@ local sGfxColorPatches = {}
 function r96lib.gfx_color_patch(node, opts)
     local o = geo_get_current_object()
     if o == nil then return end
-
     local prefix    = opts.prefix
     local origMat   = opts.origMat
     local primIndex = opts.primIndex
-
     sGfxColorPatches[prefix] = true
-
     local id       = tostring(o._pointer)
     local mat_name = prefix .. "_mat_" .. id
-
     local gfx_mat = gfx_get_from_name(mat_name)
     if gfx_mat == nil then
         local orig = gfx_get_from_name(origMat)
@@ -485,7 +507,6 @@ function r96lib.gfx_color_patch(node, opts)
         local len = gfx_get_length(orig)
         gfx_mat = gfx_create(mat_name, len)
         gfx_copy(gfx_mat, orig, len)
-
         --print("original: " .. origMat)
         --for i = 0, len - 1 do
         --    local cmd = gfx_get_command(orig, i)
@@ -497,18 +518,49 @@ function r96lib.gfx_color_patch(node, opts)
         --    print(i, "op:", gfx_get_op(cmd), string.format("w0:0x%08X w1:0x%08X", cmd.w0, cmd.w1))
         --end
     end
-
     local cmd_prim = gfx_get_command(gfx_mat, primIndex)
-    gfx_set_command(cmd_prim, "gsDPSetPrimColor(0, 0, %i, %i, %i, 255)",
-        o.oColorR, o.oColorG, o.oColorB)
-
+    gfx_set_command(cmd_prim, "gsDPSetPrimColor(0, 0, %i, %i, %i, 255)", o.oColorR, o.oColorG, o.oColorB)
     local matdisplayList = cast_graph_node(node.next) ---@type GraphNodeDisplayList
     if matdisplayList == nil or matdisplayList.displayList == nil then return end
     local cmd_display_list = gfx_get_command(matdisplayList.displayList, 0)
     gfx_set_command(cmd_display_list, "gsSPDisplayList(%g)", gfx_mat)
 end
 
--- Internal: free all cloned GFX resources for a single object when it unloads.
+local sGfxColorPatchesCache = {}
+
+---@param node GraphNode
+---@param opts table
+function r96lib.gfx_color_patch_by_name(node, opts)
+    local o = geo_get_current_object()
+    if o == nil then return end
+    local r, g, b = o.oColorR, o.oColorG, o.oColorB
+    local origDl = opts.origDl
+    local cache = sGfxColorPatchesCache[origDl]
+    if cache == nil then
+        local gfx = gfx_get_from_name(origDl)
+        if gfx == nil then return end
+        local cmds = {}
+        local function parse_dl(cmd, op)
+            if op == G_SETPRIMCOLOR then
+                cmds[#cmds + 1] = cmd
+            end
+        end
+        gfx_parse(gfx, parse_dl)
+        for i = 1, #cmds do
+            gfx_set_command(cmds[i], "gsDPSetPrimColor(0, 0, %i, %i, %i, 255)", r, g, b)
+        end
+        sGfxColorPatchesCache[origDl] = { cmds = cmds, r = r, g = g, b = b }
+        return
+    end
+    if cache.r == r and cache.g == g and cache.b == b then return end
+    local cmds = cache.cmds
+    for i = 1, #cmds do
+        gfx_set_command(cmds[i], "gsDPSetPrimColor(0, 0, %i, %i, %i, 255)", r, g, b)
+    end
+    cache.r, cache.g, cache.b = r, g, b
+end
+
+---@param o Object
 local function on_object_unload(o)
     local id = tostring(o._pointer)
     for prefix, _ in pairs(sGfxColorPatches) do
