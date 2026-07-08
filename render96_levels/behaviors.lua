@@ -72,7 +72,7 @@ local function uv_scroll_spin_slow(input_vtx, original_uv, current_uv)
     current_uv[2] = orig_dist * _sin(orig_theta + t)
 end
 
-UvScroll.hook_scrolling_function('bowser_2_dl_bowser_2_environment_mesh_layer_1_tri_3', uv_scroll_right_slow)
+--UvScroll.hook_scrolling_function('bowser_2_dl_bowser_2_environment_mesh_layer_1_tri_3', uv_scroll_right_slow)
 
 ---@param o Object
 local function bhv_tilting_bowser_lava_platform_init(o)
