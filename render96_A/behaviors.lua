@@ -2080,6 +2080,7 @@ id_bhvRender96StarParticle = hook_render96_behavior(nil, false, bhv_star_particl
 
 ---@param o Object
 local function bhv_thwomp_render96_init(o)
+    network_init_object(o, false, {'oHealth'})
     o.oSwitchState2 = 0
     o.oThwompShakeTicks = 18
     o.oThwompPosMag = 25.0
@@ -2093,6 +2094,7 @@ local function bhv_thwomp_render96_init(o)
     end
     o.oThwompBaseScale = o.header.gfx.scale.x
     o.collisionData = smlua_collision_util_get("thwomp_collision")
+    o.oNumLootCoins = 5
     o.oHomeX = o.oPosX
     o.oHomeY = o.oPosY
     o.oHomeZ = o.oPosZ
@@ -2120,28 +2122,27 @@ end
 ---@param o Object
 local function bhv_thwomp_render96_loop(o)
     bhv_thwomp_render96_shake(o)
-    if o.oAction == 0 then o.oSwitchState2 = 0 end
-    if o.oAction == 2 then o.oSwitchState2 = 2 end
-    if o.oAction == 3 then o.oSwitchState2 = 1 
+    if o.oAction == 0 then o.oSwitchState2 = 0
+    elseif o.oAction == 1 then
+        local remaining = o.oThwompRandomTimer - o.oTimer
+        o.oSwitchState2 = (remaining > (o.oThwompShakeTicks + 0.5) or remaining < 0) and 0 or 1
+    elseif o.oAction == 2 then o.oSwitchState2 = 2
+    elseif o.oAction == 3 then o.oSwitchState2 = 1
         o.oPosX = o.oHomeX
         o.oPosY = o.oHomeY
         o.oPosZ = o.oHomeZ
     end
 
-   local remaining = o.oThwompRandomTimer - o.oTimer
-    if remaining > (o.oThwompShakeTicks + 0.5) or remaining < 0 then
-         if o.oAction == 1 then o.oSwitchState2 = 0 end
-    else
-        if o.oAction == 1 then o.oSwitchState2 = 1 end
-    end
-    
     squish_on_action_enter(o, 3, 0.15, -0.20, 0.15)
 
-    if wario_charge_hit(o, 350) then
+    if o.oHealth == 0 then
         cur_obj_play_sound_2(SOUND_OBJ_THWOMP)
-        spawn_sync_object(id_bhvBlueCoinJumping, E_MODEL_BLUE_COIN, o.oPosX, o.oPosY, o.oPosZ, nil)
         create_sound_spawner(SOUND_OBJ_STOMPED)
+        cur_obj_spawn_loot_blue_coin()
         wario_charge_kill_common(o)
+    elseif wario_charge_hit(o, 350) then
+        o.oHealth = 0
+        network_send_object(o, true)
     end
 end
 
