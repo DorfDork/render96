@@ -1,0 +1,15 @@
+const struct Animation *const peach_anims[] = {
+	&peach_anim_anim_0500C638,
+	&peach_anim_anim_0500E6B4,
+	&peach_anim_peach_anim_0,
+	&peach_anim_peach_anim_1,
+	&peach_anim_peach_anim_2,
+	&peach_anim_peach_anim_3,
+	&peach_anim_peach_anim_4,
+	&peach_anim_peach_anim_5,
+	&peach_anim_peach_anim_6,
+	&peach_anim_peach_anim_7,
+	&peach_anim_peach_anim_8,
+	&peach_anim_peach_anim_9,
+	NULL,
+};

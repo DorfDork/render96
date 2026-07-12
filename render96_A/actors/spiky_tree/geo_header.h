@@ -1,0 +1,13 @@
+extern const GeoLayout spiky_tree_geo[];
+extern Lights1 spiky_tree_tree_pine_green_lights;
+extern Lights1 spiky_tree_tree_pine_trunk_lights;
+extern u8 spiky_tree_tree_noise_rgba32[];
+extern Vtx spiky_tree_000_displaylist_mesh_layer_1_vtx_0[6587];
+extern Gfx spiky_tree_000_displaylist_mesh_layer_1_tri_0[];
+extern Vtx spiky_tree_000_displaylist_mesh_layer_1_vtx_1[192];
+extern Gfx spiky_tree_000_displaylist_mesh_layer_1_tri_1[];
+extern Gfx mat_spiky_tree_tree_pine_green[];
+extern Gfx mat_revert_spiky_tree_tree_pine_green[];
+extern Gfx mat_spiky_tree_tree_pine_trunk[];
+extern Gfx mat_revert_spiky_tree_tree_pine_trunk[];
+extern Gfx spiky_tree_000_displaylist_mesh_layer_1[];

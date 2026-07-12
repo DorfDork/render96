@@ -1,0 +1,16 @@
+const GeoLayout exclamation_box_point_hd_geo[] = {
+	GEO_NODE_START(),
+	GEO_OPEN_NODE(),
+		GEO_CULLING_RADIUS(255201),
+		GEO_OPEN_NODE(),
+			GEO_SCALE(LAYER_OPAQUE, 65536),
+			GEO_OPEN_NODE(),
+				GEO_SCALE(LAYER_OPAQUE, 16384),
+				GEO_OPEN_NODE(),
+					GEO_DISPLAY_LIST(LAYER_OPAQUE, exclamation_box_point_hd_000_displaylist_mesh_layer_1),
+				GEO_CLOSE_NODE(),
+			GEO_CLOSE_NODE(),
+		GEO_CLOSE_NODE(),
+	GEO_CLOSE_NODE(),
+	GEO_END(),
+};

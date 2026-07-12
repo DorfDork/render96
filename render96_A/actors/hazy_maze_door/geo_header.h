@@ -1,0 +1,14 @@
+extern const GeoLayout hazy_maze_door_geo[];
+extern Lights1 hazy_maze_door_door_castle_knob_lights;
+extern Lights1 hazy_maze_door_sand_door_lights;
+extern u8 hazy_maze_door_shine_shiny_rgba32[];
+extern u8 hazy_maze_door_sand_door_sand_rgba32[];
+extern Vtx hazy_maze_door_000_offset_mesh_layer_1_vtx_0[294];
+extern Gfx hazy_maze_door_000_offset_mesh_layer_1_tri_0[];
+extern Vtx hazy_maze_door_000_offset_mesh_layer_1_vtx_1[2065];
+extern Gfx hazy_maze_door_000_offset_mesh_layer_1_tri_1[];
+extern Gfx mat_hazy_maze_door_door_castle_knob[];
+extern Gfx mat_revert_hazy_maze_door_door_castle_knob[];
+extern Gfx mat_hazy_maze_door_sand_door[];
+extern Gfx mat_revert_hazy_maze_door_sand_door[];
+extern Gfx hazy_maze_door_000_offset_mesh_layer_1[];

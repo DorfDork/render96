@@ -1,0 +1,14 @@
+extern const GeoLayout ccm_snowman_body_geo[];
+extern Lights1 ccm_snowman_body_snowman_body_lights;
+extern u8 ccm_snowman_body_snowman_snow_rgba32[];
+extern u8 ccm_snowman_body_shine_dull_transparent_rgba32[];
+extern Vtx ccm_snowman_body_000_displaylist_mesh_layer_1_vtx_0[115];
+extern Gfx ccm_snowman_body_000_displaylist_mesh_layer_1_tri_0[];
+extern Vtx ccm_snowman_body_000_displaylist_mesh_layer_5_vtx_0[115];
+extern Gfx ccm_snowman_body_000_displaylist_mesh_layer_5_tri_0[];
+extern Gfx mat_ccm_snowman_body_snowman_body[];
+extern Gfx mat_revert_ccm_snowman_body_snowman_body[];
+extern Gfx mat_ccm_snowman_body_snowman_body_shine[];
+extern Gfx mat_revert_ccm_snowman_body_snowman_body_shine[];
+extern Gfx ccm_snowman_body_000_displaylist_mesh_layer_1[];
+extern Gfx ccm_snowman_body_000_displaylist_mesh_layer_5[];

@@ -1,0 +1,16 @@
+const struct Animation *const ukiki_anims[] = {
+	&ukiki_anim_run_0,
+	&ukiki_anim_run_0,
+	&ukiki_anim_run_0,
+	&ukiki_anim_run_0,
+	&ukiki_anim_jump_land_4,
+	&ukiki_anim_jump_start_5,
+	&ukiki_anim_run_0,
+	&ukiki_anim_excited_jump_start_7,
+	&ukiki_anim_excited_jump_end_8,
+	&ukiki_anim_idle_itchy_9,
+	&ukiki_anim_idle_handstand_10,
+	&ukiki_anim_walk_11,
+	&ukiki_anim_idle_held_12,
+	NULL,
+};

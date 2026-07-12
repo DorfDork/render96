@@ -1,0 +1,14 @@
+extern const GeoLayout pokey_body_part_boxart_geo[];
+extern Lights1 pokey_body_part_boxart_boxart_pokey_body_lights;
+extern Lights1 pokey_body_part_boxart_boxart_pokey_spikes_lights;
+extern u8 pokey_body_part_boxart_shine_dull_rgba32[];
+extern Vtx pokey_body_part_boxart_000_displaylist_mesh_layer_4_vtx_0[184];
+extern Gfx pokey_body_part_boxart_000_displaylist_mesh_layer_4_tri_0[];
+extern Vtx pokey_body_part_boxart_000_displaylist_mesh_layer_1_vtx_0[218];
+extern Gfx pokey_body_part_boxart_000_displaylist_mesh_layer_1_tri_0[];
+extern Gfx mat_pokey_body_part_boxart_boxart_pokey_body[];
+extern Gfx mat_revert_pokey_body_part_boxart_boxart_pokey_body[];
+extern Gfx mat_pokey_body_part_boxart_boxart_pokey_spikes[];
+extern Gfx mat_revert_pokey_body_part_boxart_boxart_pokey_spikes[];
+extern Gfx pokey_body_part_boxart_000_displaylist_mesh_layer_4[];
+extern Gfx pokey_body_part_boxart_000_displaylist_mesh_layer_1[];

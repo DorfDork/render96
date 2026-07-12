@@ -1,0 +1,46 @@
+const GeoLayout cap_switch_001_switch_opt1[] = {
+	GEO_NODE_START(),
+	GEO_OPEN_NODE(),
+		GEO_DISPLAY_LIST(LAYER_OPAQUE, cap_switch_000_displaylist_001_mesh_layer_1_mat_override_cap_switch_green_0),
+	GEO_CLOSE_NODE(),
+	GEO_RETURN(),
+};
+const GeoLayout cap_switch_001_switch_opt2[] = {
+	GEO_NODE_START(),
+	GEO_OPEN_NODE(),
+		GEO_DISPLAY_LIST(LAYER_OPAQUE, cap_switch_000_displaylist_001_mesh_layer_1_mat_override_cap_switch_blue_1),
+	GEO_CLOSE_NODE(),
+	GEO_RETURN(),
+};
+const GeoLayout cap_switch_001_switch_opt3[] = {
+	GEO_NODE_START(),
+	GEO_OPEN_NODE(),
+		GEO_DISPLAY_LIST(LAYER_OPAQUE, cap_switch_000_displaylist_001_mesh_layer_1_mat_override_cap_switch_green_0),
+	GEO_CLOSE_NODE(),
+	GEO_RETURN(),
+};
+const GeoLayout cap_switch_geo[] = {
+	GEO_NODE_START(),
+	GEO_OPEN_NODE(),
+		GEO_CULLING_RADIUS(2041632),
+		GEO_OPEN_NODE(),
+			GEO_SCALE(LAYER_TRANSPARENT_DECAL, 16384),
+			GEO_OPEN_NODE(),
+				GEO_SCALE(LAYER_TRANSPARENT_DECAL, 16384),
+				GEO_OPEN_NODE(),
+					GEO_SWITCH_CASE(4, geo_switch_anim_state),
+					GEO_OPEN_NODE(),
+						GEO_NODE_START(),
+						GEO_OPEN_NODE(),
+							GEO_DISPLAY_LIST(LAYER_OPAQUE, cap_switch_000_displaylist_001_mesh_layer_1),
+						GEO_CLOSE_NODE(),
+						GEO_BRANCH(1, cap_switch_001_switch_opt1),
+						GEO_BRANCH(1, cap_switch_001_switch_opt2),
+						GEO_BRANCH(1, cap_switch_001_switch_opt3),
+					GEO_CLOSE_NODE(),
+				GEO_CLOSE_NODE(),
+			GEO_CLOSE_NODE(),
+		GEO_CLOSE_NODE(),
+	GEO_CLOSE_NODE(),
+	GEO_END(),
+};

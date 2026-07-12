@@ -1,0 +1,16 @@
+const GeoLayout star_particle_transparent_geo[] = {
+	GEO_NODE_START(),
+	GEO_OPEN_NODE(),
+		GEO_SCALE(LAYER_FORCE, 16384),
+		GEO_OPEN_NODE(),
+			GEO_ANIMATED_PART(LAYER_OPAQUE, 0, 0, 0, NULL),
+			GEO_OPEN_NODE(),
+				GEO_ANIMATED_PART(LAYER_FORCE, 0, 0, 0, NULL),
+				GEO_OPEN_NODE(),
+					GEO_ANIMATED_PART(LAYER_TRANSPARENT, 0, 0, 0, star_particle_transparent_001_displaylist_mesh_layer_5),
+				GEO_CLOSE_NODE(),
+			GEO_CLOSE_NODE(),
+		GEO_CLOSE_NODE(),
+	GEO_CLOSE_NODE(),
+	GEO_END(),
+};

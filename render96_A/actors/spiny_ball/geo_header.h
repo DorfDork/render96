@@ -1,0 +1,18 @@
+extern const GeoLayout spiny_ball_geo[];
+extern Lights1 spiny_ball_spiny_white_lights;
+extern Lights1 spiny_ball_spiny_horn_lights;
+extern Lights1 spiny_ball_spiny_red_lights;
+extern u8 spiny_ball_shine_dull_rgba32[];
+extern Vtx spiny_ball_root_mesh_layer_1_vtx_0[896];
+extern Gfx spiny_ball_root_mesh_layer_1_tri_0[];
+extern Vtx spiny_ball_root_mesh_layer_1_vtx_1[382];
+extern Gfx spiny_ball_root_mesh_layer_1_tri_1[];
+extern Vtx spiny_ball_root_mesh_layer_1_vtx_2[764];
+extern Gfx spiny_ball_root_mesh_layer_1_tri_2[];
+extern Gfx mat_spiny_ball_spiny_white[];
+extern Gfx mat_revert_spiny_ball_spiny_white[];
+extern Gfx mat_spiny_ball_spiny_horn[];
+extern Gfx mat_revert_spiny_ball_spiny_horn[];
+extern Gfx mat_spiny_ball_spiny_red[];
+extern Gfx mat_revert_spiny_ball_spiny_red[];
+extern Gfx spiny_ball_root_mesh_layer_1[];

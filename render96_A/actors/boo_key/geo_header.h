@@ -1,0 +1,13 @@
+extern const GeoLayout boo_key_geo[];
+extern Lights1 boo_key_boo_key_gold_lights;
+extern Lights1 boo_key_boo_key_green_lights;
+extern u8 boo_key_crown_rgba32[];
+extern Vtx boo_key_000_displaylist_mesh_layer_1_vtx_0[410];
+extern Gfx boo_key_000_displaylist_mesh_layer_1_tri_0[];
+extern Vtx boo_key_000_displaylist_mesh_layer_1_vtx_1[200];
+extern Gfx boo_key_000_displaylist_mesh_layer_1_tri_1[];
+extern Gfx mat_boo_key_boo_key_gold[];
+extern Gfx mat_revert_boo_key_boo_key_gold[];
+extern Gfx mat_boo_key_boo_key_green[];
+extern Gfx mat_revert_boo_key_boo_key_green[];
+extern Gfx boo_key_000_displaylist_mesh_layer_1[];

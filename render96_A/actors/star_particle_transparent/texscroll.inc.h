@@ -1,0 +1,2 @@
+extern void scroll_star_particle_transparent_001_displaylist_mesh_layer_5_vtx_1();
+extern void scroll_geo_star_particle_transparent();

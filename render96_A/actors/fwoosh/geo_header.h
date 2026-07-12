@@ -1,0 +1,13 @@
+extern const GeoLayout fwoosh_geo[];
+extern Lights1 fwoosh_fwoosh_white_lights;
+extern Lights1 fwoosh_fwoosh_black_lights;
+extern u8 fwoosh_shine_dull_rgba32[];
+extern Vtx fwoosh_000_displaylist_mesh_layer_1_vtx_0[820];
+extern Gfx fwoosh_000_displaylist_mesh_layer_1_tri_0[];
+extern Vtx fwoosh_000_displaylist_mesh_layer_1_vtx_1[306];
+extern Gfx fwoosh_000_displaylist_mesh_layer_1_tri_1[];
+extern Gfx mat_fwoosh_fwoosh_white[];
+extern Gfx mat_revert_fwoosh_fwoosh_white[];
+extern Gfx mat_fwoosh_fwoosh_black[];
+extern Gfx mat_revert_fwoosh_fwoosh_black[];
+extern Gfx fwoosh_000_displaylist_mesh_layer_1[];

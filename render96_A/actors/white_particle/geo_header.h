@@ -1,0 +1,14 @@
+extern const GeoLayout white_particle_geo[];
+extern Lights1 white_particle_snowman_body_lights;
+extern u8 white_particle_snowman_snow_rgba32[];
+extern u8 white_particle_shine_dull_transparent_rgba32[];
+extern Vtx white_particle_000_displaylist_mesh_layer_1_vtx_0[115];
+extern Gfx white_particle_000_displaylist_mesh_layer_1_tri_0[];
+extern Vtx white_particle_000_displaylist_mesh_layer_5_vtx_0[115];
+extern Gfx white_particle_000_displaylist_mesh_layer_5_tri_0[];
+extern Gfx mat_white_particle_snowman_body[];
+extern Gfx mat_revert_white_particle_snowman_body[];
+extern Gfx mat_white_particle_snowman_body_shine[];
+extern Gfx mat_revert_white_particle_snowman_body_shine[];
+extern Gfx white_particle_000_displaylist_mesh_layer_1[];
+extern Gfx white_particle_000_displaylist_mesh_layer_5[];

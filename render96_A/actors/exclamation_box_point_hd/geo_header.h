@@ -1,0 +1,8 @@
+extern const GeoLayout exclamation_box_point_hd_geo[];
+extern Lights1 exclamation_box_point_hd_box_white_lights;
+extern u8 exclamation_box_point_hd_shine_dull_rgba32[];
+extern Vtx exclamation_box_point_hd_000_displaylist_mesh_layer_1_vtx_0[597];
+extern Gfx exclamation_box_point_hd_000_displaylist_mesh_layer_1_tri_0[];
+extern Gfx mat_exclamation_box_point_hd_box_white[];
+extern Gfx mat_revert_exclamation_box_point_hd_box_white[];
+extern Gfx exclamation_box_point_hd_000_displaylist_mesh_layer_1[];

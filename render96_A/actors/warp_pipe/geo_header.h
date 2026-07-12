@@ -1,0 +1,13 @@
+extern const GeoLayout warp_pipe_geo[];
+extern Lights1 warp_pipe_warp_pipe_green_lights;
+extern Lights1 warp_pipe_warp_pipe_black_lights;
+extern u8 warp_pipe_shine_shiny_rgba32[];
+extern Vtx warp_pipe_001_displaylist_mesh_layer_1_vtx_0[198];
+extern Gfx warp_pipe_001_displaylist_mesh_layer_1_tri_0[];
+extern Vtx warp_pipe_001_displaylist_mesh_layer_1_vtx_1[17];
+extern Gfx warp_pipe_001_displaylist_mesh_layer_1_tri_1[];
+extern Gfx mat_warp_pipe_warp_pipe_green[];
+extern Gfx mat_revert_warp_pipe_warp_pipe_green[];
+extern Gfx mat_warp_pipe_warp_pipe_black[];
+extern Gfx mat_revert_warp_pipe_warp_pipe_black[];
+extern Gfx warp_pipe_001_displaylist_mesh_layer_1[];

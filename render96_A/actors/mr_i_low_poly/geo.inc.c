@@ -1,0 +1,58 @@
+const GeoLayout mr_i_low_poly_almost_open_001[] = {
+	GEO_NODE_START(),
+	GEO_OPEN_NODE(),
+		GEO_DISPLAY_LIST(LAYER_ALPHA, mr_i_low_poly_000_switch_almost_open_mesh_layer_4),
+		GEO_DISPLAY_LIST(LAYER_OPAQUE, mr_i_low_poly_000_switch_almost_open_mesh_layer_1),
+	GEO_CLOSE_NODE(),
+	GEO_RETURN(),
+};
+const GeoLayout mr_i_low_poly_half_open_001[] = {
+	GEO_NODE_START(),
+	GEO_OPEN_NODE(),
+		GEO_DISPLAY_LIST(LAYER_ALPHA, mr_i_low_poly_000_switch_half_open_mesh_layer_4),
+		GEO_DISPLAY_LIST(LAYER_OPAQUE, mr_i_low_poly_000_switch_half_open_mesh_layer_1),
+	GEO_CLOSE_NODE(),
+	GEO_RETURN(),
+};
+const GeoLayout mr_i_low_poly_almost_closed_001[] = {
+	GEO_NODE_START(),
+	GEO_OPEN_NODE(),
+		GEO_DISPLAY_LIST(LAYER_ALPHA, mr_i_low_poly_000_switch_almost_closed_mesh_layer_4),
+		GEO_DISPLAY_LIST(LAYER_OPAQUE, mr_i_low_poly_000_switch_almost_closed_mesh_layer_1),
+	GEO_CLOSE_NODE(),
+	GEO_RETURN(),
+};
+const GeoLayout mr_i_low_poly_closed_001[] = {
+	GEO_NODE_START(),
+	GEO_OPEN_NODE(),
+		GEO_DISPLAY_LIST(LAYER_ALPHA, mr_i_low_poly_000_switch_closed_mesh_layer_4),
+	GEO_CLOSE_NODE(),
+	GEO_RETURN(),
+};
+const GeoLayout mr_i_low_poly_geo[] = {
+	GEO_NODE_START(),
+	GEO_OPEN_NODE(),
+		GEO_RENDER_RANGE(5000, 32000),
+		GEO_OPEN_NODE(),
+			GEO_NODE_START(),
+			GEO_OPEN_NODE(),
+				GEO_SCALE(LAYER_ALPHA, 6554),
+				GEO_OPEN_NODE(),
+					GEO_SWITCH_CASE(4, geo_switch_state_2),
+					GEO_OPEN_NODE(),
+						GEO_NODE_START(),
+						GEO_OPEN_NODE(),
+							GEO_DISPLAY_LIST(LAYER_ALPHA, mr_i_low_poly_000_displaylist_mesh_layer_4),
+							GEO_DISPLAY_LIST(LAYER_OPAQUE, mr_i_low_poly_000_displaylist_mesh_layer_1),
+						GEO_CLOSE_NODE(),
+						GEO_BRANCH(1, mr_i_low_poly_almost_open_001),
+						GEO_BRANCH(1, mr_i_low_poly_half_open_001),
+						GEO_BRANCH(1, mr_i_low_poly_almost_closed_001),
+						GEO_BRANCH(1, mr_i_low_poly_closed_001),
+					GEO_CLOSE_NODE(),
+				GEO_CLOSE_NODE(),
+			GEO_CLOSE_NODE(),
+		GEO_CLOSE_NODE(),
+	GEO_CLOSE_NODE(),
+	GEO_END(),
+};

@@ -1,0 +1,17 @@
+const GeoLayout snow_tree_geo[] = {
+	GEO_NODE_START(),
+	GEO_OPEN_NODE(),
+		GEO_RENDER_RANGE(-2048, 6000),
+		GEO_OPEN_NODE(),
+			GEO_CULLING_RADIUS(170136),
+			GEO_OPEN_NODE(),
+				GEO_DISPLAY_LIST(LAYER_OPAQUE, snow_tree_000_displaylist_mesh_layer_1),
+			GEO_CLOSE_NODE(),
+		GEO_CLOSE_NODE(),
+		GEO_RENDER_RANGE(6000, 32000),
+		GEO_OPEN_NODE(),
+			GEO_BRANCH(1, snow_tree_low_poly_geo),
+		GEO_CLOSE_NODE(),
+	GEO_CLOSE_NODE(),
+	GEO_END(),
+};

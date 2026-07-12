@@ -1,0 +1,14 @@
+extern const GeoLayout cannon_base_geo[];
+extern Lights1 cannon_base_cannon_base_lights;
+extern Lights1 cannon_base_cannon_base_question_lights;
+extern u8 cannon_base_shine_shiny_rgba32[];
+extern u8 cannon_base_shine_dull_rgba32[];
+extern Vtx cannon_base_000_displaylist_mesh_layer_1_vtx_0[735];
+extern Gfx cannon_base_000_displaylist_mesh_layer_1_tri_0[];
+extern Vtx cannon_base_000_displaylist_mesh_layer_1_vtx_1[8];
+extern Gfx cannon_base_000_displaylist_mesh_layer_1_tri_1[];
+extern Gfx mat_cannon_base_cannon_base[];
+extern Gfx mat_revert_cannon_base_cannon_base[];
+extern Gfx mat_cannon_base_cannon_base_question[];
+extern Gfx mat_revert_cannon_base_cannon_base_question[];
+extern Gfx cannon_base_000_displaylist_mesh_layer_1[];

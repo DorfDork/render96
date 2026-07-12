@@ -1,0 +1,14 @@
+extern const GeoLayout bowser_bomb_geo[];
+extern Lights1 bowser_bomb_bomb_blue_lights;
+extern Lights1 bowser_bomb_bomb_spike_lights;
+extern u8 bowser_bomb_bobomb_rgba32[];
+extern u8 bowser_bomb_crown_rgba32[];
+extern Vtx bowser_bomb_000_displaylist_mesh_layer_1_vtx_0[319];
+extern Gfx bowser_bomb_000_displaylist_mesh_layer_1_tri_0[];
+extern Vtx bowser_bomb_000_displaylist_mesh_layer_1_vtx_1[247];
+extern Gfx bowser_bomb_000_displaylist_mesh_layer_1_tri_1[];
+extern Gfx mat_bowser_bomb_bomb_blue[];
+extern Gfx mat_revert_bowser_bomb_bomb_blue[];
+extern Gfx mat_bowser_bomb_bomb_spike[];
+extern Gfx mat_revert_bowser_bomb_bomb_spike[];
+extern Gfx bowser_bomb_000_displaylist_mesh_layer_1[];

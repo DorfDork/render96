@@ -1,0 +1,14 @@
+extern const GeoLayout bookend_geo[];
+extern Lights1 bookend_bookend_mouth_lights;
+extern Lights1 bookend_bookend_cover_lights;
+extern u8 bookend_bookend_mouth_rgba32[];
+extern u8 bookend_bookend_cover_rgba32[];
+extern Vtx bookend_000_displaylist_mesh_layer_1_vtx_0[212];
+extern Gfx bookend_000_displaylist_mesh_layer_1_tri_0[];
+extern Vtx bookend_000_displaylist_mesh_layer_1_vtx_1[184];
+extern Gfx bookend_000_displaylist_mesh_layer_1_tri_1[];
+extern Gfx mat_bookend_bookend_mouth[];
+extern Gfx mat_revert_bookend_bookend_mouth[];
+extern Gfx mat_bookend_bookend_cover[];
+extern Gfx mat_revert_bookend_bookend_cover[];
+extern Gfx bookend_000_displaylist_mesh_layer_1[];

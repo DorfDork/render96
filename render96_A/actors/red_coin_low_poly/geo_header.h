@@ -1,0 +1,16 @@
+extern const GeoLayout red_coin_low_poly_geo[];
+extern Lights1 red_coin_low_poly_coin_red_side_lights;
+extern Lights1 red_coin_low_poly_f3dlite_material_001_lights;
+extern u8 red_coin_low_poly_coin_side_rgba32[];
+extern u8 red_coin_low_poly_red_coin_lod_ci8[];
+extern u8 red_coin_low_poly_red_coin_lod_pal_rgba16[];
+extern Vtx red_coin_low_poly_000_displaylist_mesh_layer_4_vtx_0[16];
+extern Gfx red_coin_low_poly_000_displaylist_mesh_layer_4_tri_0[];
+extern Vtx red_coin_low_poly_000_displaylist_mesh_layer_1_vtx_0[16];
+extern Gfx red_coin_low_poly_000_displaylist_mesh_layer_1_tri_0[];
+extern Gfx mat_red_coin_low_poly_coin_red_side[];
+extern Gfx mat_revert_red_coin_low_poly_coin_red_side[];
+extern Gfx mat_red_coin_low_poly_f3dlite_material_001[];
+extern Gfx mat_revert_red_coin_low_poly_f3dlite_material_001[];
+extern Gfx red_coin_low_poly_000_displaylist_mesh_layer_4[];
+extern Gfx red_coin_low_poly_000_displaylist_mesh_layer_1[];
