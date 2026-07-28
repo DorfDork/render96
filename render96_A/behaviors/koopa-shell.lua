@@ -204,7 +204,7 @@ end
 local KOOPA_SHELL_OPTS = {
 
 -- Mandatory fields
-    action = 2,
+    action = KOOPA_SHELL_ACT_GRAB,
     throw = bhv_koopa_shell_render96_throw,
     update_held = bhv_koopa_shell_render96_update_held,
     update_thrown = bhv_koopa_shell_render96_update_thrown,

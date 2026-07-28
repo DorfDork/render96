@@ -1,22 +1,75 @@
+local charSelect = require("/lib/char-select")
 local r96lib = require("/lib/r96lib")
+local o2oint = require("/lib/o2oint")
 require("/constants")
+
+local _max = math.max
 
 ------------------------
 -- Behavior functions --
 ------------------------
 
-local GOOMBA_OPTS = {
-    audio = EVENT_THROWN,
-    interactions = gThrownInteractions,
-    enemy = true
-}
+local GOOMBA_INTERACTIONS = o2oint.Interactions({
+    interactions = {
 
-local GOOMBA_DEATH_WARIO_ACTIONS = {
-    [ACT_WARIO_GROUND_POUND] = true,
-    [ACT_GROUND_POUND_LAND] = true,
-    [ACT_WARIO_PILE_DRIVER] = true,
-    [ACT_WARIO_PILE_DRIVER_LAND] = true,
-    [ACT_WARIO_CHARGE] = true,
+        -- Default behavior for most of the enemies -> attack enemy
+        {
+            objectLists = {
+                OBJ_LIST_GENACTOR, -- Common enemies
+                OBJ_LIST_PUSHABLE, -- Goombas, Koopas, Lakitus
+                OBJ_LIST_SURFACE, -- Boxes
+            },
+            targets = {
+                id_bhvBobomb,
+                obj_is_attackable,
+                obj_is_exclamation_box,
+            },
+            interact = function (interactor, interactee, context)
+                interactee.oInteractStatus = interactee.oInteractStatus | ATTACK_PUNCH | INT_STATUS_WAS_ATTACKED | INT_STATUS_INTERACTED | INT_STATUS_TOUCHED_BOB_OMB
+                interactor.oMoveFlags = OBJ_MOVE_HIT_WALL -- Kill the goomba
+            end,
+            ignoreIntangible = false
+        },
+
+        -- Behavior for breakable boxes -> break the box
+        {
+            objectLists = {
+                OBJ_LIST_DESTRUCTIVE, -- Bob-ombs, breakable boxes
+                OBJ_LIST_SURFACE, -- Boxes
+            },
+            targets = {
+                obj_is_breakable_object
+            },
+            interact = function (interactor, interactee, context)
+                interactee.oInteractStatus = interactee.oInteractStatus | ATTACK_KICK_OR_TRIP | INT_STATUS_INTERACTED | INT_STATUS_WAS_ATTACKED | INT_STATUS_STOP_RIDING -- "broken" status, specific to breakable boxes
+                interactor.oMoveFlags = OBJ_MOVE_HIT_WALL -- Kill the goomba
+            end,
+            ignoreIntangible = false
+        },
+
+        -- Behavior for bullies -> repel the bully
+        {
+            objectLists = {
+                OBJ_LIST_GENACTOR, -- Common enemies
+            },
+            targets = {
+                obj_is_bully,
+            },
+            interact = function (interactor, interactee, context)
+                interactee.oMoveAngleYaw = obj_angle_to_object(interactor, interactee)
+                interactee.oForwardVel = 3392.0 / interactee.hitboxRadius
+                interactee.oInteractStatus = interactee.oInteractStatus | ATTACK_PUNCH | INT_STATUS_WAS_ATTACKED | INT_STATUS_INTERACTED
+                interactor.oMoveFlags = OBJ_MOVE_HIT_WALL -- Kill the goomba
+            end,
+            ignoreIntangible = false
+        },
+    }
+})
+
+local GOOMBA_DEATH_SOUNDS = {
+    [GOOMBA_SIZE_REGULAR] = SOUND_OBJ_ENEMY_DEATH_HIGH,
+    [GOOMBA_SIZE_HUGE] = SOUND_OBJ_ENEMY_DEATH_LOW,
+    [GOOMBA_SIZE_TINY] = SOUND_OBJ_ENEMY_DEATH_HIGH,
 }
 
 ---@param o Object
@@ -25,79 +78,238 @@ local function bhv_goomba_render96_init(o)
     o.oSwitchState1 = 0
     o.oSwitchTimer1 = 0
     o.oSwitchTimer2 = 0
+
+    -- Disable the goomba spawner thing, it's confusing and prevent the goombas from moving freely
+    if o.parentObj ~= o and obj_has_behavior_id(o.parentObj, id_bhvGoombaTripletSpawner) == 1 then
+        o.parentObj.oBehParams = o.parentObj.oBehParams | (0xFF << 8)
+    end
+    o.parentObj = o
+
+    network_init_object(o, true, {
+        "oGoombaWalkTimer",
+        "oGoombaTargetYaw",
+        "oGoombaRelativeSpeed",
+    })
 end
 
 ---@param o Object
-local function bhv_goomba_render96_death(o)
-    spawn_mist_particles()
-    obj_spawn_yellow_coins(o, o.oNumLootCoins)
-    create_sound_spawner(SOUND_OBJ_STOMPED)
-    obj_mark_for_deletion(o)
+function bhv_goomba_render96_death(o)
+    o.oAction = OBJ_ACT_INSTANT_DEATH
+    network_send_object(o, true)
 end
+
+---@param m MarioState
+---@param o Object
+---@param opts table
+local function bhv_goomba_render96_throw(m, o, opts)
+    o.oGoombaRelativeSpeed = 40 + _max(0, m.forwardVel)
+    o.oForwardVel = o.oGoombaRelativeSpeed
+    o.oVelY = 24
+    o.oTimer = 0
+end
+
+---@param m MarioState
+---@param o Object
+---@param opts table
+local function bhv_goomba_render96_update_held(m, o, opts)
+
+    -- Failsafe in case it's not Wario holding it
+    if charSelect.character_get_current_number(m.playerIndex) ~= CT_WARIO then
+        mario_drop_held_object(m)
+        o.oHeldState = HELD_THROWN
+    end
+end
+
+---@param m MarioState
+---@param o Object
+---@param opts table
+local function bhv_goomba_render96_update_thrown(m, o, opts)
+    cur_obj_become_tangible()
+    cur_obj_init_animation_with_accel_and_sound(0, 4)
+
+    -- Update pos and vel
+    o.oForwardVel = o.oGoombaRelativeSpeed
+    o.oGravity = -4
+    o.oBuoyancy = 0
+    cur_obj_update_floor_and_walls()
+    cur_obj_move_standard(-78)
+
+    -- Process interactions
+    local interactions = opts.interactions or nil
+    if interactions ~= nil then
+        interactions:process_interactions(o, { m = m, opts = opts })
+    end
+
+    -- Audio
+    if opts.audio then
+        r96lib.audio_fade(o, opts.audio, nil, nil, false)
+    end
+
+    -- Dead on impact
+    if o.oMoveFlags & (OBJ_MOVE_LANDED | OBJ_MOVE_HIT_WALL | OBJ_MOVE_MASK_IN_WATER | OBJ_MOVE_ABOVE_LAVA) ~= 0 then
+        bhv_goomba_render96_death(o)
+        if opts.audio then
+            audio_stream_stop(opts.audio)
+        end
+    end
+
+    -- Make it spin
+    obj_rotate_gfx_around_center(o,
+        { x = 0, y = 40, z = 0 },
+        { x = 0x1000 * o.oTimer, y = o.oFaceAngleYaw, z = 0 }
+    )
+
+    -- Make it intangible for a few frames to not hurt the player that threw it
+    if o.oTimer < 5 then
+        cur_obj_become_intangible()
+    end
+end
+
+local GOOMBA_OPTS = {
+
+-- Mandatory fields
+    action = GOOMBA_ACT_GRAB,
+    throw = bhv_goomba_render96_throw,
+    update_held = bhv_goomba_render96_update_held,
+    update_thrown = bhv_goomba_render96_update_thrown,
+
+-- Extra fields to use in callbacks
+    audio = EVENT_THROWN,
+    interactions = GOOMBA_INTERACTIONS,
+}
 
 ---@param o Object
 local function bhv_goomba_render96_loop(o)
+
+    -- Update eye and mouth states
     obj_update_eye_blink(o, 3, 8, 30, 100)
-
-    o.oSwitchState2 = 0
-
     if o.oAction == GOOMBA_ACT_JUMP then
         o.oSwitchState1 = 0
         o.oSwitchTimer1 = 0
         o.oSwitchState2 = 1
+    else
+        o.oSwitchState2 = 0
     end
 
-    if get_character(m).type == CT_WARIO then
-        if o.oAction == OBJ_ACT_SQUISHED then
-            if not GOOMBA_DEATH_WARIO_ACTIONS[m.action] then
-                set_mario_particle_flags(m, PARTICLE_HORIZONTAL_STAR, 0)
-                o.oInteractType = INTERACT_GRABBABLE
-                o.oAction = GOOMBA_ACT_STUN
-                o.oSwitchState2 = 1
-                o.oSwitchState1 = 2
-                o.oTimer = 0
-                cur_obj_init_animation_with_accel_and_sound(0, 0)
-            elseif GOOMBA_DEATH_WARIO_ACTIONS[m.action] then
-                bhv_goomba_render96_death(o)
-            end
+    -- Instant death
+    if o.oAction == OBJ_ACT_INSTANT_DEATH then
+        if o.oGoombaSize == GOOMBA_SIZE_HUGE then
+            obj_spawn_blue_coins(o, 1)
+        else
+            obj_spawn_yellow_coins(o, o.oNumLootCoins)
         end
+        spawn_mist_particles_with_sound(SOUND_OBJ_STOMPED)
+        create_sound_spawner(GOOMBA_DEATH_SOUNDS[o.oGoombaSize])
+        obj_mark_for_deletion(o)
+        return
+    end
 
-        --Stunned from wario's jump, checks if going to be grabbed
-        if (o.oHeldState == HELD_FREE and o.oAction == GOOMBA_ACT_STUN and o.oTimer <= 150) then
-            if GOOMBA_DEATH_WARIO_ACTIONS[m.action] and dist_between_objects(o, m.marioObj) <= 150 then
-                bhv_goomba_render96_death(o)
-            end
-            o.oGoombaTargetYaw = o.oGoombaTargetYaw + 0x1000
-            cur_obj_rotate_yaw_toward(o.oGoombaTargetYaw, 0x1000)
-            o.oSwitchState2 = 1
-            o.oSwitchState1 = 2
-            if mario_check_object_grab(m) ~= 0 and (m.heldObj == nil) then
-                m.usedObj = o
-                mario_grab_used_object(m)
-                o.oAction = GOOMBA_ACT_GRAB
-            end
-        end
+    -- Stun action
+    if o.oAction == GOOMBA_ACT_STUN then
+        o.oForwardVel = 0
+        cur_obj_update_floor_and_walls()
+        cur_obj_move_standard(-78)
 
-        r96lib.update_held_object(m, o, GOOMBA_OPTS)
+        cur_obj_init_animation_with_accel_and_sound(0, 0.5)
+        o.oGoombaTargetYaw = o.oGoombaTargetYaw + 0x1000
+        cur_obj_rotate_yaw_toward(o.oGoombaTargetYaw, 0x1000)
+        o.oSwitchState1 = 2
+        o.oSwitchState2 = 1
 
-        if o.oHeldState == HELD_HELD then
-            o.oSwitchState2 = 1
-            o.oSwitchState1 = 2
-        end
-
-        --If not picked up after some time, go back to walking
-        if (o.oHeldState == HELD_FREE and o.oAction == GOOMBA_ACT_STUN and o.oTimer > 150) then
-            o.oInteractType = INTERACT_BOUNCE_TOP;
-            o.oAction = GOOMBA_ACT_WALK;
-            o.oSwitchState2 = 0
+        -- If not picked up after some time, go back to walking
+        if o.oTimer > 150 then
+            o.oAction = GOOMBA_ACT_WALK
             o.oSwitchState1 = 0
+            o.oSwitchState2 = 0
             cur_obj_init_animation_with_accel_and_sound(0, 1)
             return
+        end
+
+    -- Grab action
+    elseif o.oAction == GOOMBA_ACT_GRAB then
+        cur_obj_become_intangible()
+
+        r96lib.update_held_object(o, GOOMBA_OPTS)
+
+        if o.oHeldState == HELD_HELD then
+            cur_obj_init_animation_with_accel_and_sound(0, 0.5)
+            o.oSwitchState2 = 1
+            o.oSwitchState1 = 2
+        end
+    end
+
+    o.oInteractStatus = 0
+end
+
+id_bhvRender96Goomba = hook_render96_behavior(id_bhvGoomba, false, bhv_goomba_render96_init, bhv_goomba_render96_loop)
+
+-----------
+-- Hooks --
+-----------
+
+local function goomba_render96_allow_interact(m, o, interactType)
+
+    -- Handle Wario interactions
+    if interactType == INTERACT_BOUNCE_TOP and obj_has_behavior_id(o, id_bhvGoomba) == 1 and o.oAction < 100 and charSelect.character_get_current_number(m.playerIndex) == CT_WARIO then
+
+        -- The following only applies to regular and big goombas
+        if o.oGoombaSize == GOOMBA_SIZE_TINY then
+            return
+        end
+
+        -- Wario charge
+        -- You know what? Vaporizing goombas on contact was not very fun...
+        -- Let's throw them with violence!
+        if m.action == ACT_WARIO_CHARGE then
+            o.oFaceAngleYaw = obj_angle_to_object(m.marioObj, o)
+            o.oMoveAngleYaw = o.oFaceAngleYaw
+            o.oAction = GOOMBA_ACT_GRAB
+            bhv_goomba_render96_throw(m, o, GOOMBA_OPTS)
+            o.oVelY = 50
+            network_send_object(o, true)
+            m.particleFlags = m.particleFlags | PARTICLE_VERTICAL_STAR
+            return false
+        end
+
+        local interaction = determine_interaction(m, o)
+
+        -- Stun the goomba if Wario jumped on it
+        if o.oAction < GOOMBA_ACT_STUN and interaction == INT_HIT_FROM_ABOVE then
+            o.oAction = GOOMBA_ACT_STUN
+            spawn_non_sync_object(id_bhvHorStarParticleSpawner, E_MODEL_NONE, m.pos.x, m.pos.y, m.pos.z)
+            mario_bounce_off_object(m, o, 30)
+            network_send_object(o, true)
+            return false
+        end
+
+        -- Grab the goomba
+        if o.oAction == GOOMBA_ACT_STUN then
+
+            -- Push Wario out of the goomba if trying to jump on it again
+            if interaction == INT_HIT_FROM_ABOVE then
+                push_mario_out_of_object(m, o)
+                return false
+            end
+
+            -- Try to grab
+            if interaction == INT_PUNCH then
+                if m.playerIndex == 0 and not m.heldObj and not m.riddenObj and interact_grabbable(m, INTERACT_GRABBABLE, o) == 1 and mario_check_object_grab(m) ~= 0 then
+                    r96lib.init_held_object(o, GOOMBA_OPTS)
+                else
+                    push_mario_out_of_object(m, o)
+                end
+                return false
+            end
+
+            if interaction == 0 then
+                push_mario_out_of_object(m, o)
+                return false
+            end
         end
     end
 end
 
-id_bhvRender96Goomba = hook_render96_behavior(id_bhvGoomba, false, bhv_goomba_render96_init, bhv_goomba_render96_loop)
+hook_event(HOOK_ALLOW_INTERACT, goomba_render96_allow_interact)
 
 -------------------
 -- Geo functions --

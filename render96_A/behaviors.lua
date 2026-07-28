@@ -254,6 +254,31 @@ function obj_update_eye_blink(o, closeMin, closeMax, openMin, openMax)
     end
 end
 
+---@param o Object
+---@param center Vec3f
+---@param rot Vec3s
+function obj_rotate_gfx_around_center(o, center, rot)
+    o.oFlags = o.oFlags & ~OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE
+    obj_update_gfx_pos_and_angle(o)
+    local gfx = o.header.gfx
+    gfx.angle.x = rot.x
+    gfx.angle.y = rot.y
+    gfx.angle.z = rot.z
+    local v = {
+        x = -gfx.scale.x * center.x,
+        y = -gfx.scale.y * center.y,
+        z = -gfx.scale.z * center.z,
+    }
+    vec3f_rotate_zxy(v, rot)
+    gfx.pos.x = gfx.pos.x + v.x + gfx.scale.x * center.x
+    gfx.pos.y = gfx.pos.y + v.y + gfx.scale.y * center.y
+    gfx.pos.z = gfx.pos.z + v.z + gfx.scale.z * center.z
+    gfx.disableAutomaticShadowPos = true
+    gfx.shadowPos.x = o.oPosX
+    gfx.shadowPos.y = o.oPosY
+    gfx.shadowPos.z = o.oPosZ
+end
+
 ---@param m MarioState
 ---@param o Object
 ---@param padding number?
@@ -287,6 +312,16 @@ function push_mario_out_of_object(m, o, padding)
             end
         end
     end
+end
+
+---@param m MarioState
+---@param o Object
+---@param velY number
+function mario_bounce_off_object(m, o, velY)
+    m.pos.y = o.oPosY + o.hitboxHeight
+    m.vel.y = velY
+    m.flags = m.flags & ~MARIO_UNKNOWN_08
+    play_sound(SOUND_ACTION_BOUNCE_OFF_OBJECT, m.marioObj.header.gfx.cameraToObject)
 end
 
 ---@param o Object

@@ -64,7 +64,7 @@ local function bhv_thwomp_render96_loop(o)
         create_sound_spawner(SOUND_OBJ_STOMPED)
         cur_obj_spawn_loot_blue_coin()
         obj_kill_common(o)
-    elseif obj_hit_by_wario_charge(o, 350) then
+    elseif obj_hit_by_wario_charge(o, 350) or obj_ground_pounded_by_wario(o) then
         o.oHealth = 0
         network_send_object(o, true)
     end

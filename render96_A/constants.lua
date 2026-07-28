@@ -373,8 +373,9 @@ COLLECTABLE         = audio_stream_load("event_collectible_grab.mp3")
 INNER_WORKINGS_SONG = audio_stream_load("level_fourth_floor.mp3")
 
 -- oAction states
+OBJ_ACT_INSTANT_DEATH = 999
 GOOMBA_ACT_STUN = 3
-GOOMBA_ACT_GRAB = 4
+GOOMBA_ACT_GRAB = 104 -- must be higher than 102
 BLARGG_MODE_SWIM = 0
 BLARGG_MODE_CHASE = 1
 BLARGG_MODE_KNOCKBACK = 2

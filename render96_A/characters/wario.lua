@@ -294,12 +294,9 @@ local function act_wario_pile_driver_land(m)
     m.actionState = 1
     queue_rumble_data_mario(m, 4, 50)
     mario_drop_held_object(m)
-    if obj_has_behavior_id(o, id_bhvRender96Goomba) == 1 then
-        spawn_mist_particles()
-        obj_spawn_yellow_coins(o, o.oNumLootCoins)
-        create_sound_spawner(SOUND_OBJ_STOMPED)
-        o.oAction = OBJ_ACT_SQUISHED
-        obj_mark_for_deletion(o)
+
+    if obj_has_behavior_id(o, id_bhvGoomba) == 1 then
+        bhv_goomba_render96_death(o)
     elseif obj_has_behavior_id(o, id_bhvBobomb) == 1 then
         o.oBobombFuseTimer = 152
     end
