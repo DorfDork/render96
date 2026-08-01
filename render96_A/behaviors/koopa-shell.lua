@@ -61,6 +61,22 @@ local KOOPA_SHELL_INTERACTIONS = o2oint.Interactions({
             ignoreIntangible = false
         },
 
+        -- Behavior for coins -> collect coin
+        {
+            objectLists = {
+                OBJ_LIST_LEVEL, -- Coins
+            },
+            targets = {
+                obj_is_coin,
+            },
+            interact = function (interactor, interactee, context)
+                if context.m.playerIndex == 0 then
+                    interact_coin(context.m, INTERACT_COIN, interactee)
+                end
+            end,
+            ignoreIntangible = false
+        },
+
         -- Behavior for koopa shells -> bounce on the interactor
         {
             targets = {
@@ -85,9 +101,9 @@ local KOOPA_SHELL_INTERACTIONS = o2oint.Interactions({
     }
 })
 
-local KOOPA_SHELL_HIT_WARIO_ACTIONS = {
-    [ACT_WARIO_CHARGE] = true,
-    [ACT_JUMP_KICK] = true,
+local KOOPA_SHELL_HIT_WARIO_ACTIONS = T{
+    ACT_R96_WARIO_CHARGE,
+    ACT_JUMP_KICK,
 }
 
 ---@param o Object
@@ -107,9 +123,9 @@ local function bhv_koopa_shell_render96_init(o)
         health = 1,
         numLootCoins = 1,
         radius = 60,
-        height = 60,
+        height = 100,
         hurtboxRadius = 60,
-        hurtboxHeight = 60,
+        hurtboxHeight = 100,
     })
 end
 
@@ -204,13 +220,13 @@ end
 local KOOPA_SHELL_OPTS = {
 
 -- Mandatory fields
-    action = KOOPA_SHELL_ACT_GRAB,
+    action = R96_KOOPA_SHELL_ACT_GRAB,
     throw = bhv_koopa_shell_render96_throw,
     update_held = bhv_koopa_shell_render96_update_held,
     update_thrown = bhv_koopa_shell_render96_update_thrown,
 
 -- Extra fields to use in callbacks
-    audio = EVENT_SHELL_THROWN,
+    audio = AUDIO_R96_EVENT_SHELL_THROWN,
     interactions = KOOPA_SHELL_INTERACTIONS,
 }
 

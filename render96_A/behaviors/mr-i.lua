@@ -38,7 +38,7 @@ local function bhv_mr_i_render96_init(o)
     o.oIntangibleTimer  = 0
     o.oDrawingDistance  = 4000
     o.oDeathSound       = SOUND_OBJ_ENEMY_DEATH_HIGH
-    o.oAction           = MR_I_IDLE
+    o.oAction           = R96_MR_I_ACT_IDLE
     o.oMrISize          = 2
     o.oSwitchState2     = 0
     o.oSwitchTimer1     = 0
@@ -150,13 +150,13 @@ local function bhv_mr_i_render96_attack(o, player, dist, angleToPlayer, angleDif
 
     bhv_mr_i_render96_track(o, dist, angleToPlayer, angleDiff)
     if o.oMrITracking >= MR_I_DEATH_THRESHOLD then
-        o.oAction = MR_I_DIZZY
+        o.oAction = R96_MR_I_ACT_DIZZY
         o.oMrIDizzyTimer = 0
         o.oMrITracking = 0
         o.oSwitchState2 = 0
     end
     if dist > o.oMrIDetectRadius * 1.5 then
-        o.oAction = MR_I_IDLE
+        o.oAction = R96_MR_I_ACT_IDLE
         o.oMrITracking = 0
     end
 end
@@ -174,7 +174,7 @@ local function bhv_mr_i_render96_dizzy(o)
     if frames <= 10 then cur_obj_scale(o.oMrISize + (0.5 - o.oMrISize) * (1.0 - (frames / 10.0))) end
     if frames > 10 then cur_obj_scale(o.oMrISize + _sin(o.oMrIDizzyTimer * 0.3) * 0.15) end
 
-    if o.oMrIDizzyTimer >= o.oMrIDizzyDuration then o.oAction = MR_I_DEAD end
+    if o.oMrIDizzyTimer >= o.oMrIDizzyDuration then o.oAction = R96_MR_I_ACT_DEAD end
 end
 
 ---@param o Object
@@ -212,7 +212,7 @@ local function bhv_mr_i_render96_idle(o, player, dist, angleToPlayer, angleDiff)
 
     if dist < o.oMrIDetectRadius and angleDiff < MR_I_FOV_THRESHOLD then
         o.oSwitchState2 = 0
-        o.oAction = MR_I_ATTACK
+        o.oAction = R96_MR_I_ACT_ATTACK
         o.oMrIFireTimer = 0
     end
 end

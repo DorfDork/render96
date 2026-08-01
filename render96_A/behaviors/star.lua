@@ -19,11 +19,11 @@ end
 ---@param o Object
 local function bhv_star_render96_init(o)
     if not is_star_collected(o) or obj_has_behavior_id(o, id_bhvCelebrationStar) == 1 then
-        spawn_non_sync_object(id_bhvRender96StarParticle, E_MODEL_STAR_PARTICLE, o.oPosX, o.oPosY, o.oPosZ, function(o2)
+        spawn_non_sync_object(id_bhvRender96StarParticle, E_MODEL_R96_STAR_PARTICLE, o.oPosX, o.oPosY, o.oPosZ, function(o2)
             o2.parentObj = o
         end)
     else
-        spawn_non_sync_object(id_bhvRender96StarParticle, E_MODEL_STAR_TRANSPARENT_PARTICLE, o.oPosX, o.oPosY, o.oPosZ, function(o2)
+        spawn_non_sync_object(id_bhvRender96StarParticle, E_MODEL_R96_STAR_TRANSPARENT_PARTICLE, o.oPosX, o.oPosY, o.oPosZ, function(o2)
             o2.parentObj = o
         end)
     end
@@ -33,7 +33,7 @@ end
 local function bhv_star_render96_loop(o)
     local m = gMarioStates[0]
     if m.action ~= ACT_CREDITS_CUTSCENE then
-        r96lib.audio_fade(o, STAR_AMBIENT, nil, nil, true, 2258, 86840)
+        r96lib.audio_fade(o, AUDIO_R96_STAR_AMBIENT, nil, nil, true, 2258, 86840)
     end
 end
 
@@ -74,7 +74,7 @@ end
 
 ---@param o Object
 local function bhv_star_particle_loop(o)
-    smlua_anim_util_set_animation(o, "star_glow")
+    smlua_anim_util_set_animation(o, ANIM_R96_STAR_GLOW)
     local star = get_star_object(o)
     if star ~= nil then
         obj_set_pos(o, star.oPosX, star.oPosY, star.oPosZ)

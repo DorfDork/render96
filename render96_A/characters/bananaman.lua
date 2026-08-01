@@ -29,7 +29,7 @@ end
 local function bananaman_update(m)
     if (m.action == ACT_JUMP or m.action == ACT_DOUBLE_JUMP or m.action == ACT_TRIPLE_JUMP) and m.actionTimer > 1 and m.controller.buttonPressed & A_BUTTON ~= 0 then
         m.faceAngle.y = m.intendedYaw
-        set_mario_action(m, ACT_BANANAMAN_JUMP, 0)
+        set_mario_action(m, ACT_R96_BANANAMAN_JUMP, 0)
         m.vel.y = 35
     end
 
@@ -42,4 +42,4 @@ hook_event(HOOK_ON_MODS_LOADED, function ()
     charSelect.character_hook_moveset(CT_TOAD, HOOK_MARIO_UPDATE, bananaman_update)
 end)
 
-hook_mario_action(ACT_BANANAMAN_JUMP, act_bananaman_jump)
+hook_mario_action(ACT_R96_BANANAMAN_JUMP, act_bananaman_jump)

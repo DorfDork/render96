@@ -26,9 +26,6 @@ local BEHAVIORS_CUSTOM_OBJECT_FIELDS = {
     oSwitchTimer2 = 's32',
 
     -- Mario
-    oMarioBlinkTimer    = 's32',
-    oMarioBlinkFrame    = 's32',
-    oMarioSleepTimer    = 's32',
     oMarioLongJumpTimer = 's32',
 
     -- Yoshi
@@ -88,9 +85,6 @@ define_custom_obj_fields(BEHAVIORS_CUSTOM_OBJECT_FIELDS)
 --- @field oSwitchTimer1 integer
 --- @field oSwitchState2 integer
 --- @field oSwitchTimer2 integer
---- @field oMarioBlinkTimer integer
---- @field oMarioBlinkFrame integer
---- @field oMarioSleepTimer integer
 --- @field oMarioLongJumpTimer integer
 --- @field oTongueU number
 --- @field oTongueTimer integer
@@ -125,12 +119,12 @@ define_custom_obj_fields(BEHAVIORS_CUSTOM_OBJECT_FIELDS)
 -- Behavior functions --
 ------------------------
 
-local SURFACE_TYPE_DEADLY = {
-    [SURFACE_BURNING] = true,
-    [SURFACE_DEATH_PLANE] = true,
-    [SURFACE_INSTANT_QUICKSAND] = true,
-    [SURFACE_INSTANT_MOVING_QUICKSAND] = true,
-    [SURFACE_VERTICAL_WIND] = true,
+local SURFACE_TYPE_DEADLY = T{
+    SURFACE_BURNING,
+    SURFACE_DEATH_PLANE,
+    SURFACE_INSTANT_QUICKSAND,
+    SURFACE_INSTANT_MOVING_QUICKSAND,
+    SURFACE_VERTICAL_WIND,
 }
 
 ---@param o Object
@@ -383,6 +377,24 @@ function geo_function_disable_billboard(node, matStackIndex)
     local o = geo_get_current_object()
     if o == nil then return end
     o.header.gfx.node.flags = o.header.gfx.node.flags & ~GRAPH_RENDER_BILLBOARD
+end
+
+---@param node GraphNode
+---@param matStackIndex integer
+---@param m MarioState
+---@param actionStates table
+function geo_switch_end_peach_cutscene(node, matStackIndex, m, actionStates)
+    if m and actionStates and m.action == ACT_END_PEACH_CUTSCENE then
+        local states = actionStates[m.actionArg]
+        if states then
+            local state = states[m.actionTimer]
+            if state then
+                cast_graph_node(node).selectedCase = state
+            end
+            return true
+        end
+    end
+    return false
 end
 
 ---------------

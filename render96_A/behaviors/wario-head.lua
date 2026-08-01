@@ -1,15 +1,14 @@
 require("/constants")
 
+------------------------------------
+-- TODO: NOT MODIFIED BY REFACTOR --
+------------------------------------
+
 local _sqrt = math.sqrt
 
 ------------------------
 -- Behavior functions --
 ------------------------
-
-local WARIO_HEAD_FUN = audio_stream_load('event_wario_head_fun.mp3')
-local WARIO_HEAD_BITE = audio_stream_load('event_wario_head_yell.mp3')
-local WARIO_HEAD_LAUGH = audio_stream_load('event_wario_head_yell.mp3')
-local WARIO_HEAD_YELL = audio_stream_load('event_wario_head_yell.mp3')
 
 local WARIO_GREETING = 0
 local WARIO_BITE = 1
@@ -51,7 +50,8 @@ end
 
 ---@param o Object
 local function bhv_wario_head_loop(o)
-    local player = nearest_player_to_object(o)
+    local m = nearest_mario_state_to_object(o)
+    local player = m.marioObj
     local distanceToPlayer = dist_between_objects(o, player)
     local angleToPlayer = obj_angle_to_object(o, player)
 
@@ -61,7 +61,7 @@ local function bhv_wario_head_loop(o)
     end
     if o.oAction == -1 and o.oWarioHeadBool == 1 then
         o.oPosY = -800
-        audio_stream_play(WARIO_HEAD_FUN, false, 2)
+        audio_stream_play(AUDIO_R96_WARIO_HEAD_FUN, false, 2)
         o.oAction = WARIO_BITE
     end
     if m.pos.x >= 2000 then
@@ -88,7 +88,7 @@ local function bhv_wario_head_loop(o)
     if o.oWarioHeadBool == 1 and m.pos.x < 604 then
         o.header.gfx.node.flags = o.header.gfx.node.flags | GRAPH_RENDER_INVISIBLE
         cur_obj_become_intangible()
-        audio_stream_play(WARIO_HEAD_YELL, false, 2)
+        audio_stream_play(AUDIO_R96_WARIO_HEAD_YELL, false, 2)
         obj_mark_for_deletion(o)
     end
    o.oInteractStatus = 0

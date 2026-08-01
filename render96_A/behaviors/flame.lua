@@ -25,7 +25,7 @@ end
 
 ---@param o Object
 local function bhv_flame_render96_loop(o)
-    if o.oTimer < 2 and (obj_has_model_extended(o, E_MODEL_RED_FLAME_TORCH) == 1 or obj_has_model_extended(o, E_MODEL_BLUE_FLAME_TORCH) == 1) then
+    if o.oTimer < 2 and (obj_has_model_extended(o, E_MODEL_R96_RED_FLAME_TORCH) == 1 or obj_has_model_extended(o, E_MODEL_R96_BLUE_FLAME_TORCH) == 1) then
         o.oPosX = o.oWallX
         o.oPosZ = o.oWallZ
         o.oFaceAngleYaw = o.oWallAngle

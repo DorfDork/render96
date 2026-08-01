@@ -1,13 +1,13 @@
 local version = require("/lib/version")
 local osync = require("/lib/osync")
 
-local _floor  = math.floor
-local _max    = math.max
-local _sqrt   = math.sqrt
-local _sin    = math.sin
-local _lerp   = math.lerp
-local _clamp  = math.clamp
-local _pi     = math.pi
+local _floor = math.floor
+local _max   = math.max
+local _sqrt  = math.sqrt
+local _sin   = math.sin
+local _lerp  = math.lerp
+local _clamp = math.clamp
+local _pi    = math.pi
 
 r96lib = {}
 
@@ -603,67 +603,6 @@ hook_event(HOOK_ON_OBJECT_UNLOAD, delete_object_gfx_data)
 -- Held object --
 -----------------
 
--- TOOD:
--- Keep this code for now
--- I will need it for goomba
-
--- ---@param o Object
--- ---@param opts table
--- local function obj_thrown_death(o, opts)
---     spawn_mist_particles()
---     obj_spawn_yellow_coins(o, o.oNumLootCoins)
---     create_sound_spawner(SOUND_OBJ_STOMPED)
---     if opts.audio then
---         audio_stream_stop(opts.audio)
---     end
---     obj_mark_for_deletion(o)
--- end
-
--- ---@param o Object
--- ---@param opts table
--- local function obj_thrown_update(o, opts)
---     cur_obj_update_floor_and_walls()
---     cur_obj_move_standard(-78)
-
---     local interactions = opts.interactions or nil
---     if interactions ~= nil then
---         interactions:process_interactions(o)
---     end
-
---     if opts.enemy then
---         o.oGravity    = opts.gravity    or -2.5
---         o.oFriction   = opts.friction   or 0.99
---         o.oBuoyancy   = opts.buoyancy   or 1.4
---         o.oForwardVel = opts.forwardVel or 40.0
-
---         if o.oMoveFlags & (OBJ_MOVE_LANDED | OBJ_MOVE_HIT_WALL | OBJ_MOVE_MASK_IN_WATER | OBJ_MOVE_ABOVE_LAVA) ~= 0 then
---             obj_thrown_death(o, opts)
---             return
---         end
-
---         if opts.audio then
---             r96lib.audio_fade(o, opts.audio, nil, nil, false)
---         end
---     else
---         spawn_non_sync_object(id_bhvSparkleSpawn, E_MODEL_NONE, o.oPosX, o.oPosY, o.oPosZ, nil)
---         o.oFaceAngleYaw = o.oFaceAngleYaw + 0x1000
---         o.oGravity = -2.5
---         o.oFriction = 0.99
---         o.oBuoyancy = 1.4
---         o.oForwardVel = math.remap(210, 300, 50, 0, math.clamp(o.oTimer, 210, 300))
-
---         if o.oMoveFlags & OBJ_MOVE_HIT_WALL ~= 0 then
---             o.oMoveAngleYaw = cur_obj_reflect_move_angle_off_wall()
---             o.oPosX = o.oPosX + o.oWallHitboxRadius * sins(o.oMoveAngleYaw)
---             o.oPosZ = o.oPosZ + o.oWallHitboxRadius * coss(o.oMoveAngleYaw)
---         end
-
---         if opts.audio and o.oForwardVel > 5 then
---             r96lib.audio_fade(o, opts.audio, nil, nil, false)
---         end
---     end
--- end
-
 ---@param o Object
 function r96lib.init_held_object(o, opts)
     local m = gMarioStates[0]
@@ -686,6 +625,7 @@ function r96lib.update_held_object(o, opts)
             local holp = m.marioBodyState.heldObjLastPosition
             o.oHeldState = HELD_HELD
             o.oAction = opts.action
+            o.oMoveFlags = 0
             cur_obj_disable_rendering_and_become_intangible(o)
             obj_set_pos(o, holp.x, holp.y, holp.z)
             call_func(opts.update_held, m, o, opts)
@@ -698,6 +638,7 @@ function r96lib.update_held_object(o, opts)
             -- Mario no longer holds the object: throw it
             if o.oHeldState == HELD_HELD then
                 o.oHeldState = HELD_FREE
+                o.oMoveFlags = 0
                 call_func(opts.throw, m, o, opts)
             end
 

@@ -6,7 +6,7 @@ require("/constants")
 
 ---@param o Object
 local function bhv_star_door_render96_init(o)
-    local frame = spawn_non_sync_object(id_bhvRender96StarDoorFrame, E_MODEL_STAR_DOOR_FRAME, o.oPosX, o.oPosY, o.oPosZ, nil)
+    local frame = spawn_non_sync_object(id_bhvRender96StarDoorFrame, E_MODEL_R96_STAR_DOOR_FRAME, o.oPosX, o.oPosY, o.oPosZ, nil)
     obj_set_angle(frame, o.oFaceAnglePitch, o.oFaceAngleYaw, o.oFaceAngleRoll)
 end
 

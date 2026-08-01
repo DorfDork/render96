@@ -5,21 +5,21 @@ local _max  = math.max
 local _min  = math.min
 local _sqrt = math.sqrt
 
-local YOSHI_FLUTTER_JUMP_ACTIONS = {
-    [ACT_YOSHI_RIDE_JUMP] = true,
+local YOSHI_FLUTTER_JUMP_ACTIONS = T{
+    ACT_R96_YOSHI_RIDE_JUMP,
 }
 
-local YOSHI_RIDE_ACTIONS = {
-    [ACT_YOSHI_RIDE_IDLE] = true,
-    [ACT_YOSHI_RIDE_WALK] = true,
-    [ACT_YOSHI_RIDE_JUMP] = true,
-    [ACT_YOSHI_RIDE_FLUTTER] = true,
-    [ACT_YOSHI_RIDE_FALL] = true,
+local YOSHI_RIDE_ACTIONS = T{
+    ACT_R96_YOSHI_RIDE_IDLE,
+    ACT_R96_YOSHI_RIDE_WALK,
+    ACT_R96_YOSHI_RIDE_JUMP,
+    ACT_R96_YOSHI_RIDE_FLUTTER,
+    ACT_R96_YOSHI_RIDE_FALL,
 }
 
-local YOSHI_TONGUE_BEHAVIORS = {
-    [id_bhvRender96Goomba] = true,
-    [id_bhvBobomb] = true,
+local YOSHI_TONGUE_BEHAVIORS = T{
+    id_bhvRender96Goomba,
+    id_bhvBobomb,
 }
 
 ---@param m MarioState
@@ -84,7 +84,7 @@ end
 
 ---@param m MarioState
 local function yoshi_tongue_find_target(m)
-    local bestObj, bestDist = nil, TONGUE_RADIUS
+    local bestObj, bestDist = nil, YOSHI_TONGUE_RADIUS
     local o = obj_get_first(OBJ_LIST_GENACTOR)
 
     while o ~= nil do
@@ -111,16 +111,16 @@ end
 ---@param m MarioState
 local function yoshi_tongue_attack(m)
     local target = yoshi_tongue_find_target(m)
-    local tongue = spawn_non_sync_object(id_bhvRender96YoshiTongue, E_MODEL_YOSHI_TONGUE,
+    local tongue = spawn_non_sync_object(id_bhvRender96YoshiTongue, E_MODEL_R96_YOSHI_TONGUE,
         m.marioObj.oPosX, m.marioObj.oPosY + 60.0, m.marioObj.oPosZ, nil)
 
-    tongue.oAction = TONGUE_STATE_EXTENDING
+    tongue.oAction = R96_YOSHI_TONGUE_ACT_EXTENDING
     tongue.oTongueU = 0.0
 
     if target == nil then
-        tongue.oTongueLockX = m.marioObj.oPosX + sins(m.faceAngle.y) * TONGUE_RADIUS
+        tongue.oTongueLockX = m.marioObj.oPosX + sins(m.faceAngle.y) * YOSHI_TONGUE_RADIUS
         tongue.oTongueLockY = m.marioObj.oPosY + 60.0
-        tongue.oTongueLockZ = m.marioObj.oPosZ + coss(m.faceAngle.y) * TONGUE_RADIUS
+        tongue.oTongueLockZ = m.marioObj.oPosZ + coss(m.faceAngle.y) * YOSHI_TONGUE_RADIUS
     else
         tongue.parentObj = target
     end
@@ -137,17 +137,17 @@ local function act_yoshi_ride_idle(m)
     end
 
     set_mario_animation(m, MARIO_ANIM_SLIDING_ON_BOTTOM_WITH_LIGHT_OBJ)
-    smlua_anim_util_set_animation(m.marioObj, "MARIO_RIDING_YOSHI_IDLE")
+    smlua_anim_util_set_animation(m.marioObj, CHAR_ANIM_R96_MARIO_RIDING_YOSHI_IDLE)
 
     if stationary_ground_step(m) == GROUND_STEP_LEFT_GROUND then
-        return set_mario_action(m, ACT_YOSHI_RIDE_FALL, 0)
+        return set_mario_action(m, ACT_R96_YOSHI_RIDE_FALL, 0)
     end
     if (m.input & INPUT_A_PRESSED) ~= 0 then
-        return set_mario_action(m, ACT_YOSHI_RIDE_JUMP, 0)
+        return set_mario_action(m, ACT_R96_YOSHI_RIDE_JUMP, 0)
     end
     if (m.input & INPUT_NONZERO_ANALOG) ~= 0 then
         m.faceAngle.y = m.intendedYaw
-        return set_mario_action(m, ACT_YOSHI_RIDE_WALK, 0)
+        return set_mario_action(m, ACT_R96_YOSHI_RIDE_WALK, 0)
     end
     mario_set_forward_vel(m, 0)
 end
@@ -159,16 +159,16 @@ local function act_yoshi_ride_walk(m)
     end
 
     set_mario_animation(m, MARIO_ANIM_SLIDING_ON_BOTTOM_WITH_LIGHT_OBJ)
-    smlua_anim_util_set_animation(m.marioObj, "MARIO_RIDING_YOSHI_IDLE")
+    smlua_anim_util_set_animation(m.marioObj, CHAR_ANIM_R96_MARIO_RIDING_YOSHI_RUN)
     yoshi_walk_speed(m)
 
     local step = perform_ground_step(m)
     if step == GROUND_STEP_LEFT_GROUND then
-        return set_mario_action(m, ACT_YOSHI_RIDE_FALL, 1)
+        return set_mario_action(m, ACT_R96_YOSHI_RIDE_FALL, 1)
     elseif step == GROUND_STEP_HIT_WALL then
         m.forwardVel = 6
         if (m.input & INPUT_ZERO_MOVEMENT) ~= 0 then
-            return set_mario_action(m, ACT_YOSHI_RIDE_IDLE, 0)
+            return set_mario_action(m, ACT_R96_YOSHI_RIDE_IDLE, 0)
         end
     elseif step == GROUND_STEP_NONE then
         if m.intendedMag - m.forwardVel > 16.0 then
@@ -176,8 +176,8 @@ local function act_yoshi_ride_walk(m)
         end
     end
 
-    if (m.input & INPUT_A_PRESSED) ~= 0 then return set_mario_action(m, ACT_YOSHI_RIDE_JUMP, 0) end
-    if _abs(m.forwardVel) <= 1 then return set_mario_action(m, ACT_YOSHI_RIDE_IDLE, 0) end
+    if (m.input & INPUT_A_PRESSED) ~= 0 then return set_mario_action(m, ACT_R96_YOSHI_RIDE_JUMP, 0) end
+    if _abs(m.forwardVel) <= 1 then return set_mario_action(m, ACT_R96_YOSHI_RIDE_IDLE, 0) end
     if (m.input & INPUT_NONZERO_ANALOG) ~= 0 and m.forwardVel <= 5 then mario_set_forward_vel(m, 5) end
 end
 
@@ -193,11 +193,11 @@ local function act_yoshi_ride_jump(m)
     end
     update_air_without_turn(m)
     if perform_air_step(m, 0) == AIR_STEP_LANDED then
-        return set_mario_action(m, ACT_YOSHI_RIDE_WALK, 0)
+        return set_mario_action(m, ACT_R96_YOSHI_RIDE_WALK, 0)
     end
 
     set_mario_animation(m, MARIO_ANIM_SLIDING_ON_BOTTOM_WITH_LIGHT_OBJ)
-    smlua_anim_util_set_animation(m.marioObj, "MARIO_RIDING_YOSHI_IDLE")
+    smlua_anim_util_set_animation(m.marioObj, CHAR_ANIM_R96_MARIO_RIDING_YOSHI_JUMP)
     m.actionTimer = m.actionTimer + 1
 end
 
@@ -208,14 +208,14 @@ local function act_yoshi_ride_flutter(m)
     end
 
     if (m.input & INPUT_A_DOWN) == 0 or m.vel.y < -10 then
-        return set_mario_action(m, ACT_YOSHI_RIDE_FALL, 0)
+        return set_mario_action(m, ACT_R96_YOSHI_RIDE_FALL, 0)
     end
 
     yoshi_ride_flutter_update_vel(m)
     set_mario_animation(m, MARIO_ANIM_SLIDING_ON_BOTTOM_WITH_LIGHT_OBJ)
-    smlua_anim_util_set_animation(m.marioObj, "MARIO_RIDING_YOSHI_IDLE")
+    smlua_anim_util_set_animation(m.marioObj, CHAR_ANIM_R96_MARIO_RIDING_YOSHI_FLUTTER)
     if perform_air_step(m, 0) == AIR_STEP_LANDED then
-        return set_mario_action(m, ACT_YOSHI_RIDE_WALK, 0)
+        return set_mario_action(m, ACT_R96_YOSHI_RIDE_WALK, 0)
     end
 end
 
@@ -226,16 +226,16 @@ local function act_yoshi_ride_fall(m)
     end
 
     if m.actionTimer > 0 and (m.controller.buttonDown & A_BUTTON) ~= 0 and m.vel.y < 0 then
-        return set_mario_action(m, ACT_YOSHI_RIDE_FLUTTER, 0)
+        return set_mario_action(m, ACT_R96_YOSHI_RIDE_FLUTTER, 0)
     end
 
     update_air_without_turn(m)
     if perform_air_step(m, 0) == AIR_STEP_LANDED then
-        return set_mario_action(m, ACT_YOSHI_RIDE_WALK, 0)
+        return set_mario_action(m, ACT_R96_YOSHI_RIDE_WALK, 0)
     end
 
     set_mario_animation(m, MARIO_ANIM_SLIDING_ON_BOTTOM_WITH_LIGHT_OBJ)
-    smlua_anim_util_set_animation(m.marioObj, "MARIO_RIDING_YOSHI_IDLE")
+    smlua_anim_util_set_animation(m.marioObj, CHAR_ANIM_R96_MARIO_RIDING_YOSHI_FALL)
     m.actionTimer = m.actionTimer + 1
 end
 
@@ -249,11 +249,11 @@ local function act_yoshi_ride_land(m)
 
     update_air_without_turn(m)
     if perform_air_step(m, 0) == AIR_STEP_LANDED then
-        return set_mario_action(m, ACT_YOSHI_RIDE_WALK, 0)
+        return set_mario_action(m, ACT_R96_YOSHI_RIDE_WALK, 0)
     end
 
     set_mario_animation(m, MARIO_ANIM_SLIDING_ON_BOTTOM_WITH_LIGHT_OBJ)
-    smlua_anim_util_set_animation(m.marioObj, YOSHI_ANIM_RIDABLE_FLUTTER_FALL)
+    smlua_anim_util_set_animation(m.marioObj, ANIM_R96_YOSHI_RIDEABLE_FLUTTER_FALL)
     m.actionTimer = m.actionTimer + 1
 end
 
@@ -267,7 +267,7 @@ local function yoshi_check_flutter_jump(m)
         m.prevAction & ACT_FLAG_AIR == 0 and
         m.input & INPUT_A_DOWN ~= 0 and
         m.vel.y < 0) then
-        set_mario_action(m, ACT_YOSHI_RIDE_FLUTTER, 0)
+        set_mario_action(m, ACT_R96_YOSHI_RIDE_FLUTTER, 0)
     end
 end
 
@@ -281,8 +281,8 @@ end
 hook_event(HOOK_BEFORE_MARIO_UPDATE, yoshi_check_flutter_jump)
 hook_event(HOOK_MARIO_UPDATE, yoshi_update)
 
-hook_mario_action(ACT_YOSHI_RIDE_IDLE,    act_yoshi_ride_idle)
-hook_mario_action(ACT_YOSHI_RIDE_WALK,    act_yoshi_ride_walk)
-hook_mario_action(ACT_YOSHI_RIDE_JUMP,    act_yoshi_ride_jump)
-hook_mario_action(ACT_YOSHI_RIDE_FLUTTER, act_yoshi_ride_flutter)
-hook_mario_action(ACT_YOSHI_RIDE_FALL,    act_yoshi_ride_fall)
+hook_mario_action(ACT_R96_YOSHI_RIDE_IDLE,    act_yoshi_ride_idle)
+hook_mario_action(ACT_R96_YOSHI_RIDE_WALK,    act_yoshi_ride_walk)
+hook_mario_action(ACT_R96_YOSHI_RIDE_JUMP,    act_yoshi_ride_jump)
+hook_mario_action(ACT_R96_YOSHI_RIDE_FLUTTER, act_yoshi_ride_flutter)
+hook_mario_action(ACT_R96_YOSHI_RIDE_FALL,    act_yoshi_ride_fall)

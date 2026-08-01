@@ -34,7 +34,7 @@ local function bhv_six_golden_coin_loop(o)
     if dist_between_objects(o, m.marioObj) <= 100 then
         collect_wario_coin(o.oBehParams2ndByte)
         spawn_non_sync_object(id_bhvCoinSparkles, E_MODEL_SPARKLES, o.oPosX, o.oPosY, o.oPosZ, nil)
-        audio_stream_play(COLLECTABLE, false, 1)
+        audio_stream_play(AUDIO_R96_COLLECTABLE, false, 1)
         obj_mark_for_deletion(o)
         return
     end

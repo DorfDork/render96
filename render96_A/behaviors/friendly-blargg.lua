@@ -21,7 +21,7 @@ local function bhv_blargg_friendly_render96_init(o)
     })
 
     o.oAnimations = gObjectAnimations.blargg_seg5_anims_0500616C
-    cur_obj_init_animation(BLARGG_ANIM_SWIM)
+    cur_obj_init_animation(ANIM_R96_BLARGG_SWIM)
     obj_set_home(o, o.oPosX, o.oPosY, o.oPosZ)
     o.oAction = 0
     o.activeFlags = ACTIVE_FLAG_ACTIVE
@@ -37,9 +37,12 @@ local function bhv_blargg_friendly_render96_explode(o)
     local m = gMarioStates[o.heldByPlayerIndex]
     if m ~= nil then
         mario_stop_riding_object(m)
-        set_mario_action(m, ACT_JUMP_NO_CONTROL_HEIGHT, 0)
-        set_mario_y_vel_based_on_fspeed(m, 42, 0.25)
-        mario_set_forward_vel(m, m.forwardVel * 0.8)
+        if m.action & (ACT_FLAG_INTANGIBLE | ACT_FLAG_INVULNERABLE) == 0 then
+            set_mario_action(m, ACT_JUMP, 0)
+            set_mario_y_vel_based_on_fspeed(m, 42, 0.25)
+            mario_set_forward_vel(m, m.forwardVel * 0.8)
+            m.flags = m.flags & ~MARIO_UNKNOWN_08 -- Disable the effect of ACT_FLAG_CONTROL_JUMP_HEIGHT
+        end
     end
 
     obj_mark_for_deletion(o)
@@ -49,7 +52,7 @@ end
 
 ---@param o Object
 local function bhv_blargg_friendly_render96_loop(o)
-    cur_obj_init_animation(BLARGG_ANIM_SWIM)
+    cur_obj_init_animation(ANIM_R96_BLARGG_SWIM)
 
     -- Waiting for Mario
     if o.oAction == 0 then

@@ -156,7 +156,7 @@ local function bhv_goomba_render96_update_thrown(m, o, opts)
     -- Make it spin
     obj_rotate_gfx_around_center(o,
         { x = 0, y = 40, z = 0 },
-        { x = 0x1000 * o.oTimer, y = o.oFaceAngleYaw, z = 0 }
+        { x = 0x1800 * o.oTimer, y = o.oFaceAngleYaw, z = 0 }
     )
 
     -- Make it intangible for a few frames to not hurt the player that threw it
@@ -168,13 +168,13 @@ end
 local GOOMBA_OPTS = {
 
 -- Mandatory fields
-    action = GOOMBA_ACT_GRAB,
+    action = R96_GOOMBA_ACT_GRAB,
     throw = bhv_goomba_render96_throw,
     update_held = bhv_goomba_render96_update_held,
     update_thrown = bhv_goomba_render96_update_thrown,
 
 -- Extra fields to use in callbacks
-    audio = EVENT_THROWN,
+    audio = AUDIO_R96_EVENT_THROWN,
     interactions = GOOMBA_INTERACTIONS,
 }
 
@@ -205,7 +205,7 @@ local function bhv_goomba_render96_loop(o)
     end
 
     -- Stun action
-    if o.oAction == GOOMBA_ACT_STUN then
+    if o.oAction == R96_GOOMBA_ACT_STUN then
         o.oForwardVel = 0
         cur_obj_update_floor_and_walls()
         cur_obj_move_standard(-78)
@@ -226,7 +226,7 @@ local function bhv_goomba_render96_loop(o)
         end
 
     -- Grab action
-    elseif o.oAction == GOOMBA_ACT_GRAB then
+    elseif o.oAction == R96_GOOMBA_ACT_GRAB then
         cur_obj_become_intangible()
 
         r96lib.update_held_object(o, GOOMBA_OPTS)
@@ -236,6 +236,14 @@ local function bhv_goomba_render96_loop(o)
             o.oSwitchState2 = 1
             o.oSwitchState1 = 2
         end
+
+    -- Knockback actions
+    elseif o.oAction == OBJ_ACT_HORIZONTAL_KNOCKBACK or o.oAction == OBJ_ACT_VERTICAL_KNOCKBACK then
+        cur_obj_init_animation_with_accel_and_sound(0, 3)
+        obj_rotate_gfx_around_center(o,
+            { x = 0, y = 40, z = 0 },
+            { x = -0x1000 * o.oTimer, y = o.oFaceAngleYaw, z = 0 }
+        )
     end
 
     o.oInteractStatus = 0
@@ -260,10 +268,10 @@ local function goomba_render96_allow_interact(m, o, interactType)
         -- Wario charge
         -- You know what? Vaporizing goombas on contact was not very fun...
         -- Let's throw them with violence!
-        if m.action == ACT_WARIO_CHARGE then
+        if m.action == ACT_R96_WARIO_CHARGE then
             o.oFaceAngleYaw = obj_angle_to_object(m.marioObj, o)
             o.oMoveAngleYaw = o.oFaceAngleYaw
-            o.oAction = GOOMBA_ACT_GRAB
+            o.oAction = R96_GOOMBA_ACT_GRAB
             bhv_goomba_render96_throw(m, o, GOOMBA_OPTS)
             o.oVelY = 50
             network_send_object(o, true)
@@ -274,8 +282,8 @@ local function goomba_render96_allow_interact(m, o, interactType)
         local interaction = determine_interaction(m, o)
 
         -- Stun the goomba if Wario jumped on it
-        if o.oAction < GOOMBA_ACT_STUN and interaction == INT_HIT_FROM_ABOVE then
-            o.oAction = GOOMBA_ACT_STUN
+        if o.oAction < R96_GOOMBA_ACT_STUN and interaction == INT_HIT_FROM_ABOVE then
+            o.oAction = R96_GOOMBA_ACT_STUN
             spawn_non_sync_object(id_bhvHorStarParticleSpawner, E_MODEL_NONE, m.pos.x, m.pos.y, m.pos.z)
             mario_bounce_off_object(m, o, 30)
             network_send_object(o, true)
@@ -283,7 +291,7 @@ local function goomba_render96_allow_interact(m, o, interactType)
         end
 
         -- Grab the goomba
-        if o.oAction == GOOMBA_ACT_STUN then
+        if o.oAction == R96_GOOMBA_ACT_STUN then
 
             -- Push Wario out of the goomba if trying to jump on it again
             if interaction == INT_HIT_FROM_ABOVE then

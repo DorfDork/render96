@@ -1,15 +1,19 @@
 require("/constants")
 
+------------------------------------
+-- TODO: NOT MODIFIED BY REFACTOR --
+------------------------------------
+
 ------------------------
 -- Behavior functions --
 ------------------------
 
-local YOSHI_RIDING_ACTIONS = {
-    [ACT_YOSHI_RIDE_IDLE]    = true,
-    [ACT_YOSHI_RIDE_WALK]    = true,
-    [ACT_YOSHI_RIDE_JUMP]    = true,
-    [ACT_YOSHI_RIDE_FLUTTER] = true,
-    [ACT_YOSHI_RIDE_FALL]    = true,
+local YOSHI_RIDING_ACTIONS = T{
+    ACT_R96_YOSHI_RIDE_IDLE,
+    ACT_R96_YOSHI_RIDE_WALK,
+    ACT_R96_YOSHI_RIDE_JUMP,
+    ACT_R96_YOSHI_RIDE_FLUTTER,
+    ACT_R96_YOSHI_RIDE_FALL,
 }
 
 ---@param o Object
@@ -85,7 +89,7 @@ local function bhv_yoshi_unridden(o)
             player.riddenObj = o
             o.oAction = 1
             o.heldByPlayerIndex = player.playerIndex
-            set_mario_action(player, ACT_YOSHI_RIDE_FALL, 0)
+            set_mario_action(player, ACT_R96_YOSHI_RIDE_FALL, 0)
         end
     end
 end
@@ -115,29 +119,29 @@ local function bhv_yoshi_rideable_render96_loop(o)
         o.oFaceAngleRoll = 0
 
         local action = rider.action
-        if action == ACT_YOSHI_RIDE_IDLE then
-            smlua_anim_util_set_animation(o, YOSHI_ANIM_RIDABLE_IDLE)
-        elseif action == ACT_YOSHI_RIDE_WALK then
+        if action == ACT_R96_YOSHI_RIDE_IDLE then
+            smlua_anim_util_set_animation(o, ANIM_R96_YOSHI_RIDEABLE_IDLE)
+        elseif action == ACT_R96_YOSHI_RIDE_WALK then
             --cur_obj_init_animation_with_accel_and_sound(1, _abs(rider.forwardVel) / 14)
             --if cur_obj_check_anim_frame(3) ~= 0 then
             --    play_sound(SOUND_GENERAL_YOSHI_WALK, m.marioObj.header.gfx.cameraToObject)
             --end
             --play_step_sound(m, 1, 2);
-            smlua_anim_util_set_animation(o, YOSHI_ANIM_RIDABLE_RUN)
+            smlua_anim_util_set_animation(o, ANIM_R96_YOSHI_RIDEABLE_RUN)
             cur_obj_play_sound_at_anim_range(3, 9, SOUND_GENERAL_YOSHI_WALK)
-        elseif action == ACT_YOSHI_RIDE_JUMP then
+        elseif action == ACT_R96_YOSHI_RIDE_JUMP then
             if rider.vel.y >= -21 then
-                smlua_anim_util_set_animation(o, YOSHI_ANIM_RIDABLE_JUMP)
+                smlua_anim_util_set_animation(o, ANIM_R96_YOSHI_RIDEABLE_JUMP)
                 if o.header.gfx.animInfo.animFrame >= 4 then
                     o.header.gfx.animInfo.animFrame = 4
                 end
             else
-                smlua_anim_util_set_animation(o, YOSHI_ANIM_RIDABLE_JUMP_FALL)
+                smlua_anim_util_set_animation(o, ANIM_R96_YOSHI_RIDEABLE_JUMP_FALL)
             end
-        elseif action == ACT_YOSHI_RIDE_FALL then
-            smlua_anim_util_set_animation(o, YOSHI_ANIM_RIDABLE_JUMP_FALL)
-        elseif action == ACT_YOSHI_RIDE_FLUTTER then
-            smlua_anim_util_set_animation(o, YOSHI_ANIM_RIDABLE_FLUTTER)
+        elseif action == ACT_R96_YOSHI_RIDE_FALL then
+            smlua_anim_util_set_animation(o, ANIM_R96_YOSHI_RIDEABLE_JUMP_FALL)
+        elseif action == ACT_R96_YOSHI_RIDE_FLUTTER then
+            smlua_anim_util_set_animation(o, ANIM_R96_YOSHI_RIDEABLE_FLUTTER)
         else
             mario_stop_riding_object(rider)
         end

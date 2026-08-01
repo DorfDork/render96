@@ -1,5 +1,9 @@
 require("/constants")
 
+------------------------------------
+-- TODO: NOT MODIFIED BY REFACTOR --
+------------------------------------
+
 local _max  = math.max
 local _min  = math.min
 local _sqrt = math.sqrt
@@ -7,6 +11,12 @@ local _sqrt = math.sqrt
 ------------------------
 -- Behavior functions --
 ------------------------
+
+YOSHI_TONGUE_EXTEND_FRAMES  = 8
+YOSHI_TONGUE_RETRACT_FRAMES = 10
+YOSHI_TONGUE_LATCH_HOLD     = 15
+YOSHI_TONGUE_RADIUS         = 500.0
+YOSHI_TONGUE_MODEL_LENGTH   = 40.0
 
 ---@param o Object
 local function bhv_yoshi_tongue(o)
@@ -19,7 +29,7 @@ local function bhv_yoshi_tongue(o)
     if o.parentObj ~= nil and (o.parentObj.activeFlags & ACTIVE_FLAG_DEACTIVATED) ~= 0 then
         o.oTongueLockX, o.oTongueLockY, o.oTongueLockZ = o.parentObj.oPosX, o.parentObj.oPosY, o.parentObj.oPosZ
         o.parentObj = nil
-        o.oAction = TONGUE_STATE_RETRACTING
+        o.oAction = R96_YOSHI_TONGUE_ACT_RETRACTING
     end
 
     -- Base tracks the mouth every frame so the tongue follows Mario/Yoshi's head while out.
@@ -37,29 +47,29 @@ local function bhv_yoshi_tongue(o)
     local dx, dy, dz = targetX-baseX, targetY-baseY, targetZ-baseZ
     local distance = _max(_sqrt(dx*dx + dy*dy + dz*dz), 0.001)
 
-    if o.oAction == TONGUE_STATE_EXTENDING then
-        o.oTongueU = _min(o.oTongueU + (1.0 / TONGUE_EXTEND_FRAMES), 1.0)
+    if o.oAction == R96_YOSHI_TONGUE_ACT_EXTENDING then
+        o.oTongueU = _min(o.oTongueU + (1.0 / YOSHI_TONGUE_EXTEND_FRAMES), 1.0)
 
         if o.oTongueU >= 1.0 then
             if o.parentObj ~= nil then
-                o.oAction = TONGUE_STATE_LATCHED
+                o.oAction = R96_YOSHI_TONGUE_ACT_LATCHED
                 o.oTongueTimer = 0
                 queue_rumble_data_mario(m, 4, 40)
                 play_sound(SOUND_GENERAL_BOING1, m.marioObj.header.gfx.cameraToObject)
                 -- hook your grab/damage effect on o.parentObj here
             else
-                o.oAction = TONGUE_STATE_RETRACTING -- missed
+                o.oAction = R96_YOSHI_TONGUE_ACT_RETRACTING -- missed
             end
         end
 
-    elseif o.oAction == TONGUE_STATE_LATCHED then
+    elseif o.oAction == R96_YOSHI_TONGUE_ACT_LATCHED then
         o.oTongueTimer = o.oTongueTimer + 1
-        if o.oTongueTimer >= TONGUE_LATCH_HOLD then
-            o.oAction = TONGUE_STATE_RETRACTING
+        if o.oTongueTimer >= YOSHI_TONGUE_LATCH_HOLD then
+            o.oAction = R96_YOSHI_TONGUE_ACT_RETRACTING
         end
 
     else -- RETRACTING
-        o.oTongueU = o.oTongueU - (1.0 / TONGUE_RETRACT_FRAMES)
+        o.oTongueU = o.oTongueU - (1.0 / YOSHI_TONGUE_RETRACT_FRAMES)
         if o.oTongueU <= 0.0 then
             obj_mark_for_deletion(o)
             return
@@ -74,7 +84,7 @@ local function bhv_yoshi_tongue(o)
 
     o.header.gfx.scale.x = 1.0
     o.header.gfx.scale.y = 1.0
-    o.header.gfx.scale.z = _max(currentLength, 0.001) / TONGUE_MODEL_LENGTH
+    o.header.gfx.scale.z = _max(currentLength, 0.001) / YOSHI_TONGUE_MODEL_LENGTH
 end
 
 id_bhvRender96YoshiTongue = hook_render96_behavior(nil, false, nil, bhv_yoshi_tongue, OBJ_LIST_DEFAULT)

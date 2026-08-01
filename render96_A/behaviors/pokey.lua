@@ -18,9 +18,9 @@ local function bhv_pokey_render96_loop(o)
     local np = gNetworkPlayers[0]
     if np.currLevelNum == LEVEL_SSL and o.oPosX < -2000 then -- the pokeys behind the pyramid
         if o.oBehParams2ndByte == 0 then
-            obj_set_model_extended(o, E_MODEL_POKEY_HEAD_BOXART)
+            obj_set_model_extended(o, E_MODEL_R96_POKEY_HEAD_BOXART)
         else
-            obj_set_model_extended(o, E_MODEL_POKEY_BODY_PART_BOXART)
+            obj_set_model_extended(o, E_MODEL_R96_POKEY_BODY_PART_BOXART)
         end
     end
 end

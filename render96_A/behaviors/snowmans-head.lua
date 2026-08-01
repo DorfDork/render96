@@ -6,7 +6,7 @@ require("/constants")
 
 ---@param o Object
 local function bhv_snowmans_head_render96_loop(o)
-    if o.oTimer < 2 and obj_has_model_extended(o, E_MODEL_SNOWMAN_HEAD) == 1 then
+    if o.oTimer < 2 and obj_has_model_extended(o, E_MODEL_R96_SNOWMAN_HEAD) == 1 then
         o.oFaceAngleYaw = 0x1000
         --o.oMoveAngleYaw = 0x4000
         --o.oFaceAnglePitch = 0x1000

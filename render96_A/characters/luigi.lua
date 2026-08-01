@@ -1,18 +1,18 @@
 local charSelect = require("/lib/char-select")
 require("/constants")
 
-local LUIGI_JUMP_ACTIONS = {
-    [ACT_JUMP] = true,
-    [ACT_DOUBLE_JUMP] = true,
-    [ACT_TRIPLE_JUMP] = true,
+local LUIGI_JUMP_ACTIONS = T{
+    ACT_JUMP,
+    ACT_DOUBLE_JUMP,
+    ACT_TRIPLE_JUMP,
 }
 
-local LUIGI_SCUTTLE_RUN_ACTIONS = {
-    [ACT_JUMP] = true,
+local LUIGI_SCUTTLE_RUN_ACTIONS = T{
+    ACT_JUMP,
 }
 
-local LUIGI_SCUTTLE_RUN_HOLD_ACTIONS = {
-    [ACT_HOLD_JUMP] = true,
+local LUIGI_SCUTTLE_RUN_HOLD_ACTIONS = T{
+    ACT_HOLD_JUMP,
 }
 
 ---@param m MarioState
@@ -52,7 +52,7 @@ local function act_luigi_twirling(m)
     local yawVelTarget
 
     if (m.input & INPUT_Z_DOWN) ~= 0 then
-        return set_mario_action(m, ACT_LUIGI_TWIRLING_DOWN, 0)
+        return set_mario_action(m, ACT_R96_LUIGI_TWIRLING_DOWN, 0)
     else
         if m.vel.y < -7.0 then m.vel.y = -7.0 end
     end
@@ -134,7 +134,7 @@ local function act_luigi_backflip(m)
     end
 
     if m.marioObj.header.gfx.animInfo.animFrame > 17 then
-        return set_mario_action(m, ACT_LUIGI_TWIRLING, 0)
+        return set_mario_action(m, ACT_R96_LUIGI_TWIRLING, 0)
     end
 
     play_mario_sound(m, SOUND_ACTION_TERRAIN_JUMP, CHAR_SOUND_YAH_WAH_HOO)
@@ -190,9 +190,9 @@ local function luigi_update(m)
         m.input & INPUT_A_DOWN ~= 0 and
         m.vel.y < 0) then
         if LUIGI_SCUTTLE_RUN_ACTIONS[m.action] then
-            set_mario_action(m, ACT_LUIGI_SCUTTLE_RUN, 0)
+            set_mario_action(m, ACT_R96_LUIGI_SCUTTLE_RUN, 0)
         elseif LUIGI_SCUTTLE_RUN_HOLD_ACTIONS[m.action] then
-            set_mario_action(m, ACT_LUIGI_SCUTTLE_RUN_HOLD, 0)
+            set_mario_action(m, ACT_R96_LUIGI_SCUTTLE_RUN_HOLD, 0)
         end
     end
 
@@ -202,8 +202,8 @@ local function luigi_update(m)
         m.vel.y = m.vel.y + 6.0  -- small height boost
     end
 
-    if m.action == ACT_BACKFLIP then set_mario_action(m, ACT_LUIGI_BACKFLIP, 0) end
-    if m.action == ACT_TWIRLING then set_mario_action(m, ACT_LUIGI_TWIRLING, 0) end
+    if m.action == ACT_BACKFLIP then set_mario_action(m, ACT_R96_LUIGI_BACKFLIP, 0) end
+    if m.action == ACT_TWIRLING then set_mario_action(m, ACT_R96_LUIGI_TWIRLING, 0) end
 end
 
 ---@param m MarioState
@@ -233,8 +233,8 @@ hook_event(HOOK_ON_MODS_LOADED, function ()
     charSelect.character_hook_moveset(CT_LUIGI, HOOK_MARIO_UPDATE, luigi_update)
 end)
 
-hook_mario_action(ACT_LUIGI_SCUTTLE_RUN,      act_luigi_scuttle_run)
-hook_mario_action(ACT_LUIGI_SCUTTLE_RUN_HOLD, act_luigi_scuttle_run_hold)
-hook_mario_action(ACT_LUIGI_BACKFLIP,         act_luigi_backflip)
-hook_mario_action(ACT_LUIGI_TWIRLING,         act_luigi_twirling)
-hook_mario_action(ACT_LUIGI_TWIRLING_DOWN,    act_luigi_twirling_down, INT_GROUND_POUND)
+hook_mario_action(ACT_R96_LUIGI_SCUTTLE_RUN,      act_luigi_scuttle_run)
+hook_mario_action(ACT_R96_LUIGI_SCUTTLE_RUN_HOLD, act_luigi_scuttle_run_hold)
+hook_mario_action(ACT_R96_LUIGI_BACKFLIP,         act_luigi_backflip)
+hook_mario_action(ACT_R96_LUIGI_TWIRLING,         act_luigi_twirling)
+hook_mario_action(ACT_R96_LUIGI_TWIRLING_DOWN,    act_luigi_twirling_down, INT_GROUND_POUND)

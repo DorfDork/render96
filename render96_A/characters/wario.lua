@@ -1,15 +1,28 @@
 local charSelect = require("/lib/char-select")
 require("/constants")
 
---[[
-local E_MODEL_R96_WARIO = smlua_model_util_get_id("r96_wario_geo")
-_G.charSelect.character_add_costume(CT_WARIO, "Vanilla Wario", nil, nil, nil, E_MODEL_WARIO)
-_G.charSelect.character_edit(CT_WARIO, nil, nil, "Render96", nil, E_MODEL_R96_WARIO)
-]]
-
 local _floor = math.floor
 local _max   = math.max
 local _min   = math.min
+
+local WARIO_GRAB_LIGHT_ANIMS = {
+    [CHAR_ANIM_WALK_WITH_LIGHT_OBJ]                  = CHAR_ANIM_R96_WARIO_WALK_WITH_LIGHT_OBJ,
+    [CHAR_ANIM_RUN_WITH_LIGHT_OBJ]                   = CHAR_ANIM_R96_WARIO_RUN_WITH_LIGHT_OBJ,
+    [CHAR_ANIM_SLOW_WALK_WITH_LIGHT_OBJ]             = CHAR_ANIM_R96_WARIO_SLOW_WALK_WITH_LIGHT_OBJ,
+    [CHAR_ANIM_IDLE_WITH_LIGHT_OBJ]                  = CHAR_ANIM_R96_WARIO_IDLE_WITH_LIGHT_OBJ,
+    [CHAR_ANIM_JUMP_LAND_WITH_LIGHT_OBJ]             = CHAR_ANIM_R96_WARIO_JUMP_LAND_WITH_LIGHT_OBJ,
+    [CHAR_ANIM_JUMP_WITH_LIGHT_OBJ]                  = CHAR_ANIM_R96_WARIO_JUMP_WITH_LIGHT_OBJ,
+    [CHAR_ANIM_FALL_LAND_WITH_LIGHT_OBJ]             = CHAR_ANIM_R96_WARIO_FALL_LAND_WITH_LIGHT_OBJ,
+    [CHAR_ANIM_FALL_WITH_LIGHT_OBJ]                  = CHAR_ANIM_R96_WARIO_FALL_WITH_LIGHT_OBJ,
+    [CHAR_ANIM_FALL_FROM_SLIDING_WITH_LIGHT_OBJ]     = CHAR_ANIM_R96_WARIO_FALL_FROM_SLIDING_WITH_LIGHT_OBJ,
+    [CHAR_ANIM_SLIDING_ON_BOTTOM_WITH_LIGHT_OBJ]     = CHAR_ANIM_R96_WARIO_SLIDING_ON_BOTTOM_WITH_LIGHT_OBJ,
+    [CHAR_ANIM_STAND_UP_FROM_SLIDING_WITH_LIGHT_OBJ] = CHAR_ANIM_R96_WARIO_STAND_UP_FROM_SLIDING_WITH_LIGHT_OBJ,
+    [CHAR_ANIM_THROW_LIGHT_OBJECT]                   = CHAR_ANIM_R96_WARIO_THROW_LIGHT_OBJECT,
+    [CHAR_ANIM_GROUND_THROW]                         = CHAR_ANIM_R96_WARIO_GROUND_THROW,
+    [CHAR_ANIM_PICK_UP_LIGHT_OBJ]                    = CHAR_ANIM_R96_WARIO_PICK_UP_LIGHT_OBJ,
+    [CHAR_ANIM_PLACE_LIGHT_OBJ]                      = CHAR_ANIM_R96_WARIO_PLACE_LIGHT_OBJ,
+    [CHAR_ANIM_STOP_SLIDE_LIGHT_OBJ]                 = CHAR_ANIM_R96_WARIO_STOP_SLIDE_LIGHT_OBJ,
+}
 
 local BEHAVIORS_NO_GREEN_COIN = {
     id_bhvMips,
@@ -92,7 +105,7 @@ local function wario_check_common_hold_idle_cancels(m)
     end
 
     if m.input & INPUT_Z_DOWN ~= 0 then
-        return set_mario_action(m, ACT_WARIO_SWING_FLING_START, 0)
+        return set_mario_action(m, ACT_R96_WARIO_SWING_FLING_START, 0)
     end
 
     return false
@@ -155,7 +168,7 @@ end
 ---@param m MarioState
 local function act_wario_charge(m)
     if (m.input & INPUT_A_PRESSED) ~= 0 then
-        return set_mario_action(m, ACT_WARIO_TRIPLE_JUMP, 0)
+        return set_mario_action(m, ACT_R96_WARIO_TRIPLE_JUMP, 0)
     end
 
     if m.actionTimer == 0 then
@@ -272,7 +285,7 @@ local function act_wario_pile_driver(m)
         if stepResult == AIR_STEP_LANDED then
             play_mario_heavy_landing_sound(m, SOUND_ACTION_TERRAIN_HEAVY_LANDING)
             m.particleFlags = m.particleFlags | PARTICLE_MIST_CIRCLE | PARTICLE_HORIZONTAL_STAR
-            set_mario_action(m, ACT_WARIO_PILE_DRIVER_LAND, 0)
+            set_mario_action(m, ACT_R96_WARIO_PILE_DRIVER_LAND, 0)
             if m.playerIndex == 0 then
                 set_camera_shake_from_hit(SHAKE_LARGE_DAMAGE)
             end
@@ -328,7 +341,7 @@ local function act_wario_hold_idle(m)
     end
 
     if (m.input & INPUT_Z_PRESSED) ~= 0 then
-        return set_mario_action(m, ACT_WARIO_SWING_FLING_START, 0)
+        return set_mario_action(m, ACT_R96_WARIO_SWING_FLING_START, 0)
     end
 
     if (m.marioObj.oInteractStatus & INT_STATUS_MARIO_DROP_OBJECT) ~= 0 then
@@ -356,11 +369,11 @@ local function act_wario_hold_heavy_idle(m)
     end
 
     if (m.input & INPUT_A_PRESSED) ~= 0 then
-        return set_jumping_action(m, ACT_WARIO_HOLD_HEAVY_JUMP, 0)
+        return set_jumping_action(m, ACT_R96_WARIO_HOLD_HEAVY_JUMP, 0)
     end
 
     if (m.input & INPUT_Z_PRESSED) ~= 0 then
-        return set_mario_action(m, ACT_WARIO_SWING_FLING_START, 0)
+        return set_mario_action(m, ACT_R96_WARIO_SWING_FLING_START, 0)
     end
 
     if (m.input & INPUT_OFF_FLOOR) ~= 0 then
@@ -372,7 +385,7 @@ local function act_wario_hold_heavy_idle(m)
     end
 
     if (m.input & INPUT_NONZERO_ANALOG) ~= 0 then
-        return set_mario_action(m, ACT_WARIO_HOLD_HEAVY_WALKING, 0)
+        return set_mario_action(m, ACT_R96_WARIO_HOLD_HEAVY_WALKING, 0)
     end
 
     if (m.input & INPUT_B_PRESSED) ~= 0 then
@@ -446,15 +459,15 @@ local function act_wario_hold_walking(m)
     end
 
     if (m.input & INPUT_A_PRESSED) ~= 0 then
-        return set_jumping_action(m, ACT_WARIO_HOLD_JUMP, 0)
+        return set_jumping_action(m, ACT_R96_WARIO_HOLD_JUMP, 0)
     end
 
     if (m.input & INPUT_ZERO_MOVEMENT) ~= 0 then
-        return set_mario_action(m, ACT_WARIO_HOLD_DECELERATING, 0)
+        return set_mario_action(m, ACT_R96_WARIO_HOLD_DECELERATING, 0)
     end
 
     if (m.input & INPUT_Z_PRESSED) ~= 0 then
-        return set_mario_action(m, ACT_WARIO_SWING_FLING_START, 0)
+        return set_mario_action(m, ACT_R96_WARIO_SWING_FLING_START, 0)
     end
 
     update_walking_speed(m)
@@ -505,7 +518,7 @@ local function act_wario_hold_decelerating(m)
     end
 
     if (m.input & INPUT_Z_PRESSED) ~= 0 then
-        return set_mario_action(m, ACT_WARIO_SWING_FLING_START, 0)
+        return set_mario_action(m, ACT_R96_WARIO_SWING_FLING_START, 0)
     end
 
     if m.input & INPUT_NONZERO_ANALOG ~= 0 then
@@ -513,7 +526,7 @@ local function act_wario_hold_decelerating(m)
     end
 
     if wario_update_decelerating_speed(m) then
-        return set_mario_action(m, ACT_WARIO_HOLD_IDLE, 0)
+        return set_mario_action(m, ACT_R96_WARIO_HOLD_IDLE, 0)
     end
 
     m.intendedMag = m.intendedMag * 0.4
@@ -556,7 +569,7 @@ local function act_wario_hold_heavy_walking(m)
     end
 
     if (m.input & INPUT_A_PRESSED) ~= 0 then
-        return set_jumping_action(m, ACT_WARIO_HOLD_HEAVY_JUMP, 0)
+        return set_jumping_action(m, ACT_R96_WARIO_HOLD_HEAVY_JUMP, 0)
     end
 
     if wario_should_begin_sliding(m) then
@@ -568,7 +581,7 @@ local function act_wario_hold_heavy_walking(m)
     end
 
     if (m.input & INPUT_Z_PRESSED) ~= 0 then
-        return set_mario_action(m, ACT_WARIO_SWING_FLING_START, 0)
+        return set_mario_action(m, ACT_R96_WARIO_SWING_FLING_START, 0)
     end
 
     m.intendedMag = m.intendedMag * 0.4
@@ -600,7 +613,7 @@ local function act_wario_hold_jump(m)
     end
 
     if (m.input & INPUT_Z_PRESSED) ~= 0 then
-        return set_mario_action(m, ACT_WARIO_PILE_DRIVER, 0)
+        return set_mario_action(m, ACT_R96_WARIO_PILE_DRIVER, 0)
     end
     if m.actionState == 0 then
         m.actionState = m.actionState + 1
@@ -620,7 +633,7 @@ local function act_wario_hold_heavy_jump(m)
     end
 
     if (m.input & INPUT_Z_PRESSED) ~= 0 then
-        return set_mario_action(m, ACT_WARIO_PILE_DRIVER, 0)
+        return set_mario_action(m, ACT_R96_WARIO_PILE_DRIVER, 0)
     end
     if m.actionState == 0 then
         m.actionState = m.actionState + 1
@@ -628,7 +641,7 @@ local function act_wario_hold_heavy_jump(m)
     end
 
     play_mario_sound(m, SOUND_ACTION_TERRAIN_JUMP, 0)
-    common_air_action_step(m, ACT_WARIO_HOLD_HEAVY_IDLE, CHAR_ANIM_IDLE_HEAVY_OBJ, AIR_STEP_CHECK_LEDGE_GRAB)
+    common_air_action_step(m, ACT_R96_WARIO_HOLD_HEAVY_IDLE, CHAR_ANIM_IDLE_HEAVY_OBJ, AIR_STEP_CHECK_LEDGE_GRAB)
     return false
 end
 
@@ -650,7 +663,7 @@ local function act_wario_hold_freefall(m)
     end
 
     if (m.input & INPUT_Z_PRESSED) then
-        return set_mario_action(m, ACT_WARIO_PILE_DRIVER, 0)
+        return set_mario_action(m, ACT_R96_WARIO_PILE_DRIVER, 0)
     end
 
     common_air_action_step(m, ACT_HOLD_FREEFALL_LAND, animation, AIR_STEP_CHECK_LEDGE_GRAB)
@@ -671,7 +684,7 @@ local function act_wario_swing_fling_start(m)
     m.marioBodyState.grabPos = GRAB_POS_HEAVY_OBJ
 
     if is_anim_at_end(m) == 1 then
-        set_mario_action(m, ACT_WARIO_SWING_FLING_HELD, 0)
+        set_mario_action(m, ACT_R96_WARIO_SWING_FLING_HELD, 0)
     end
 
     stationary_ground_step(m)
@@ -701,13 +714,13 @@ local function act_wario_swing_fling_held(m)
     local o = m.heldObj
     if (m.input & INPUT_B_PRESSED) ~= 0 then
         play_character_sound_if_no_flag(m, CHAR_SOUND_HERE_WE_GO, MARIO_MARIO_SOUND_PLAYED)
-        return set_mario_action(m, ACT_WARIO_SWING_FLING_THROW, 0)
+        return set_mario_action(m, ACT_R96_WARIO_SWING_FLING_THROW, 0)
     end
 
     if m.angleVel.y == 0 then
         m.actionTimer = m.actionTimer + 1
         if m.actionTimer > 120 then
-            return set_mario_action(m, ACT_WARIO_SWING_FLING_THROW, 1)
+            return set_mario_action(m, ACT_R96_WARIO_SWING_FLING_THROW, 1)
         end
         set_character_animation(m, CHAR_ANIM_HOLDING_BOWSER)
     else
@@ -755,7 +768,7 @@ local function act_wario_swing_fling_held(m)
         m.actionState = m.actionState + 1
         if m.actionState % 5 == 0 and wario_swing_fling_spin_should_spawn_coins(o) then
             spawn_non_sync_object(
-                id_bhvWarioCoins, E_MODEL_GREEN_COIN,
+                id_bhvWarioCoins, E_MODEL_R96_GREEN_COIN,
                 m.marioObj.oPosX +(random_float() * 20),
                 m.marioObj.oPosY + 100,
                 m.marioObj.oPosZ + (random_float() * 20),
@@ -766,7 +779,7 @@ local function act_wario_swing_fling_held(m)
         set_mario_particle_flags(m, PARTICLE_SPARKLES, 0)
         if m.actionState >= 135 then
             play_character_sound_if_no_flag(m, CHAR_SOUND_SO_LONGA_BOWSER, MARIO_MARIO_SOUND_PLAYED)
-            return set_mario_action(m, ACT_WARIO_SWING_FLING_THROW, 0)
+            return set_mario_action(m, ACT_R96_WARIO_SWING_FLING_THROW, 0)
         end
     end
 
@@ -868,15 +881,15 @@ end
 ---@param m MarioState
 ---@param incomingAct integer
 local function wario_before_actions(m, incomingAct)
-    if (incomingAct == ACT_DIVE and m.vel.y == 20) then return ACT_WARIO_CHARGE end -- check_ground_dive_or_punch
-    if (incomingAct == ACT_TRIPLE_JUMP) then return ACT_WARIO_TRIPLE_JUMP end
-    if (incomingAct == ACT_HOLD_JUMP) then return ACT_WARIO_HOLD_JUMP end
-    if (incomingAct == ACT_HOLD_FREEFALL) then return ACT_WARIO_HOLD_FREEFALL end
-    if (incomingAct == ACT_GROUND_POUND) then return ACT_WARIO_GROUND_POUND end
-    if (incomingAct == ACT_HOLD_IDLE) then return ACT_WARIO_HOLD_IDLE end
-    if (incomingAct == ACT_HOLD_WALKING) then return ACT_WARIO_HOLD_WALKING end
-    if (incomingAct == ACT_HOLD_HEAVY_IDLE) then return ACT_WARIO_HOLD_HEAVY_IDLE end
-    if (incomingAct == ACT_HOLD_HEAVY_WALKING) then return ACT_WARIO_HOLD_HEAVY_WALKING end
+    if (incomingAct == ACT_DIVE and m.vel.y == 20) then return ACT_R96_WARIO_CHARGE end -- check_ground_dive_or_punch
+    if (incomingAct == ACT_TRIPLE_JUMP) then return ACT_R96_WARIO_TRIPLE_JUMP end
+    if (incomingAct == ACT_HOLD_JUMP) then return ACT_R96_WARIO_HOLD_JUMP end
+    if (incomingAct == ACT_HOLD_FREEFALL) then return ACT_R96_WARIO_HOLD_FREEFALL end
+    if (incomingAct == ACT_GROUND_POUND) then return ACT_R96_WARIO_GROUND_POUND end
+    if (incomingAct == ACT_HOLD_IDLE) then return ACT_R96_WARIO_HOLD_IDLE end
+    if (incomingAct == ACT_HOLD_WALKING) then return ACT_R96_WARIO_HOLD_WALKING end
+    if (incomingAct == ACT_HOLD_HEAVY_IDLE) then return ACT_R96_WARIO_HOLD_HEAVY_IDLE end
+    if (incomingAct == ACT_HOLD_HEAVY_WALKING) then return ACT_R96_WARIO_HOLD_HEAVY_WALKING end
 end
 
 ---@param m MarioState
@@ -887,7 +900,7 @@ local function wario_update(m)
 
     -- Grab animation
     local o = m.marioObj
-    local lightGrabAnim = gWarioGrabLightAnims[o.header.gfx.animInfo.animID]
+    local lightGrabAnim = WARIO_GRAB_LIGHT_ANIMS[o.header.gfx.animInfo.animID]
     if lightGrabAnim then
         smlua_anim_util_set_animation(o, lightGrabAnim)
         o.oSwitchState1 = 1
@@ -902,22 +915,22 @@ hook_event(HOOK_ON_MODS_LOADED, function ()
     charSelect.character_hook_moveset(CT_WARIO, HOOK_MARIO_UPDATE, wario_update)
 end)
 
-hook_mario_action(ACT_WARIO_CHARGE,             act_wario_charge, INT_FAST_ATTACK_OR_SHELL)
-hook_mario_action(ACT_WARIO_TRIPLE_JUMP,        act_wario_triple_jump)
-hook_mario_action(ACT_WARIO_HOLD_IDLE,          act_wario_hold_idle)
-hook_mario_action(ACT_WARIO_HOLD_HEAVY_IDLE,    act_wario_hold_heavy_idle)
-hook_mario_action(ACT_WARIO_HOLD_WALKING,       act_wario_hold_walking)
-hook_mario_action(ACT_WARIO_HOLD_HEAVY_WALKING, act_wario_hold_heavy_walking)
-hook_mario_action(ACT_WARIO_HOLD_JUMP,          act_wario_hold_jump)
-hook_mario_action(ACT_WARIO_HOLD_HEAVY_JUMP,    act_wario_hold_heavy_jump)
-hook_mario_action(ACT_WARIO_HOLD_FREEFALL,      act_wario_hold_freefall)
-hook_mario_action(ACT_WARIO_HOLD_DECELERATING,  act_wario_hold_decelerating)
-hook_mario_action(ACT_WARIO_PILE_DRIVER,        act_wario_pile_driver, INT_GROUND_POUND)
-hook_mario_action(ACT_WARIO_PILE_DRIVER_LAND,   act_wario_pile_driver_land, INT_GROUND_POUND)
-hook_mario_action(ACT_WARIO_SWING_FLING_START,  act_wario_swing_fling_start)
-hook_mario_action(ACT_WARIO_SWING_FLING_HELD,   act_wario_swing_fling_held)
-hook_mario_action(ACT_WARIO_SWING_FLING_THROW,  act_wario_swing_fling_throw)
-hook_mario_action(ACT_WARIO_GROUND_POUND,       act_wario_ground_pound, INT_GROUND_POUND)
+hook_mario_action(ACT_R96_WARIO_CHARGE,             act_wario_charge, INT_FAST_ATTACK_OR_SHELL)
+hook_mario_action(ACT_R96_WARIO_TRIPLE_JUMP,        act_wario_triple_jump)
+hook_mario_action(ACT_R96_WARIO_HOLD_IDLE,          act_wario_hold_idle)
+hook_mario_action(ACT_R96_WARIO_HOLD_HEAVY_IDLE,    act_wario_hold_heavy_idle)
+hook_mario_action(ACT_R96_WARIO_HOLD_WALKING,       act_wario_hold_walking)
+hook_mario_action(ACT_R96_WARIO_HOLD_HEAVY_WALKING, act_wario_hold_heavy_walking)
+hook_mario_action(ACT_R96_WARIO_HOLD_JUMP,          act_wario_hold_jump)
+hook_mario_action(ACT_R96_WARIO_HOLD_HEAVY_JUMP,    act_wario_hold_heavy_jump)
+hook_mario_action(ACT_R96_WARIO_HOLD_FREEFALL,      act_wario_hold_freefall)
+hook_mario_action(ACT_R96_WARIO_HOLD_DECELERATING,  act_wario_hold_decelerating)
+hook_mario_action(ACT_R96_WARIO_PILE_DRIVER,        act_wario_pile_driver, INT_GROUND_POUND)
+hook_mario_action(ACT_R96_WARIO_PILE_DRIVER_LAND,   act_wario_pile_driver_land, INT_GROUND_POUND)
+hook_mario_action(ACT_R96_WARIO_SWING_FLING_START,  act_wario_swing_fling_start)
+hook_mario_action(ACT_R96_WARIO_SWING_FLING_HELD,   act_wario_swing_fling_held)
+hook_mario_action(ACT_R96_WARIO_SWING_FLING_THROW,  act_wario_swing_fling_throw)
+hook_mario_action(ACT_R96_WARIO_GROUND_POUND,       act_wario_ground_pound, INT_GROUND_POUND)
 
 ------------------------
 -- Behavior functions --
@@ -939,7 +952,7 @@ end
 ---@param o Object
 ---@param dist number
 function obj_hit_by_wario_charge(o, dist)
-    return obj_hit_by_wario_action(o, dist, { [ACT_WARIO_CHARGE] = true })
+    return obj_hit_by_wario_action(o, dist, T{ ACT_R96_WARIO_CHARGE })
 end
 
 ---@param o Object
