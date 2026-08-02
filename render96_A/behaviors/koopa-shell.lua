@@ -313,7 +313,7 @@ local function bhv_koopa_shell_render96_loop(o)
     o.oInteractStatus = 0
 end
 
-id_bhvRender96KoopaShell = hook_render96_behavior(id_bhvKoopaShell, true, bhv_koopa_shell_render96_init, bhv_koopa_shell_render96_loop)
+id_bhvRender96KoopaShell = r96lib.hook_behavior(id_bhvKoopaShell, true, bhv_koopa_shell_render96_init, bhv_koopa_shell_render96_loop)
 
 -----------
 -- Hooks --

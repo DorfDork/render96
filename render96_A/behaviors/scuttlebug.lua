@@ -16,7 +16,7 @@ local function bhv_scuttlebug_render96_loop(o)
     r96lib.pulse_cycle(o, SCUTTLEBUG_COLORS, 50)
 end
 
-id_bhvRender96Scuttlebug = hook_render96_behavior(id_bhvScuttlebug, false, nil, bhv_scuttlebug_render96_loop)
+id_bhvRender96Scuttlebug = r96lib.hook_behavior(id_bhvScuttlebug, false, nil, bhv_scuttlebug_render96_loop)
 
 -------------------
 -- Geo functions --

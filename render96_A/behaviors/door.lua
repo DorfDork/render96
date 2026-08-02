@@ -1,3 +1,4 @@
+local r96lib = require("/lib/r96lib")
 require("/constants")
 
 ------------------------
@@ -10,14 +11,14 @@ local function bhv_star_door_render96_init(o)
     obj_set_angle(frame, o.oFaceAnglePitch, o.oFaceAngleYaw, o.oFaceAngleRoll)
 end
 
-id_bhvRender96StarDoor = hook_render96_behavior(id_bhvStarDoor, false, bhv_star_door_render96_init, nil)
+id_bhvRender96StarDoor = r96lib.hook_behavior(id_bhvStarDoor, false, bhv_star_door_render96_init, nil)
 
 ---@param o Object
 local function bhv_star_door_frame_render96_init(o)
     o.activeFlags = o.activeFlags | ACTIVE_FLAG_ACTIVE
 end
 
-id_bhvRender96StarDoorFrame = hook_render96_behavior(nil, true, bhv_star_door_frame_render96_init, nil, OBJ_LIST_SURFACE)
+id_bhvRender96StarDoorFrame = r96lib.hook_behavior(nil, true, bhv_star_door_frame_render96_init, nil, OBJ_LIST_SURFACE)
 
 -----------
 -- Hooks --

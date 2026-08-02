@@ -1,3 +1,4 @@
+local r96lib = require("/lib/r96lib")
 require("/constants")
 
 ------------------------
@@ -13,7 +14,7 @@ function bhv_chuckya_heaveho_render96_loop(o)
     end
 end
 
-id_bhvRender96Chuckya = hook_render96_behavior(id_bhvChuckya, false, nil, bhv_chuckya_heaveho_render96_loop)
+id_bhvRender96Chuckya = r96lib.hook_behavior(id_bhvChuckya, false, nil, bhv_chuckya_heaveho_render96_loop)
 
 -------------------
 -- Geo functions --

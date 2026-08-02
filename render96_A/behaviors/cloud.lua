@@ -1,3 +1,4 @@
+local r96lib = require("/lib/r96lib")
 require("/constants")
 
 ------------------------
@@ -11,7 +12,7 @@ local function bhv_cloud_render96_init(o)
     end
 end
 
-id_bhvRender96Cloud = hook_render96_behavior(id_bhvCloud, false, bhv_cloud_render96_init, nil)
+id_bhvRender96Cloud = r96lib.hook_behavior(id_bhvCloud, false, bhv_cloud_render96_init, nil)
 
 ---@param o Object
 local function bhv_cloudpart_render96_init(o)
@@ -20,4 +21,4 @@ local function bhv_cloudpart_render96_init(o)
     end
 end
 
-id_bhvRender96CloudPart = hook_render96_behavior(id_bhvCloudPart, false, bhv_cloudpart_render96_init, nil)
+id_bhvRender96CloudPart = r96lib.hook_behavior(id_bhvCloudPart, false, bhv_cloudpart_render96_init, nil)

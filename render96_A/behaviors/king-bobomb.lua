@@ -32,7 +32,7 @@ local function bhv_king_bobomb_render96_loop(o)
     end
 end
 
-id_bhvRender96KingBobomb = hook_render96_behavior(id_bhvKingBobomb, false, bhv_king_bobomb_render96_init, bhv_king_bobomb_render96_loop)
+id_bhvRender96KingBobomb = r96lib.hook_behavior(id_bhvKingBobomb, false, bhv_king_bobomb_render96_init, bhv_king_bobomb_render96_loop)
 
 -------------------
 -- Geo functions --

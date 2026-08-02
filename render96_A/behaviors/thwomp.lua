@@ -23,7 +23,7 @@ local function bhv_thwomp_render96_init(o)
     o.oNumLootCoins = 5
     obj_set_home(o, o.oPosX, o.oPosY, o.oPosZ)
 
-    network_init_object(o, false, {'oHealth'})
+    network_init_object(o, false, {"oHealth"})
 end
 
 ---@param o Object
@@ -70,5 +70,5 @@ local function bhv_thwomp_render96_loop(o)
     end
 end
 
-id_bhvRender96Thwomp = hook_render96_behavior(id_bhvThwomp, false, bhv_thwomp_render96_init, bhv_thwomp_render96_loop)
-id_bhvRender96Thwomp2 = hook_render96_behavior(id_bhvThwomp2, false, bhv_thwomp_render96_init, bhv_thwomp_render96_loop)
+id_bhvRender96Thwomp = r96lib.hook_behavior(id_bhvThwomp, false, bhv_thwomp_render96_init, bhv_thwomp_render96_loop)
+id_bhvRender96Thwomp2 = r96lib.hook_behavior(id_bhvThwomp2, false, bhv_thwomp_render96_init, bhv_thwomp_render96_loop)

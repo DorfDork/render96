@@ -1,3 +1,4 @@
+local r96lib = require("/lib/r96lib")
 require("/constants")
 
 local _random = math.random
@@ -24,4 +25,4 @@ local function bhv_tree_render96_loop(o)
     end
 end
 
-id_bhvRender96Tree = hook_render96_behavior(id_bhvTree, true, bhv_tree_render96_init, bhv_tree_render96_loop)
+id_bhvRender96Tree = r96lib.hook_behavior(id_bhvTree, true, bhv_tree_render96_init, bhv_tree_render96_loop)

@@ -1,3 +1,4 @@
+local r96lib = require("/lib/r96lib")
 require("/constants")
 
 ------------------------
@@ -40,4 +41,4 @@ local function bhv_luigi_key_loop(o)
     end
 end
 
-id_bhvLuigiKeys = hook_render96_behavior(nil, false, bhv_luigi_key_init, bhv_luigi_key_loop, OBJ_LIST_LEVEL, "LuigiKeys")
+id_bhvLuigiKeys = r96lib.hook_behavior(nil, false, bhv_luigi_key_init, bhv_luigi_key_loop, OBJ_LIST_LEVEL, "LuigiKeys")

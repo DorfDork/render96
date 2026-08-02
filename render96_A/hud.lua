@@ -47,7 +47,7 @@ end
 
 ---@param msg string
 local function toggle_hud(msg)
-    if msg == '0' then
+    if msg == "0" then
         hud_hide()
         return true
     elseif string.sub(msg, 1, 1) == "1" then

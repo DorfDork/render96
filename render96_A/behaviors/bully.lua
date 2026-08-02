@@ -1,3 +1,4 @@
+local r96lib = require("/lib/r96lib")
 local osync = require("/lib/osync")
 require("/constants")
 
@@ -15,8 +16,8 @@ local function bhv_bully_render96_loop(o)
     obj_update_eye_blink(o, 4, 10, 30, 100)
 end
 
-id_bhvRender96Bully = hook_render96_behavior(id_bhvSmallBully, false, nil, bhv_bully_render96_loop)
-id_bhvRender96SmallChillBully = hook_render96_behavior(id_bhvSmallChillBully, false, nil, bhv_bully_render96_loop)
+id_bhvRender96Bully = r96lib.hook_behavior(id_bhvSmallBully, false, nil, bhv_bully_render96_loop)
+id_bhvRender96SmallChillBully = r96lib.hook_behavior(id_bhvSmallChillBully, false, nil, bhv_bully_render96_loop)
 
 ---@param o Object
 local function bhv_big_chill_bully_with_minions_render96_init(o)
@@ -77,6 +78,6 @@ local function bhv_big_chill_bully_with_minions_render96_loop(o)
     bhv_bully_render96_loop(o)
 end
 
-id_bhvRender96BigBully = hook_render96_behavior(id_bhvBigBully, false, bhv_big_bully_render96_init, bhv_bully_render96_loop)
-id_bhvRender96BigBullyWithMinions = hook_render96_behavior(id_bhvBigBullyWithMinions, false, bhv_big_bully_render96_init, bhv_bully_render96_loop)
-id_bhvRender96BigChillBully = hook_render96_behavior(id_bhvBigChillBully, true, bhv_big_chill_bully_with_minions_render96_init, bhv_big_chill_bully_with_minions_render96_loop)
+id_bhvRender96BigBully = r96lib.hook_behavior(id_bhvBigBully, false, bhv_big_bully_render96_init, bhv_bully_render96_loop)
+id_bhvRender96BigBullyWithMinions = r96lib.hook_behavior(id_bhvBigBullyWithMinions, false, bhv_big_bully_render96_init, bhv_bully_render96_loop)
+id_bhvRender96BigChillBully = r96lib.hook_behavior(id_bhvBigChillBully, true, bhv_big_chill_bully_with_minions_render96_init, bhv_big_chill_bully_with_minions_render96_loop)

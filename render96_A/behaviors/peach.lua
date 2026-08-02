@@ -1,6 +1,15 @@
 require("/constants")
 
--- TODO: same problem as Wario held animations?
+------------------------
+-- Behavior functions --
+------------------------
+
+---@param o Object
+local function bhv_end_peach_render96_loop(o)
+    o.header.gfx.animInfo.animID = o.oSoundStateID -- Fix animation interpolation bug
+end
+
+id_bhvRender96EndPeach = r96lib.hook_behavior(id_bhvEndPeach, false, nil, bhv_end_peach_render96_loop)
 
 -------------------
 -- Geo functions --

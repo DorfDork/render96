@@ -1,3 +1,4 @@
+local r96lib = require("/lib/r96lib")
 require("/constants")
 
 ------------------------
@@ -12,7 +13,7 @@ local function bhv_bowling_ball(o)
     end
 end
 
-id_bhvRender96BowlingBall = hook_render96_behavior(id_bhvBowlingBall, false, nil, bhv_bowling_ball)
+id_bhvRender96BowlingBall = r96lib.hook_behavior(id_bhvBowlingBall, false, nil, bhv_bowling_ball)
 
 ---@param o Object
 local function bhv_pit_bowling_ball(o)
@@ -23,4 +24,4 @@ local function bhv_pit_bowling_ball(o)
     end
 end
 
-id_bhvRender96PitBowlingBall = hook_render96_behavior(id_bhvPitBowlingBall, false, nil, bhv_pit_bowling_ball)
+id_bhvRender96PitBowlingBall = r96lib.hook_behavior(id_bhvPitBowlingBall, false, nil, bhv_pit_bowling_ball)

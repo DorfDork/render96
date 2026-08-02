@@ -1,3 +1,4 @@
+local r96lib = require("/lib/r96lib")
 require("/constants")
 
 local _floor = math.floor
@@ -171,4 +172,4 @@ local function bhv_blargg_render96_loop(o)
     set_object_visibility(o, 3000)
 end
 
-id_bhvRender96Blargg = hook_render96_behavior(nil, true, bhv_blargg_render96_init, bhv_blargg_render96_loop, OBJ_LIST_GENACTOR, "Blargg")
+id_bhvRender96Blargg = r96lib.hook_behavior(nil, true, bhv_blargg_render96_init, bhv_blargg_render96_loop, OBJ_LIST_GENACTOR, "Blargg")

@@ -1,3 +1,4 @@
+local r96lib = require("/lib/r96lib")
 require("/constants")
 
 local _random = math.random
@@ -22,5 +23,5 @@ local function bhv_amp_render96_loop(o)
     end
 end
 
-id_bhvRender96CirclingAmp = hook_render96_behavior(id_bhvCirclingAmp, false, nil, bhv_amp_render96_loop)
-id_bhvRender96HomingAmp = hook_render96_behavior(id_bhvHomingAmp, false, nil, bhv_amp_render96_loop)
+id_bhvRender96CirclingAmp = r96lib.hook_behavior(id_bhvCirclingAmp, false, nil, bhv_amp_render96_loop)
+id_bhvRender96HomingAmp = r96lib.hook_behavior(id_bhvHomingAmp, false, nil, bhv_amp_render96_loop)

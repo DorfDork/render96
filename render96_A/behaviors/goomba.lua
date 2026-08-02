@@ -249,7 +249,7 @@ local function bhv_goomba_render96_loop(o)
     o.oInteractStatus = 0
 end
 
-id_bhvRender96Goomba = hook_render96_behavior(id_bhvGoomba, false, bhv_goomba_render96_init, bhv_goomba_render96_loop)
+id_bhvRender96Goomba = r96lib.hook_behavior(id_bhvGoomba, false, bhv_goomba_render96_init, bhv_goomba_render96_loop)
 
 -----------
 -- Hooks --
@@ -335,28 +335,28 @@ end
 -- UV scroll --
 ---------------
 
--- UvScroll.hook_scrolling_function('kug_body_mesh_layer_1_tri_0', uv_scroll_spin_slow)
--- UvScroll.hook_scrolling_function('kug_foot_L_mesh_layer_1_tri_0', uv_scroll_spin_slow)
--- UvScroll.hook_scrolling_function('kug_foot_R_mesh_layer_1_tri_0', uv_scroll_spin_slow)
+-- UvScroll.hook_scrolling_function("kug_body_mesh_layer_1_tri_0", uv_scroll_spin_slow)
+-- UvScroll.hook_scrolling_function("kug_foot_L_mesh_layer_1_tri_0", uv_scroll_spin_slow)
+-- UvScroll.hook_scrolling_function("kug_foot_R_mesh_layer_1_tri_0", uv_scroll_spin_slow)
 
--- UvScroll.hook_scrolling_function('kug_switchopt1_body_mesh_layer_1_tri_0', uv_scroll_spin_slow)
--- UvScroll.hook_scrolling_function('kug_switchopt1_foot_L_mesh_layer_1_tri_0', uv_scroll_spin_slow)
--- UvScroll.hook_scrolling_function('kug_switchopt1_foot_R_mesh_layer_1_tri_0', uv_scroll_spin_slow)
+-- UvScroll.hook_scrolling_function("kug_switchopt1_body_mesh_layer_1_tri_0", uv_scroll_spin_slow)
+-- UvScroll.hook_scrolling_function("kug_switchopt1_foot_L_mesh_layer_1_tri_0", uv_scroll_spin_slow)
+-- UvScroll.hook_scrolling_function("kug_switchopt1_foot_R_mesh_layer_1_tri_0", uv_scroll_spin_slow)
 
--- UvScroll.hook_scrolling_function('kug_switchopt2_body_mesh_layer_1_tri_0', uv_scroll_spin_slow)
--- UvScroll.hook_scrolling_function('kug_switchopt2_foot_L_mesh_layer_1_tri_0', uv_scroll_spin_slow)
--- UvScroll.hook_scrolling_function('kug_switchopt2_foot_R_mesh_layer_1_tri_0', uv_scroll_spin_slow)
+-- UvScroll.hook_scrolling_function("kug_switchopt2_body_mesh_layer_1_tri_0", uv_scroll_spin_slow)
+-- UvScroll.hook_scrolling_function("kug_switchopt2_foot_L_mesh_layer_1_tri_0", uv_scroll_spin_slow)
+-- UvScroll.hook_scrolling_function("kug_switchopt2_foot_R_mesh_layer_1_tri_0", uv_scroll_spin_slow)
 
--- UvScroll.hook_scrolling_function('kug_switchopt3_body_mesh_layer_1_tri_0', uv_scroll_spin_slow)
--- UvScroll.hook_scrolling_function('kug_switchopt3_foot_L_mesh_layer_1_tri_0', uv_scroll_spin_slow)
--- UvScroll.hook_scrolling_function('kug_switchopt3_foot_R_mesh_layer_1_tri_0', uv_scroll_spin_slow)
+-- UvScroll.hook_scrolling_function("kug_switchopt3_body_mesh_layer_1_tri_0", uv_scroll_spin_slow)
+-- UvScroll.hook_scrolling_function("kug_switchopt3_foot_L_mesh_layer_1_tri_0", uv_scroll_spin_slow)
+-- UvScroll.hook_scrolling_function("kug_switchopt3_foot_R_mesh_layer_1_tri_0", uv_scroll_spin_slow)
 
--- UvScroll.hook_scrolling_function('kug_mouth_mesh_layer_1_tri_2', uv_scroll_spin_slow)
--- UvScroll.hook_scrolling_function('kug_switchopt1_mouth_mesh_layer_1_tri_2', uv_scroll_spin_slow)
--- UvScroll.hook_scrolling_function('kug_switchopt2_mouth_mesh_layer_1_tri_2', uv_scroll_spin_slow)
--- UvScroll.hook_scrolling_function('kug_switchopt3_mouth_mesh_layer_1_tri_2', uv_scroll_spin_slow)
+-- UvScroll.hook_scrolling_function("kug_mouth_mesh_layer_1_tri_2", uv_scroll_spin_slow)
+-- UvScroll.hook_scrolling_function("kug_switchopt1_mouth_mesh_layer_1_tri_2", uv_scroll_spin_slow)
+-- UvScroll.hook_scrolling_function("kug_switchopt2_mouth_mesh_layer_1_tri_2", uv_scroll_spin_slow)
+-- UvScroll.hook_scrolling_function("kug_switchopt3_mouth_mesh_layer_1_tri_2", uv_scroll_spin_slow)
 
--- UvScroll.hook_scrolling_function('goomba_eyes_dazed_switch_eyes_dazed_mesh_layer_1_tri_1', uv_scroll_spin)
--- UvScroll.hook_scrolling_function('goomba_underground_eyes_dazed_switch_eyes_dazed_mesh_layer_1_tri_1', uv_scroll_spin)
--- UvScroll.hook_scrolling_function('goomba_boxart_eyes_dazed_switch_eyes_dazed_mesh_layer_1_tri_2', uv_scroll_spin)
--- UvScroll.hook_scrolling_function('kug_eyes_dazed_switch_eyes_dazed_mesh_layer_1_tri_2', uv_scroll_spin)
+-- UvScroll.hook_scrolling_function("goomba_eyes_dazed_switch_eyes_dazed_mesh_layer_1_tri_1", uv_scroll_spin)
+-- UvScroll.hook_scrolling_function("goomba_underground_eyes_dazed_switch_eyes_dazed_mesh_layer_1_tri_1", uv_scroll_spin)
+-- UvScroll.hook_scrolling_function("goomba_boxart_eyes_dazed_switch_eyes_dazed_mesh_layer_1_tri_2", uv_scroll_spin)
+-- UvScroll.hook_scrolling_function("kug_eyes_dazed_switch_eyes_dazed_mesh_layer_1_tri_2", uv_scroll_spin)

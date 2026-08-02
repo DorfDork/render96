@@ -1,3 +1,4 @@
+local r96lib = require("/lib/r96lib")
 require("/constants")
 
 local _sqrt = math.sqrt
@@ -33,4 +34,4 @@ local function bhv_flame_render96_loop(o)
     end
 end
 
-id_bhvRender96Flame = hook_render96_behavior(id_bhvFlame, false, bhv_flame_render96_init, bhv_flame_render96_loop)
+id_bhvRender96Flame = r96lib.hook_behavior(id_bhvFlame, false, bhv_flame_render96_init, bhv_flame_render96_loop)

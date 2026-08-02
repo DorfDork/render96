@@ -1,3 +1,4 @@
+local r96lib = require("/lib/r96lib")
 require("/constants")
 
 ------------------------
@@ -40,4 +41,4 @@ local function bhv_six_golden_coin_loop(o)
     end
 end
 
-id_bhvSixGoldenCoin = hook_render96_behavior(nil, false, bhv_six_golden_coin_init, bhv_six_golden_coin_loop, OBJ_LIST_LEVEL, "SixGoldenCoin")
+id_bhvSixGoldenCoin = r96lib.hook_behavior(nil, false, bhv_six_golden_coin_init, bhv_six_golden_coin_loop, OBJ_LIST_LEVEL, "SixGoldenCoin")

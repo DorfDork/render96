@@ -1,3 +1,4 @@
+local r96lib = require("/lib/r96lib")
 require("/constants")
 
 ------------------------
@@ -12,4 +13,4 @@ local function bhv_tower_door_render96_loop(o)
     end
 end
 
-id_bhvRender96TowerDoor = hook_render96_behavior(id_bhvTowerDoor, false, nil, bhv_tower_door_render96_loop)
+id_bhvRender96TowerDoor = r96lib.hook_behavior(id_bhvTowerDoor, false, nil, bhv_tower_door_render96_loop)

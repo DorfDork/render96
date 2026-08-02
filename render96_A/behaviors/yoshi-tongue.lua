@@ -1,8 +1,5 @@
+local r96lib = require("/lib/r96lib")
 require("/constants")
-
-------------------------------------
--- TODO: NOT MODIFIED BY REFACTOR --
-------------------------------------
 
 local _max  = math.max
 local _min  = math.min
@@ -20,6 +17,8 @@ YOSHI_TONGUE_MODEL_LENGTH   = 40.0
 
 ---@param o Object
 local function bhv_yoshi_tongue(o)
+    local m = gMarioStates[network_local_index_from_global(o.globalPlayerIndex)]
+
     if m == nil or m.marioObj == nil then
         obj_mark_for_deletion(o)
         return
@@ -87,4 +86,4 @@ local function bhv_yoshi_tongue(o)
     o.header.gfx.scale.z = _max(currentLength, 0.001) / YOSHI_TONGUE_MODEL_LENGTH
 end
 
-id_bhvRender96YoshiTongue = hook_render96_behavior(nil, false, nil, bhv_yoshi_tongue, OBJ_LIST_DEFAULT)
+id_bhvRender96YoshiTongue = r96lib.hook_behavior(nil, false, nil, bhv_yoshi_tongue, OBJ_LIST_DEFAULT)

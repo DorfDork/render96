@@ -1,3 +1,4 @@
+local r96lib = require("/lib/r96lib")
 require("/constants")
 
 ------------------------
@@ -41,4 +42,4 @@ local function bhv_toad_render96_loop(o)
     end
 end
 
-id_bhvRender96ToadMessage = hook_render96_behavior(id_bhvToadMessage, false, nil, bhv_toad_render96_loop)
+id_bhvRender96ToadMessage = r96lib.hook_behavior(id_bhvToadMessage, false, nil, bhv_toad_render96_loop)

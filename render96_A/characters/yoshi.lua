@@ -112,7 +112,9 @@ end
 local function yoshi_tongue_attack(m)
     local target = yoshi_tongue_find_target(m)
     local tongue = spawn_non_sync_object(id_bhvRender96YoshiTongue, E_MODEL_R96_YOSHI_TONGUE,
-        m.marioObj.oPosX, m.marioObj.oPosY + 60.0, m.marioObj.oPosZ, nil)
+        m.marioObj.oPosX, m.marioObj.oPosY + 60.0, m.marioObj.oPosZ, function (o)
+            o.globalPlayerIndex = network_global_index_from_local(m.playerIndex)
+        end)
 
     tongue.oAction = R96_YOSHI_TONGUE_ACT_EXTENDING
     tongue.oTongueU = 0.0
@@ -245,7 +247,7 @@ local function act_yoshi_ride_land(m)
         return 1
     end
 
-    common_landing_action(m, CHAR_ANIM_LAND_FROM_SINGLE_JUMP, ACT_FREEFALL);
+    common_landing_action(m, CHAR_ANIM_LAND_FROM_SINGLE_JUMP, ACT_FREEFALL)
 
     update_air_without_turn(m)
     if perform_air_step(m, 0) == AIR_STEP_LANDED then

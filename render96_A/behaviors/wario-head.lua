@@ -1,8 +1,5 @@
+local r96lib = require("/lib/r96lib")
 require("/constants")
-
-------------------------------------
--- TODO: NOT MODIFIED BY REFACTOR --
-------------------------------------
 
 local _sqrt = math.sqrt
 
@@ -94,7 +91,7 @@ local function bhv_wario_head_loop(o)
    o.oInteractStatus = 0
 end
 
-id_bhvWarioHead = hook_render96_behavior(nil, false, bhv_wario_head_init, bhv_wario_head_loop, OBJ_LIST_GENACTOR, "WarioHead")
+id_bhvWarioHead = r96lib.hook_behavior(nil, false, bhv_wario_head_init, bhv_wario_head_loop, OBJ_LIST_GENACTOR, "WarioHead")
 
 -----------
 -- Hooks --

@@ -1,4 +1,5 @@
 local charSelect = require("/lib/char-select")
+local r96lib = require("/lib/r96lib")
 require("/constants")
 
 ------------------------
@@ -16,7 +17,7 @@ local function bhv_koopa_render96_loop(o)
     end
 end
 
-id_bhvRender96Koopa = hook_render96_behavior(id_bhvKoopa, false, nil, bhv_koopa_render96_loop)
+id_bhvRender96Koopa = r96lib.hook_behavior(id_bhvKoopa, false, nil, bhv_koopa_render96_loop)
 
 -----------
 -- Hooks --

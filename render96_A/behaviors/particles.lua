@@ -1,3 +1,4 @@
+local r96lib = require("/lib/r96lib")
 require("/constants")
 
 ------------------------
@@ -20,4 +21,4 @@ local function bhv_particle_render96_loop(o)
     cur_obj_move_using_fvel_and_gravity()
 end
 
-id_bhvRender96Particle = hook_render96_behavior(nil, true, bhv_particle_render96_init, bhv_particle_render96_loop, OBJ_LIST_UNIMPORTANT)
+id_bhvRender96Particle = r96lib.hook_behavior(nil, true, bhv_particle_render96_init, bhv_particle_render96_loop, OBJ_LIST_UNIMPORTANT)

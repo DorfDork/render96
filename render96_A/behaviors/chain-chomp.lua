@@ -1,3 +1,4 @@
+local r96lib = require("/lib/r96lib")
 require("/constants")
 
 ------------------------
@@ -12,4 +13,4 @@ local function bhv_chain_chomp_render96_loop(o)
     o.oSwitchState2 = CHAIN_CHOMP_BITE_FRAMES[frame] or 0
 end
 
-id_bhvRender96ChainChomp = hook_render96_behavior(id_bhvChainChomp, false, nil, bhv_chain_chomp_render96_loop)
+id_bhvRender96ChainChomp = r96lib.hook_behavior(id_bhvChainChomp, false, nil, bhv_chain_chomp_render96_loop)

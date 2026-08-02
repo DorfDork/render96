@@ -1,3 +1,4 @@
+local r96lib = require("/lib/r96lib")
 require("/constants")
 
 local _clamp = math.clamp
@@ -34,5 +35,5 @@ local function bhv_whomp_king_render96_loop(o)
     o.oThwompPrevAction = o.oAction
 end
 
-id_bhvRender96SmallWhomp = hook_render96_behavior(id_bhvSmallWhomp, false, bhv_whomp_render96_init, bhv_whomp_render96_loop)
-id_bhvRender96WhompKingBoss = hook_render96_behavior(id_bhvWhompKingBoss, false, bhv_whomp_render96_init, bhv_whomp_king_render96_loop)
+id_bhvRender96SmallWhomp = r96lib.hook_behavior(id_bhvSmallWhomp, false, bhv_whomp_render96_init, bhv_whomp_render96_loop)
+id_bhvRender96WhompKingBoss = r96lib.hook_behavior(id_bhvWhompKingBoss, false, bhv_whomp_render96_init, bhv_whomp_king_render96_loop)

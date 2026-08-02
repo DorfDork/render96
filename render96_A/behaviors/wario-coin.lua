@@ -1,3 +1,4 @@
+local r96lib = require("/lib/r96lib")
 require("/constants")
 
 local _lerp = math.lerp
@@ -61,4 +62,4 @@ local function bhv_wario_coin_loop(o)
     end
 end
 
-id_bhvWarioCoins = hook_render96_behavior(nil, false, bhv_wario_coin_init, bhv_wario_coin_loop, OBJ_LIST_LEVEL, "WarioCoins")
+id_bhvWarioCoins = r96lib.hook_behavior(nil, false, bhv_wario_coin_init, bhv_wario_coin_loop, OBJ_LIST_LEVEL, "WarioCoins")

@@ -37,7 +37,7 @@ local function bhv_warp_pipe_render96_red_loop(o)
     r96lib.audio_fade(o, AUDIO_R96_BOO_PIPE_RED, 650, 1800, true)
 end
 
-id_bhvRender96WarpPipeRed = hook_render96_behavior(nil, false, bhv_warp_pipe_render96_init, bhv_warp_pipe_render96_red_loop, OBJ_LIST_SURFACE, "WarpPipeRed")
+id_bhvRender96WarpPipeRed = r96lib.hook_behavior(nil, false, bhv_warp_pipe_render96_init, bhv_warp_pipe_render96_red_loop, OBJ_LIST_SURFACE, "WarpPipeRed")
 
 ---@param o Object
 local function bhv_warp_pipe_render96_green_loop(o)
@@ -47,8 +47,8 @@ local function bhv_warp_pipe_render96_green_loop(o)
     r96lib.audio_fade(o, AUDIO_R96_BOO_PIPE_GREEN, 650, 1800, true)
 end
 
-id_bhvRender96WarpPipeGreenUnlock = hook_render96_behavior(nil, false, bhv_warp_pipe_render96_init, bhv_warp_pipe_render96_green_loop, OBJ_LIST_SURFACE, "WarpPipeGreenUnlock")
-id_bhvRender96WarpPipeGreenLock = hook_render96_behavior(nil, false, bhv_warp_pipe_locked_render96_init, bhv_warp_pipe_render96_green_loop, OBJ_LIST_SURFACE, "WarpPipeGreenLock")
+id_bhvRender96WarpPipeGreenUnlock = r96lib.hook_behavior(nil, false, bhv_warp_pipe_render96_init, bhv_warp_pipe_render96_green_loop, OBJ_LIST_SURFACE, "WarpPipeGreenUnlock")
+id_bhvRender96WarpPipeGreenLock = r96lib.hook_behavior(nil, false, bhv_warp_pipe_locked_render96_init, bhv_warp_pipe_render96_green_loop, OBJ_LIST_SURFACE, "WarpPipeGreenLock")
 
 ---@param o Object
 local function bhv_warp_pipe_render96_yellow_loop(o)
@@ -58,5 +58,5 @@ local function bhv_warp_pipe_render96_yellow_loop(o)
     r96lib.audio_fade(o, AUDIO_R96_BOO_PIPE_YELLOW, 650, 1800, true)
 end
 
-id_bhvRender96WarpPipeYellowUnlock = hook_render96_behavior(nil, false, bhv_warp_pipe_render96_init, bhv_warp_pipe_render96_yellow_loop, OBJ_LIST_SURFACE, "WarpPipeYellowUnlock")
-id_bhvRender96WarpPipeYellowLock = hook_render96_behavior(nil, false, bhv_warp_pipe_locked_render96_init, bhv_warp_pipe_render96_yellow_loop, OBJ_LIST_SURFACE, "WarpPipeYellowLock")
+id_bhvRender96WarpPipeYellowUnlock = r96lib.hook_behavior(nil, false, bhv_warp_pipe_render96_init, bhv_warp_pipe_render96_yellow_loop, OBJ_LIST_SURFACE, "WarpPipeYellowUnlock")
+id_bhvRender96WarpPipeYellowLock = r96lib.hook_behavior(nil, false, bhv_warp_pipe_locked_render96_init, bhv_warp_pipe_render96_yellow_loop, OBJ_LIST_SURFACE, "WarpPipeYellowLock")

@@ -1,3 +1,4 @@
+local r96lib = require("/lib/r96lib")
 require("/constants")
 
 local _floor  = math.floor
@@ -237,7 +238,7 @@ local function bhv_mr_i_render96_loop(o)
     o.oInteractStatus = 0
 end
 
-id_bhvRender96MrI = hook_render96_behavior(id_bhvMrI, true, bhv_mr_i_render96_init, bhv_mr_i_render96_loop)
+id_bhvRender96MrI = r96lib.hook_behavior(id_bhvMrI, true, bhv_mr_i_render96_init, bhv_mr_i_render96_loop)
 
 ---@param o Object
 local function bhv_mr_i_render96_fire_particle_init(o)
@@ -276,7 +277,7 @@ local function bhv_mr_i_render96_fire_particle_loop(o)
     o.oInteractStatus = 0
 end
 
-id_bhvRender96MrIFireParticle = hook_render96_behavior(nil, false, bhv_mr_i_render96_fire_particle_init, bhv_mr_i_render96_fire_particle_loop, OBJ_LIST_GENACTOR, "MrIFireParticle")
+id_bhvRender96MrIFireParticle = r96lib.hook_behavior(nil, false, bhv_mr_i_render96_fire_particle_init, bhv_mr_i_render96_fire_particle_loop, OBJ_LIST_GENACTOR, "MrIFireParticle")
 
 ---@param o Object
 local function bhv_mr_i_render96_particle_init(o)
@@ -314,4 +315,4 @@ local function bhv_mr_i_render96_particle_loop(o)
     o.oInteractStatus = 0
 end
 
-id_bhvRender96MrIParticle = hook_render96_behavior(nil, false, bhv_mr_i_render96_particle_init, bhv_mr_i_render96_particle_loop, OBJ_LIST_GENACTOR, "MrIParticle")
+id_bhvRender96MrIParticle = r96lib.hook_behavior(nil, false, bhv_mr_i_render96_particle_init, bhv_mr_i_render96_particle_loop, OBJ_LIST_GENACTOR, "MrIParticle")

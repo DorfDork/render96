@@ -1,8 +1,5 @@
+local r96lib = require("/lib/r96lib")
 require("/constants")
-
-------------------------------------
--- TODO: NOT MODIFIED BY REFACTOR --
-------------------------------------
 
 ------------------------
 -- Behavior functions --
@@ -126,7 +123,7 @@ local function bhv_yoshi_rideable_render96_loop(o)
             --if cur_obj_check_anim_frame(3) ~= 0 then
             --    play_sound(SOUND_GENERAL_YOSHI_WALK, m.marioObj.header.gfx.cameraToObject)
             --end
-            --play_step_sound(m, 1, 2);
+            --play_step_sound(m, 1, 2)
             smlua_anim_util_set_animation(o, ANIM_R96_YOSHI_RIDEABLE_RUN)
             cur_obj_play_sound_at_anim_range(3, 9, SOUND_GENERAL_YOSHI_WALK)
         elseif action == ACT_R96_YOSHI_RIDE_JUMP then
@@ -160,4 +157,4 @@ local function bhv_yoshi_rideable_render96_loop(o)
     end
 end
 
-id_bhvRender96YoshiRideable = hook_render96_behavior(nil, true, bhv_yoshi_rideable_render96_init, bhv_yoshi_rideable_render96_loop, OBJ_LIST_PUSHABLE)
+id_bhvRender96YoshiRideable = r96lib.hook_behavior(nil, true, bhv_yoshi_rideable_render96_init, bhv_yoshi_rideable_render96_loop, OBJ_LIST_PUSHABLE)

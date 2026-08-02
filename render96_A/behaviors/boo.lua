@@ -1,3 +1,4 @@
+local r96lib = require("/lib/r96lib")
 require("/constants")
 
 ------------------------
@@ -36,8 +37,8 @@ local function bhv_boo_render96_loop(o)
     end
 end
 
-id_bhvRender96GhostHuntBoo = hook_render96_behavior(id_bhvGhostHuntBoo, false, bhv_boo_render96_init, bhv_boo_render96_loop)
-id_bhvRender96GhostHuntBigBoo = hook_render96_behavior(id_bhvGhostHuntBigBoo, false, bhv_boo_render96_init, bhv_boo_render96_loop)
-id_bhvRender96BooWithCage = hook_render96_behavior(id_bhvBooWithCage, false, bhv_boo_render96_init, bhv_boo_render96_loop)
-id_bhvRender96BalconyBigBoo = hook_render96_behavior(id_bhvBalconyBigBoo, false, bhv_boo_render96_init, bhv_boo_render96_loop)
-id_bhvRender96MerryGoRoundBigBoo = hook_render96_behavior(id_bhvMerryGoRoundBigBoo, false, bhv_boo_render96_init, bhv_boo_render96_loop)
+id_bhvRender96GhostHuntBoo = r96lib.hook_behavior(id_bhvGhostHuntBoo, false, bhv_boo_render96_init, bhv_boo_render96_loop)
+id_bhvRender96GhostHuntBigBoo = r96lib.hook_behavior(id_bhvGhostHuntBigBoo, false, bhv_boo_render96_init, bhv_boo_render96_loop)
+id_bhvRender96BooWithCage = r96lib.hook_behavior(id_bhvBooWithCage, false, bhv_boo_render96_init, bhv_boo_render96_loop)
+id_bhvRender96BalconyBigBoo = r96lib.hook_behavior(id_bhvBalconyBigBoo, false, bhv_boo_render96_init, bhv_boo_render96_loop)
+id_bhvRender96MerryGoRoundBigBoo = r96lib.hook_behavior(id_bhvMerryGoRoundBigBoo, false, bhv_boo_render96_init, bhv_boo_render96_loop)

@@ -6,8 +6,8 @@ require("/constants")
 ------------------------
 
 ---@param o Object
-local function bhv_unagi_render96_init(o)
+local function bhv_falling_bowser_platform_init(o)
     o.header.gfx.skipInViewCheck = true
 end
 
-id_bhvRender96Unagi = r96lib.hook_behavior(id_bhvUnagi, false, bhv_unagi_render96_init, nil)
+id_bhvRender96FallingBowserPlatform = r96lib.hook_behavior(id_bhvFallingBowserPlatform, false, bhv_falling_bowser_platform_init, nil)

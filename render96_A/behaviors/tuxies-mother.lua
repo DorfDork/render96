@@ -1,3 +1,4 @@
+local r96lib = require("/lib/r96lib")
 require("/constants")
 
 ------------------------
@@ -85,4 +86,4 @@ local function bhv_tuxie_mother_render96_loop(o)
     end
 end
 
-id_bhvRender96TuxiesMother = hook_render96_behavior(id_bhvTuxiesMother, false, bhv_tuxie_mother_render96_init, bhv_tuxie_mother_render96_loop)
+id_bhvRender96TuxiesMother = r96lib.hook_behavior(id_bhvTuxiesMother, false, bhv_tuxie_mother_render96_init, bhv_tuxie_mother_render96_loop)

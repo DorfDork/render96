@@ -1,3 +1,4 @@
+local r96lib = require("/lib/r96lib")
 require("/constants")
 
 ------------------------
@@ -20,6 +21,6 @@ local function bhv_breakable_box_small_render96_loop(o)
     end
 end
 
-id_bhvRender96BreakableBox = hook_render96_behavior(id_bhvBreakableBox, false, nil, bhv_breakable_box_render96_loop)
-id_bhvRender96BreakableBoxSmall = hook_render96_behavior(id_bhvBreakableBoxSmall, false, nil, bhv_breakable_box_small_render96_loop)
-id_bhvRender96JumpingBox = hook_render96_behavior(id_bhvJumpingBox, false, nil, bhv_breakable_box_render96_loop)
+id_bhvRender96BreakableBox = r96lib.hook_behavior(id_bhvBreakableBox, false, nil, bhv_breakable_box_render96_loop)
+id_bhvRender96BreakableBoxSmall = r96lib.hook_behavior(id_bhvBreakableBoxSmall, false, nil, bhv_breakable_box_small_render96_loop)
+id_bhvRender96JumpingBox = r96lib.hook_behavior(id_bhvJumpingBox, false, nil, bhv_breakable_box_render96_loop)

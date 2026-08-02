@@ -1,3 +1,4 @@
+local r96lib = require("/lib/r96lib")
 require("/constants")
 
 ------------------------
@@ -25,4 +26,4 @@ local function bhv_pokey_render96_loop(o)
     end
 end
 
-id_bhvRender96PokeyBodyPart = hook_render96_behavior(id_bhvPokeyBodyPart, false, bhv_pokey_render96_init, bhv_pokey_render96_loop)
+id_bhvRender96PokeyBodyPart = r96lib.hook_behavior(id_bhvPokeyBodyPart, false, bhv_pokey_render96_init, bhv_pokey_render96_loop)

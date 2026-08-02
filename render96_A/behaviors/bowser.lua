@@ -19,9 +19,10 @@ end
 local function bhv_bowser_render96_loop(o)
     obj_set_model_extended(o, E_MODEL_BOWSER)
     o.oSwitchTimer1 = o.oSwitchTimer1 + 1
+    o.header.gfx.animInfo.animID = o.oSoundStateID -- Fix animation interpolation bug
 end
 
-id_bhvRender96Bowser = hook_render96_behavior(id_bhvBowser, false, nil, bhv_bowser_render96_loop)
+id_bhvRender96Bowser = r96lib.hook_behavior(id_bhvBowser, false, nil, bhv_bowser_render96_loop)
 
 -------------------
 -- Geo functions --

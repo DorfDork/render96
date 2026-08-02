@@ -94,7 +94,7 @@ local R96_MARIO_LIP_ENDING_STATES = {
         [108] = R96_MARIO_LIP_E,
         [112] = R96_MARIO_LIP_A,
         [115] = R96_MARIO_LIP_O,
-        [140] = R96_MARIO_LIP_A,
+        [140] = R96_MARIO_LIP_CLOSED,
     },
 }
 
@@ -120,6 +120,12 @@ function geo_switch_mario_face(node, matStackIndex)
     -- Dead
     if m.health <= 0xFF then
         switchCase.selectedCase = R96_MARIO_FACE_ANGRY
+        return
+    end
+
+    -- Yawning
+    if marioAction == ACT_START_SLEEPING and m.actionState >= 2 then
+        switchCase.selectedCase = R96_MARIO_FACE_OPEN
         return
     end
 
@@ -300,8 +306,8 @@ function geo_switch_mario_eye_custom(node, matStackIndex)
         return
     end
 
-    -- Start sleeping
-    if marioAction == ACT_START_SLEEPING then
+    -- Yawning
+    if marioAction == ACT_START_SLEEPING and m.actionState >= 2 then
         switchCase.selectedCase = R96_MARIO_EYES_HALF_CLOSED
         return
     end

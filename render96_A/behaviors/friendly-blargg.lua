@@ -1,3 +1,4 @@
+local r96lib = require("/lib/r96lib")
 require("/constants")
 
 local _abs = math.abs
@@ -108,4 +109,4 @@ local function bhv_blargg_friendly_render96_loop(o)
     o.oInteractStatus = 0
 end
 
-id_bhvRender96BlarggFriendly = hook_render96_behavior(nil, false, bhv_blargg_friendly_render96_init, bhv_blargg_friendly_render96_loop, OBJ_LIST_LEVEL, "BlarggFriendly")
+id_bhvRender96BlarggFriendly = r96lib.hook_behavior(nil, false, bhv_blargg_friendly_render96_init, bhv_blargg_friendly_render96_loop, OBJ_LIST_LEVEL, "BlarggFriendly")

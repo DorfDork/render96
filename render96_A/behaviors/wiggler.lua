@@ -1,3 +1,4 @@
+local r96lib = require("/lib/r96lib")
 require("/constants")
 
 local _clamp = math.clamp
@@ -32,7 +33,7 @@ local function bhv_wiggler_head_render96_loop(o)
     end
 end
 
-id_bhvRender96WigglerHead = hook_render96_behavior(id_bhvWigglerHead, false, nil, bhv_wiggler_head_render96_loop)
+id_bhvRender96WigglerHead = r96lib.hook_behavior(id_bhvWigglerHead, false, nil, bhv_wiggler_head_render96_loop)
 
 -------------------
 -- Geo functions --
@@ -73,4 +74,4 @@ end
 -- UV scroll --
 ---------------
 
---UvScroll.hook_scrolling_function('wiggler_head_switch_opt1_000_displaylist5_mesh_layer_1_tri_3', uv_scroll_spin)
+--UvScroll.hook_scrolling_function("wiggler_head_switch_opt1_000_displaylist5_mesh_layer_1_tri_3", uv_scroll_spin)

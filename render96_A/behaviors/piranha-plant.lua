@@ -1,3 +1,4 @@
+local r96lib = require("/lib/r96lib")
 require("/constants")
 
 local _min = math.min
@@ -42,7 +43,7 @@ local function bhv_piranha_plant_render96_loop(o)
     end
 end
 
-id_bhvRender96PiranhaPlant = hook_render96_behavior(id_bhvPiranhaPlant, false, bhv_piranha_plant_render96_init, bhv_piranha_plant_render96_loop)
+id_bhvRender96PiranhaPlant = r96lib.hook_behavior(id_bhvPiranhaPlant, false, bhv_piranha_plant_render96_init, bhv_piranha_plant_render96_loop)
 
 ---@param o Object
 local function bhv_fire_piranha_plant_render96_loop(o)
@@ -68,4 +69,4 @@ local function bhv_fire_piranha_plant_render96_loop(o)
     end
 end
 
-id_bhvRender96FirePiranhaPlant = hook_render96_behavior(id_bhvFirePiranhaPlant, false, bhv_piranha_plant_render96_init, bhv_fire_piranha_plant_render96_loop)
+id_bhvRender96FirePiranhaPlant = r96lib.hook_behavior(id_bhvFirePiranhaPlant, false, bhv_piranha_plant_render96_init, bhv_fire_piranha_plant_render96_loop)

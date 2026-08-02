@@ -37,12 +37,12 @@ local function bhv_star_render96_loop(o)
     end
 end
 
-id_bhvRender96Star = hook_render96_behavior(id_bhvStar, false, bhv_star_render96_init, bhv_star_render96_loop)
-id_bhvRender96SpawnedStar = hook_render96_behavior(id_bhvSpawnedStar, false, bhv_star_render96_init, bhv_star_render96_loop)
-id_bhvRender96SpawnedStarNoLevelExit = hook_render96_behavior(id_bhvSpawnedStarNoLevelExit, false, bhv_star_render96_init, bhv_star_render96_loop)
---id_bhvRender96HiddenStar = hook_render96_behavior(id_bhvHiddenStar, false, bhv_star_render96_init, bhv_star_render96_loop)
-id_bhvRender96SpawnCoordStar = hook_render96_behavior(id_bhvStarSpawnCoordinates, false, bhv_star_render96_init, bhv_star_render96_loop)
-id_bhvRender96CelebrationStar = hook_render96_behavior(id_bhvCelebrationStar, false, bhv_star_render96_init)
+id_bhvRender96Star = r96lib.hook_behavior(id_bhvStar, false, bhv_star_render96_init, bhv_star_render96_loop)
+id_bhvRender96SpawnedStar = r96lib.hook_behavior(id_bhvSpawnedStar, false, bhv_star_render96_init, bhv_star_render96_loop)
+id_bhvRender96SpawnedStarNoLevelExit = r96lib.hook_behavior(id_bhvSpawnedStarNoLevelExit, false, bhv_star_render96_init, bhv_star_render96_loop)
+--id_bhvRender96HiddenStar = r96lib.hook_behavior(id_bhvHiddenStar, false, bhv_star_render96_init, bhv_star_render96_loop)
+id_bhvRender96SpawnCoordStar = r96lib.hook_behavior(id_bhvStarSpawnCoordinates, false, bhv_star_render96_init, bhv_star_render96_loop)
+id_bhvRender96CelebrationStar = r96lib.hook_behavior(id_bhvCelebrationStar, false, bhv_star_render96_init)
 
 ---@param o Object
 local function bhv_star_particle_render96_init(o)
@@ -94,10 +94,10 @@ local function bhv_star_particle_loop(o)
     end
 end
 
-id_bhvRender96StarParticle = hook_render96_behavior(nil, false, bhv_star_particle_render96_init, bhv_star_particle_loop, OBJ_LIST_UNIMPORTANT, "StarParticle")
+id_bhvRender96StarParticle = r96lib.hook_behavior(nil, false, bhv_star_particle_render96_init, bhv_star_particle_loop, OBJ_LIST_UNIMPORTANT, "StarParticle")
 
 ---------------
 -- UV scroll --
 ---------------
 
---UvScroll.hook_scrolling_function('star_particle_001_displaylist_mesh_layer_5_tri_1', uv_scroll_right)
+--UvScroll.hook_scrolling_function("star_particle_001_displaylist_mesh_layer_5_tri_1", uv_scroll_right)

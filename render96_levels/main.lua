@@ -4,4 +4,7 @@
 -- incompatible: romhack
 
 -- 3D Skybox
-require('3d-skybox')
+local skybox3d = require("/lib/skybox-3d")
+require("/constants")
+
+skybox3d.set_level_skybox_model(LEVEL_BOWSER_1, E_MODEL_BOWSER_1_SKYBOX)

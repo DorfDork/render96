@@ -1,3 +1,4 @@
+local r96lib = require("/lib/r96lib")
 require("/constants")
 
 ------------------------
@@ -12,4 +13,4 @@ local function bhv_wooden_post_render96_loop(o)
     end
 end
 
-id_bhvRender96WoodenPost = hook_render96_behavior(id_bhvWoodenPost, false, nil, bhv_wooden_post_render96_loop)
+id_bhvRender96WoodenPost = r96lib.hook_behavior(id_bhvWoodenPost, false, nil, bhv_wooden_post_render96_loop)
