@@ -1,7 +1,7 @@
 -- Makes everything defined in this file visible to _G (xLuigiGamerx)
 _ENV = _G
 
--- Truth table (Cooliokid)
+-- Truth table (Cooliokid956)
 T = function (l) local t = {} for _, v in ipairs(l) do t[v] = true end return t end
 
 -------------
