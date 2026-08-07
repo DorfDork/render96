@@ -5,8 +5,7 @@
 local version = require("/lib/version")
 local r96lib = require("/lib/r96lib")
 
--- TODO: uncomment this ---vvvvv---
--- gLevelValues.entryLevel = SPECIAL_WARP_TITLE
+gLevelValues.entryLevel = SPECIAL_WARP_TITLE
 if version.SKIP_GODDARD_AND_FILE_SELECT then
     gLevelValues.skipGoddard = 0
     gLevelValues.skipFileSelect = 0
