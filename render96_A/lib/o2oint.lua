@@ -3,7 +3,7 @@
     Object to object interactions
 
     filename: o2oint.lua
-    version: v1.1
+    version: v1.2
     author: PeachyPeach
     required: sm64coopdx v1.4 or later
 
@@ -11,13 +11,29 @@
 
 --]]
 
+--- @alias list<T> table<integer, T>
+
+--- @class BehaviorInteraction
+--- @field interact fun(interactor: Object, interactee: Object, context: table|nil): (boolean|nil)
+--- @field ignoreIntangible boolean
+
+--- @class FunctionInteraction
+--- @field objectLists list<ObjectList|integer>
+--- @field func fun(obj:Object):boolean
+--- @field interact fun(interactor: Object, interactee: Object, context: table|nil): (boolean|nil)
+--- @field ignoreIntangible boolean
+
+--- @class Interactions
+--- @field behaviorIds table<BehaviorId|integer, BehaviorInteraction>
+--- @field functions list<FunctionInteraction>
+--- @field process_interactions fun(self, interactor: Object|table, context: table|nil): table<Object> Processes interactions for the interactor object and returns a table of interacted objects
+
 local type = type
 local pairs = pairs
 local ipairs = ipairs
 local unpack = table.unpack
 local obj_get_first = obj_get_first
 local obj_get_next = obj_get_next
-local get_id_from_behavior = get_id_from_behavior
 local obj_is_valid_for_interaction = obj_is_valid_for_interaction
 local obj_check_hitbox_overlap = obj_check_hitbox_overlap
 local obj_check_overlap_with_hitbox_params = obj_check_overlap_with_hitbox_params
@@ -34,7 +50,11 @@ local DEFAULT_OBJ_LISTS = {
     OBJ_LIST_POLELIKE,
 }
 
-local function tblfind(t, value, equals)
+--- @param t table
+--- @param value any
+--- @param equals (fun(any, any): boolean)|nil
+--- @return any
+local function tfind(t, value, equals)
     for k, v in pairs(t) do
         if (equals and equals(v, value)) or (not equals and v == value) then
             return k
@@ -43,15 +63,10 @@ local function tblfind(t, value, equals)
     return nil
 end
 
-local function get_function_name(func)
-    for k, v in pairs(_G) do
-        if v == func then
-            return k
-        end
-    end
-    return tostring(func)
-end
-
+--- @param interactions Interactions
+--- @param interactor Object|table
+--- @param context table|nil
+--- @return table<Object>
 local function process_interactions(interactions, interactor, context)
     local check_hitbox_overlap, args
     if type(interactor) == "table" then
@@ -69,82 +84,109 @@ local function process_interactions(interactions, interactor, context)
         args = { interactor }
     end
 
+    --- @type table<Object>
     local interacted = {}
-    local objLists = interactions.objectLists
+    local processed = {}
+
+    -- Process behaviors
     local behaviorIds = interactions.behaviorIds
-    local functions = interactions.functions
-    for _, objList in ipairs(objLists) do
-        local obj = obj_get_first(objList)
+    for behaviorId, interaction in pairs(behaviorIds) do
+        local ignoreIntangible = interaction.ignoreIntangible
+        local interact = interaction.interact
+        local obj = obj_get_first_with_behavior_id(behaviorId)
         while obj do
-            local interaction
+            processed[obj._pointer] = true
+
+            -- Don't interact with itself
+            if obj == interactor then
+                goto next_obj
+            end
 
             -- Check hitbox overlap
             if not check_hitbox_overlap(obj, unpack(args)) then
                 goto next_obj
             end
 
-            -- Check behavior id
-            interaction = behaviorIds[get_id_from_behavior(obj.behavior)]
-            if interaction then
-                goto process_interaction
-            end
-
-            -- Check "obj is..." functions
-            for _, func in ipairs(functions) do
-                if func.func(obj) then
-                    interaction = func
-                    goto process_interaction
-                end
-            end
-
-            -- No interaction found
-            goto next_obj
-
-            ::process_interaction::
-
             -- Check if the object is valid for interaction
-            if interaction.ignoreIntangible or obj_is_valid_for_interaction(obj) then
+            if ignoreIntangible or obj_is_valid_for_interaction(obj) then
 
                 -- Process interaction, stop if it returns true
                 interacted[#interacted+1] = obj
-                if interaction.interact(interactor, obj, context) then
+                if interact(interactor, obj, context) then
                     return interacted
                 end
             end
 
             ::next_obj::
 
-            obj = obj_get_next(obj)
+            obj = obj_get_next_with_same_behavior_id(obj)
+        end
+    end
+
+    -- Process functions
+    local functions = interactions.functions
+    for _, interaction in ipairs(functions) do
+        local func = interaction.func
+        local interact = interaction.interact
+        local ignoreIntangible = interaction.ignoreIntangible
+
+        local objectLists = interaction.objectLists
+        for _, objList in ipairs(objectLists) do
+            local obj = obj_get_first(objList)
+            while obj do
+                if processed[obj._pointer] then
+                    goto next_obj
+                end
+
+                -- Don't interact with itself
+                if obj == interactor then
+                    goto next_obj
+                end
+
+                -- Check function
+                if not func(obj) then
+                    goto next_obj
+                end
+
+                -- Check hitbox overlap
+                if not check_hitbox_overlap(obj, unpack(args)) then
+                    goto next_obj
+                end
+
+                -- Check if the object is valid for interaction
+                if ignoreIntangible or obj_is_valid_for_interaction(obj) then
+
+                    -- Process interaction, stop if it returns true
+                    interacted[#interacted+1] = obj
+                    if interact(interactor, obj, context) then
+                        return interacted
+                    end
+                end
+
+                ::next_obj::
+
+                obj = obj_get_next(obj)
+            end
         end
     end
 
     return interacted
 end
 
----@class Interactions
----@field process_interactions fun(self, interactor: table|Object, context: table|nil): table Processes interactions for the interactor object and returns a table of interacted objects
-
----@param interactions table
----@return Interactions
+--- @param interactions table
+--- @return Interactions
 --- Creates a new Interactions object
 local function new_interactions(interactions)
+    ---@type Interactions
     local t = {
-        objectLists = {},
         behaviorIds = {},
         functions = {},
         process_interactions = process_interactions,
     }
 
     -- Object lists
-    if type(interactions.objectLists) == "table" then
-
-        -- Discard keys, we don't need those
-        for _, objList in pairs(interactions.objectLists) do
-            table.insert(t.objectLists, objList)
-        end
-    else
-        t.objectLists = DEFAULT_OBJ_LISTS
-    end
+    --- @type list<ObjectList|integer>
+    local defaultObjectLists = type(interactions.objectLists) == "table" and interactions.objectLists or DEFAULT_OBJ_LISTS
 
     -- Interactions
     if type(interactions.interactions) == "table" then
@@ -153,6 +195,7 @@ local function new_interactions(interactions)
             -- Mandatory keys: 'targets' and 'interact'
             if interaction.targets and type(interaction.interact) == "function" then
                 local targets = type(interaction.targets) == "table" and interaction.targets or {interaction.targets}
+                local objectLists = type(interaction.objectLists) == "table" and interaction.objectLists or defaultObjectLists
                 for _, target in pairs(targets) do
 
                     -- Allowed types for target: number (behavior id), function
@@ -165,10 +208,11 @@ local function new_interactions(interactions)
                             ignoreIntangible = interaction.ignoreIntangible
                         }
                     elseif type(target) == "function" then
-                        if tblfind(t.functions, target, function (l, r) return l.func == r end) then
-                            error("An interaction is already defined for function: " .. get_function_name(target))
+                        if tfind(t.functions, target, function (l, r) return l.func == r end) then
+                            error("An interaction is already defined for function: " .. tostring(tfind(_G, target)))
                         end
                         table.insert(t.functions, {
+                            objectLists = objectLists,
                             func = target,
                             interact = interaction.interact,
                             ignoreIntangible = interaction.ignoreIntangible
@@ -190,8 +234,8 @@ local _o2oint = {
     Interactions = new_interactions
 }
 
----@class o2oint
----@field Interactions fun(interactions: table): Interactions Creates a new Interactions object
+--- @class o2oint
+--- @field Interactions fun(interactions: table): Interactions Creates a new Interactions object
 local o2oint = setmetatable({}, {
     __index = _o2oint,
     __newindex = function () end,

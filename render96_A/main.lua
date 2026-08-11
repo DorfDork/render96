@@ -2,353 +2,149 @@
 -- description: A Mod Pack That Adds All Render96 Features To The Game
 -- author: \#ff3030\Render96DX Team
 
+local version = require("/lib/version")
 local r96lib = require("/lib/r96lib")
-charSelect = _G.charSelect
 
 gLevelValues.entryLevel = SPECIAL_WARP_TITLE
---gLevelValues.entryLevel = LEVEL_ENDING
-
--- Models
-r96lib.addModelOverride(id_bhvBalconyBigBoo,           E_MODEL_BOO_BIG)
-r96lib.addModelOverride(id_bhvMerryGoRoundBigBoo,      E_MODEL_BOO_BIG)
-r96lib.addModelOverride(id_bhvBooWithCage,             E_MODEL_BOO_BIG)
-r96lib.addModelOverride(id_bhvGhostHuntBigBoo,         E_MODEL_BOO_KING)
-r96lib.addModelOverride(id_bhvBooInCastle,             E_MODEL_BOO_KING)
-r96lib.addModelOverride(id_bhvBigBullyWithMinions,     E_MODEL_BULLY_BIG)
-r96lib.addModelOverride(id_bhvGrindel,                 E_MODEL_GRINDLE)
-r96lib.addModelOverride(id_bhvHorizontalGrindel,       E_MODEL_GRINDLE)
-r96lib.addModelOverride(id_bhvSpindel,                 E_MODEL_SPINDLE)
-r96lib.addModelOverride(id_bhvSmallPenguin,            E_MODEL_PENGUIN_BABY)
-r96lib.addModelOverride(id_bhvRacingPenguin,           E_MODEL_PENGUIN_RACER)
-r96lib.addModelOverride(id_bhvSLWalkingPenguin,        E_MODEL_PENGUIN_SL)
-r96lib.addModelOverride(id_bhvFirePiranhaPlant,        E_MODEL_PIRANHA_PLANT_FIRE)
-r96lib.addModelOverride(id_bhvWhompKingBoss,           E_MODEL_WHOMP_KING)
-r96lib.addModelOverride(id_bhvSignOnWall,              E_MODEL_SIGN_ON_WALL)
-r96lib.addModelOverride(id_bhvStarDoor,                E_MODEL_STAR_DOOR)
-r96lib.addModelOverride(id_bhvToxBox,                  E_MODEL_TOXBOX)
-r96lib.addModelOverride(id_bhvCapSwitchBase,           E_MODEL_CAP_SWITCH_BASE_HD)
-r96lib.addModelOverride(id_bhvFireSpitter,             E_MODEL_FIRE_SPITTER)
-r96lib.addModelOverride(id_bhvMantaRay,                E_MODEL_MANTA)
-r96lib.addModelOverride(id_bhvRotatingExclamationMark, E_MODEL_EXCLAMATION_POINT_HD)
-r96lib.addModelOverride(id_bhvCoffin,                  E_MODEL_BBH_COFFIN)
-r96lib.addModelOverride(id_bhvSnowmansHead,            E_MODEL_SNOWMAN_HEAD)
-r96lib.addModelOverride(id_bhvSnowmansBottom,          E_MODEL_SNOWMAN_BODY)
-r96lib.addModelOverride(id_bhvBigSnowmanWhole,         E_MODEL_SNOWMAN_BODY)
-
-r96lib.addModelParamOverride(id_bhvKoopa, 0x01020000, E_MODEL_KOOPA_QUICK_BOB)
-r96lib.addModelParamOverride(id_bhvKoopa, 0x02030000, E_MODEL_KOOPA_QUICK_THI)
-
-r96lib.addModelLevelOverride(id_bhvGoomba, E_MODEL_GOOMBA_SSL,         E_MODEL_GOOMBA,     LEVEL_SSL, 1, nil)
-r96lib.addModelLevelOverride(id_bhvGoomba, E_MODEL_GOOMBA_UNDERGROUND, E_MODEL_GOOMBA,     LEVEL_SSL, 2, nil)
-r96lib.addModelLevelOverride(id_bhvGoomba, E_MODEL_GOOMBA_UNDERGROUND, E_MODEL_GOOMBA,     LEVEL_JRB, 1, nil)
-r96lib.addModelLevelOverride(id_bhvGoomba, E_MODEL_GOOMBA_BOXART,      E_MODEL_GOOMBA,     LEVEL_BITDW, 1, nil)
-r96lib.addModelLevelOverride(id_bhvGoomba, E_MODEL_GOOMBA_BOXART,      E_MODEL_GOOMBA,     LEVEL_BITFS, 1, nil)
-r96lib.addModelLevelOverride(id_bhvGoomba, E_MODEL_GOOMBA_BOXART,      E_MODEL_GOOMBA,     LEVEL_BITS, 1, nil)
-
-r96lib.addModelLevelOverride(id_bhvFlame,  E_MODEL_RED_FLAME_TORCH,    E_MODEL_RED_FLAME,  LEVEL_CASTLE, 3, nil)
-r96lib.addModelLevelOverride(id_bhvFlame,  E_MODEL_BLUE_FLAME_TORCH,   E_MODEL_BLUE_FLAME, LEVEL_CASTLE, 3, nil)
-r96lib.addModelLevelOverride(id_bhvFlame,  E_MODEL_RED_FLAME_TORCH,    E_MODEL_RED_FLAME,  LEVEL_HMC, 1, nil)
-r96lib.addModelLevelOverride(id_bhvFlame,  E_MODEL_RED_FLAME_BBH_TORCH,    E_MODEL_RED_FLAME,  LEVEL_BBH, 1, nil)
-
-r96lib.addModelLevelOverride(id_bhvFlyguyFlame,               E_MODEL_RED_FLAME_BOWSER,  E_MODEL_RED_FLAME,  LEVEL_BOWSER_1, 1, nil)
-r96lib.addModelLevelOverride(id_bhvFlyguyFlame,               E_MODEL_BLUE_FLAME_BOWSER, E_MODEL_BLUE_FLAME, LEVEL_BOWSER_1, 1, nil)
-r96lib.addModelLevelOverride(id_bhvFlameBowser,               E_MODEL_RED_FLAME_BOWSER,  E_MODEL_RED_FLAME,  LEVEL_BOWSER_1, 1, nil)
-r96lib.addModelLevelOverride(id_bhvFlameBowser,               E_MODEL_BLUE_FLAME_BOWSER, E_MODEL_BLUE_FLAME, LEVEL_BOWSER_1, 1, nil)
-r96lib.addModelLevelOverride(id_bhvFlameBouncing,             E_MODEL_RED_FLAME_BOWSER,  E_MODEL_RED_FLAME,  LEVEL_BOWSER_1, 1, nil)
-r96lib.addModelLevelOverride(id_bhvFlameBouncing,             E_MODEL_BLUE_FLAME_BOWSER, E_MODEL_BLUE_FLAME, LEVEL_BOWSER_1, 1, nil)
-r96lib.addModelLevelOverride(id_bhvBlueBowserFlame,           E_MODEL_RED_FLAME_BOWSER,  E_MODEL_RED_FLAME,  LEVEL_BOWSER_1, 1, nil)
-r96lib.addModelLevelOverride(id_bhvBlueBowserFlame,           E_MODEL_BLUE_FLAME_BOWSER, E_MODEL_BLUE_FLAME, LEVEL_BOWSER_1, 1, nil)
-r96lib.addModelLevelOverride(id_bhvSmallPiranhaFlame,         E_MODEL_RED_FLAME_BOWSER,  E_MODEL_RED_FLAME,  LEVEL_BOWSER_1, 1, nil)
-r96lib.addModelLevelOverride(id_bhvSmallPiranhaFlame,         E_MODEL_BLUE_FLAME_BOWSER, E_MODEL_BLUE_FLAME, LEVEL_BOWSER_1, 1, nil)
-r96lib.addModelLevelOverride(id_bhvFlameFloatingLanding,      E_MODEL_RED_FLAME_BOWSER,  E_MODEL_RED_FLAME,  LEVEL_BOWSER_1, 1, nil)
-r96lib.addModelLevelOverride(id_bhvFlameFloatingLanding,      E_MODEL_BLUE_FLAME_BOWSER, E_MODEL_BLUE_FLAME, LEVEL_BOWSER_1, 1, nil)
-r96lib.addModelLevelOverride(id_bhvFlameLargeBurningOut,      E_MODEL_RED_FLAME_BOWSER,  E_MODEL_RED_FLAME,  LEVEL_BOWSER_1, 1, nil)
-r96lib.addModelLevelOverride(id_bhvFlameLargeBurningOut,      E_MODEL_BLUE_FLAME_BOWSER, E_MODEL_BLUE_FLAME, LEVEL_BOWSER_1, 1, nil)
-r96lib.addModelLevelOverride(id_bhvFlameMovingForwardGrowing, E_MODEL_RED_FLAME_BOWSER,  E_MODEL_RED_FLAME,  LEVEL_BOWSER_1, 1, nil)
-r96lib.addModelLevelOverride(id_bhvFlameMovingForwardGrowing, E_MODEL_BLUE_FLAME_BOWSER, E_MODEL_BLUE_FLAME, LEVEL_BOWSER_1, 1, nil)
-
-r96lib.addModelLevelOverride(id_bhvFlyguyFlame,               E_MODEL_RED_FLAME_BOWSER,  E_MODEL_RED_FLAME,  LEVEL_BOWSER_2, 1, nil)
-r96lib.addModelLevelOverride(id_bhvFlyguyFlame,               E_MODEL_BLUE_FLAME_BOWSER, E_MODEL_BLUE_FLAME, LEVEL_BOWSER_2, 1, nil)
-r96lib.addModelLevelOverride(id_bhvFlameBowser,               E_MODEL_RED_FLAME_BOWSER,  E_MODEL_RED_FLAME,  LEVEL_BOWSER_2, 1, nil)
-r96lib.addModelLevelOverride(id_bhvFlameBowser,               E_MODEL_BLUE_FLAME_BOWSER, E_MODEL_BLUE_FLAME, LEVEL_BOWSER_2, 1, nil)
-r96lib.addModelLevelOverride(id_bhvFlameBouncing,             E_MODEL_RED_FLAME_BOWSER,  E_MODEL_RED_FLAME,  LEVEL_BOWSER_2, 1, nil)
-r96lib.addModelLevelOverride(id_bhvFlameBouncing,             E_MODEL_BLUE_FLAME_BOWSER, E_MODEL_BLUE_FLAME, LEVEL_BOWSER_2, 1, nil)
-r96lib.addModelLevelOverride(id_bhvBlueBowserFlame,           E_MODEL_RED_FLAME_BOWSER,  E_MODEL_RED_FLAME,  LEVEL_BOWSER_2, 1, nil)
-r96lib.addModelLevelOverride(id_bhvBlueBowserFlame,           E_MODEL_BLUE_FLAME_BOWSER, E_MODEL_BLUE_FLAME, LEVEL_BOWSER_2, 1, nil)
-r96lib.addModelLevelOverride(id_bhvSmallPiranhaFlame,         E_MODEL_RED_FLAME_BOWSER,  E_MODEL_RED_FLAME,  LEVEL_BOWSER_2, 1, nil)
-r96lib.addModelLevelOverride(id_bhvSmallPiranhaFlame,         E_MODEL_BLUE_FLAME_BOWSER, E_MODEL_BLUE_FLAME, LEVEL_BOWSER_2, 1, nil)
-r96lib.addModelLevelOverride(id_bhvFlameFloatingLanding,      E_MODEL_RED_FLAME_BOWSER,  E_MODEL_RED_FLAME,  LEVEL_BOWSER_2, 1, nil)
-r96lib.addModelLevelOverride(id_bhvFlameFloatingLanding,      E_MODEL_BLUE_FLAME_BOWSER, E_MODEL_BLUE_FLAME, LEVEL_BOWSER_2, 1, nil)
-r96lib.addModelLevelOverride(id_bhvFlameLargeBurningOut,      E_MODEL_RED_FLAME_BOWSER,  E_MODEL_RED_FLAME,  LEVEL_BOWSER_2, 1, nil)
-r96lib.addModelLevelOverride(id_bhvFlameLargeBurningOut,      E_MODEL_BLUE_FLAME_BOWSER, E_MODEL_BLUE_FLAME, LEVEL_BOWSER_2, 1, nil)
-r96lib.addModelLevelOverride(id_bhvFlameMovingForwardGrowing, E_MODEL_RED_FLAME_BOWSER,  E_MODEL_RED_FLAME,  LEVEL_BOWSER_2, 1, nil)
-r96lib.addModelLevelOverride(id_bhvFlameMovingForwardGrowing, E_MODEL_BLUE_FLAME_BOWSER, E_MODEL_BLUE_FLAME, LEVEL_BOWSER_2, 1, nil)
-
-r96lib.addModelLevelOverride(id_bhvFlyguyFlame,               E_MODEL_RED_FLAME_BOWSER,  E_MODEL_RED_FLAME,  LEVEL_BOWSER_3, 1, nil)
-r96lib.addModelLevelOverride(id_bhvFlyguyFlame,               E_MODEL_BLUE_FLAME_BOWSER, E_MODEL_BLUE_FLAME, LEVEL_BOWSER_3, 1, nil)
-r96lib.addModelLevelOverride(id_bhvFlameBowser,               E_MODEL_RED_FLAME_BOWSER,  E_MODEL_RED_FLAME,  LEVEL_BOWSER_3, 1, nil)
-r96lib.addModelLevelOverride(id_bhvFlameBowser,               E_MODEL_BLUE_FLAME_BOWSER, E_MODEL_BLUE_FLAME, LEVEL_BOWSER_3, 1, nil)
-r96lib.addModelLevelOverride(id_bhvFlameBouncing,             E_MODEL_RED_FLAME_BOWSER,  E_MODEL_RED_FLAME,  LEVEL_BOWSER_3, 1, nil)
-r96lib.addModelLevelOverride(id_bhvFlameBouncing,             E_MODEL_BLUE_FLAME_BOWSER, E_MODEL_BLUE_FLAME, LEVEL_BOWSER_3, 1, nil)
-r96lib.addModelLevelOverride(id_bhvBlueBowserFlame,           E_MODEL_RED_FLAME_BOWSER,  E_MODEL_RED_FLAME,  LEVEL_BOWSER_3, 1, nil)
-r96lib.addModelLevelOverride(id_bhvBlueBowserFlame,           E_MODEL_BLUE_FLAME_BOWSER, E_MODEL_BLUE_FLAME, LEVEL_BOWSER_3, 1, nil)
-r96lib.addModelLevelOverride(id_bhvSmallPiranhaFlame,         E_MODEL_RED_FLAME_BOWSER,  E_MODEL_RED_FLAME,  LEVEL_BOWSER_3, 1, nil)
-r96lib.addModelLevelOverride(id_bhvSmallPiranhaFlame,         E_MODEL_BLUE_FLAME_BOWSER, E_MODEL_BLUE_FLAME, LEVEL_BOWSER_3, 1, nil)
-r96lib.addModelLevelOverride(id_bhvFlameFloatingLanding,      E_MODEL_RED_FLAME_BOWSER,  E_MODEL_RED_FLAME,  LEVEL_BOWSER_3, 1, nil)
-r96lib.addModelLevelOverride(id_bhvFlameFloatingLanding,      E_MODEL_BLUE_FLAME_BOWSER, E_MODEL_BLUE_FLAME, LEVEL_BOWSER_3, 1, nil)
-r96lib.addModelLevelOverride(id_bhvFlameLargeBurningOut,      E_MODEL_RED_FLAME_BOWSER,  E_MODEL_RED_FLAME,  LEVEL_BOWSER_3, 1, nil)
-r96lib.addModelLevelOverride(id_bhvFlameLargeBurningOut,      E_MODEL_BLUE_FLAME_BOWSER, E_MODEL_BLUE_FLAME, LEVEL_BOWSER_3, 1, nil)
-r96lib.addModelLevelOverride(id_bhvFlameMovingForwardGrowing, E_MODEL_RED_FLAME_BOWSER,  E_MODEL_RED_FLAME,  LEVEL_BOWSER_3, 1, nil)
-r96lib.addModelLevelOverride(id_bhvFlameMovingForwardGrowing, E_MODEL_BLUE_FLAME_BOWSER, E_MODEL_BLUE_FLAME, LEVEL_BOWSER_3, 1, nil)
-
--- Enemies
-r96lib.addSpawn(SPECIAL_WARP_TITLE,  1, E_MODEL_MR_I, id_bhvRender96MrI,   0, 0, 0, 0, 0, 0, false, nil, function(o) cur_obj_scale(100) end)
-r96lib.addSpawn(LEVEL_LLL,  1, E_MODEL_BLARGG_FRIENDLY, id_bhvRender96BlarggFriendly, -2070, 0, 6177, 0, 0, 0, 0, {5, 6})
-r96lib.addSpawn(LEVEL_LLL,  1, E_MODEL_BLARGG, id_bhvRender96Blargg, -6766, 0,  3033, 0, 0, 0, false)
-r96lib.addSpawn(LEVEL_LLL,  1, E_MODEL_BLARGG, id_bhvRender96Blargg, -6018, 0, -5512, 0, 0, 0, false)
-r96lib.addSpawn(LEVEL_LLL,  1, E_MODEL_BLARGG, id_bhvRender96Blargg, -2151, 0, -5254, 0, 0, 0, false)
-r96lib.addSpawn(LEVEL_LLL,  1, E_MODEL_BLARGG, id_bhvRender96Blargg,  2012, 0, -3440, 0, 0, 0, false)
-r96lib.addSpawn(LEVEL_LLL,  1, E_MODEL_BLARGG, id_bhvRender96Blargg,  7408, 0, -4223, 0, 0, 0, false)
-r96lib.addSpawn(LEVEL_LLL,  1, E_MODEL_BLARGG, id_bhvRender96Blargg,  6318, 0,   752, 0, 0, 0, false)
-r96lib.addSpawn(LEVEL_LLL,  1, E_MODEL_BLARGG, id_bhvRender96Blargg,  5647, 0,  3426, 0, 0, 0, false)
-r96lib.addSpawn(LEVEL_LLL,  1, E_MODEL_BLARGG, id_bhvRender96Blargg, -5315, 0,  7493, 0, 0, 0, false)
-r96lib.addSpawn(LEVEL_BBH,  1, E_MODEL_MR_I, id_bhvRender96MrI, -2369, -204,  5184, 0, 0, 0, false)
-r96lib.addSpawn(LEVEL_BBH,  1, E_MODEL_MR_I, id_bhvRender96MrI,   480,   10,  -653, 0, 0, 0, false)
-r96lib.addSpawn(LEVEL_BBH,  1, E_MODEL_MR_I, id_bhvRender96MrI,  1640,  840,  -733, 0, 0, 0, false)
-r96lib.addSpawn(LEVEL_BBH,  1, E_MODEL_MR_I, id_bhvRender96MrI,   923, 1741,  -332, 0, 0, 0, false, nil, function(o) o.oBehParams = 0x05010000 o.oBehParams2ndByte = 0x05010000 end)
-r96lib.addSpawn(LEVEL_LLL,  1, E_MODEL_MR_I, id_bhvRender96MrI, -3199,  307,  3456, 0, 0, 0, false)
-r96lib.addSpawn(LEVEL_LLL,  1, E_MODEL_MR_I, id_bhvRender96MrI,  6673,  154, -3060, 0, 0, 0, false)
-r96lib.addSpawn(LEVEL_HMC,  1, E_MODEL_MR_I, id_bhvRender96MrI,  4740, 1060,  4680, 0, 0, 0, false)
-r96lib.addSpawn(LEVEL_HMC,  1, E_MODEL_MR_I, id_bhvRender96MrI,  6700, 1020,  6820, 0, 0, 0, false)
-r96lib.addSpawn(LEVEL_BITS, 1, E_MODEL_MARTY, id_bhvThwomp,     -5247, -1330,  -787, 0, 0, 0, true, nil, function(o) o.oBehParams = 1 end)
-r96lib.addSpawn(LEVEL_SL, 1, E_MODEL_BIG_CHILL_BULLY, id_bhvBigBullyWithMinions, 315, 1331, -4852, 0, 0, 0, false, nil, function(o) o.oBullySubtype = BULLY_STYPE_CHILL end)
-
--- Extra
-r96lib.addSpawn(LEVEL_BOB,   1, E_MODEL_LUIGI_KEY, id_bhvLuigiKeys, 7141,  2030,  -6711, 0, 0, 0, false, nil, function(o) o.oBehParams2ndByte = 0 end)
-r96lib.addSpawn(LEVEL_WF,    1, E_MODEL_LUIGI_KEY, id_bhvLuigiKeys, -356,  3584,  -21,   0, 0, 0, false, {2, 3, 4, 5, 6}, function(o) o.oBehParams2ndByte = 1 end)
-r96lib.addSpawn(LEVEL_JRB,   1, E_MODEL_LUIGI_KEY, id_bhvLuigiKeys, 7134,  -3322, 2169,  0, 0, 0, false, {2}, function(o) o.oBehParams2ndByte = 2 end)
-r96lib.addSpawn(LEVEL_CCM,   2, E_MODEL_LUIGI_KEY, id_bhvLuigiKeys, -5539, -4812, -6637, 0, 0, 0, false, nil, function(o) o.oBehParams2ndByte = 3 end)
-r96lib.addSpawn(LEVEL_BBH,   1, E_MODEL_LUIGI_KEY, id_bhvLuigiKeys, -1595, 2560,  1657,  0, 0, 0, false, nil, function(o) o.oBehParams2ndByte = 4 end)
-r96lib.addSpawn(LEVEL_SA,    1, E_MODEL_LUIGI_KEY, id_bhvLuigiKeys, -318,  -160,  -38,   0, 0, 0, false, nil, function(o) o.oBehParams2ndByte = 5 end)
-r96lib.addSpawn(LEVEL_PSS,   1, E_MODEL_LUIGI_KEY, id_bhvLuigiKeys, 6094,  6144,  -4145, 0, 0, 0, false, nil, function(o) o.oBehParams2ndByte = 6 end)
-r96lib.addSpawn(LEVEL_BITDW, 1, E_MODEL_LUIGI_KEY, id_bhvLuigiKeys, -4560, 1126,  -179,  0, 0, 0, false, nil, function(o) o.oBehParams2ndByte = 7 end)
-
-r96lib.addSpawn(LEVEL_VCUTM, 1, E_MODEL_WARIO_LUNAR_COIN,   id_bhvSixGoldenCoin, 4287, 685, -4391,    0, 0, 0, false, nil, function(o) o.oBehParams2ndByte = 0 end)
-r96lib.addSpawn(LEVEL_TOTWC, 1, E_MODEL_WARIO_HOUSE_COIN,   id_bhvSixGoldenCoin, 4045, 490, 5154,     0, 0, 0, false, nil, function(o) o.oBehParams2ndByte = 1 end)
-r96lib.addSpawn(LEVEL_LLL,   1, E_MODEL_WARIO_PUMPKIN_COIN, id_bhvSixGoldenCoin, 6585, 142, -6909,    0, 0, 0, false, nil, function(o) o.oBehParams2ndByte = 2 end)
-r96lib.addSpawn(LEVEL_SSL,   1, E_MODEL_WARIO_KOOPA_COIN,   id_bhvSixGoldenCoin, -2052, 1830, -1021,  0, 0, 0, false, nil, function(o) o.oBehParams2ndByte = 3 end)
-r96lib.addSpawn(LEVEL_DDD,   2, E_MODEL_WARIO_MARIO_COIN,   id_bhvSixGoldenCoin, 5025, -3681, -1430,  0, 0, 0, false, nil, function(o) o.oBehParams2ndByte = 4 end)
-r96lib.addSpawn(LEVEL_COTMC, 1, E_MODEL_WARIO_TREE_COIN,    id_bhvSixGoldenCoin, 7, -143, 2141,       0, 0, 0, false, nil, function(o) o.oBehParams2ndByte = 5 end)
-
-local function on_room_create()
-    gBehaviorValues.ProcessLODs = 1
+if version.SKIP_GODDARD_AND_FILE_SELECT then
+    gLevelValues.skipGoddard = 0
+    gLevelValues.skipFileSelect = 0
 end
 
-hook_event(HOOK_ON_MODS_LOADED, on_room_create)
+gBehaviorValues.ProcessLODs = 1
 
-local TEX_BOO_KEY    = get_texture_info("texture_hud_boo_key")
-local TEX_WARIO_COIN = get_texture_info("texture_hud_wario_coin")
+------------
+-- Models --
+------------
 
-local function in_cutscene()
-    local act = gMarioStates[0].action
-    return act == ACT_END_PEACH_CUTSCENE
-        or act == ACT_CREDITS_CUTSCENE
-        or act == ACT_END_WAVING_CUTSCENE
-        or act == ACT_INTRO_CUTSCENE
-end
+r96lib.add_model_override(id_bhvBalconyBigBoo,           E_MODEL_R96_BOO_BIG)
+r96lib.add_model_override(id_bhvMerryGoRoundBigBoo,      E_MODEL_R96_BOO_BIG)
+r96lib.add_model_override(id_bhvBooWithCage,             E_MODEL_R96_BOO_BIG)
+r96lib.add_model_override(id_bhvGhostHuntBigBoo,         E_MODEL_R96_BOO_KING)
+r96lib.add_model_override(id_bhvBooInCastle,             E_MODEL_R96_BOO_KING)
+r96lib.add_model_override(id_bhvBigBullyWithMinions,     E_MODEL_R96_BULLY_BIG)
+r96lib.add_model_override(id_bhvGrindel,                 E_MODEL_R96_GRINDLE)
+r96lib.add_model_override(id_bhvHorizontalGrindel,       E_MODEL_R96_GRINDLE)
+r96lib.add_model_override(id_bhvSpindel,                 E_MODEL_R96_SPINDLE)
+r96lib.add_model_override(id_bhvSmallPenguin,            E_MODEL_R96_PENGUIN_BABY)
+r96lib.add_model_override(id_bhvRacingPenguin,           E_MODEL_R96_PENGUIN_RACER)
+r96lib.add_model_override(id_bhvSLWalkingPenguin,        E_MODEL_R96_PENGUIN_SL)
+r96lib.add_model_override(id_bhvFirePiranhaPlant,        E_MODEL_R96_PIRANHA_PLANT_FIRE)
+r96lib.add_model_override(id_bhvWhompKingBoss,           E_MODEL_R96_WHOMP_KING)
+r96lib.add_model_override(id_bhvSignOnWall,              E_MODEL_R96_SIGN_ON_WALL)
+r96lib.add_model_override(id_bhvStarDoor,                E_MODEL_R96_STAR_DOOR)
+r96lib.add_model_override(id_bhvToxBox,                  E_MODEL_R96_TOXBOX)
+r96lib.add_model_override(id_bhvCapSwitchBase,           E_MODEL_R96_CAP_SWITCH_BASE_HD)
+r96lib.add_model_override(id_bhvFireSpitter,             E_MODEL_R96_FIRE_SPITTER)
+r96lib.add_model_override(id_bhvMantaRay,                E_MODEL_R96_MANTA)
+r96lib.add_model_override(id_bhvRotatingExclamationMark, E_MODEL_R96_EXCLAMATION_POINT_HD)
+r96lib.add_model_override(id_bhvCoffin,                  E_MODEL_R96_BBH_COFFIN)
+r96lib.add_model_override(id_bhvSnowmansHead,            E_MODEL_R96_SNOWMAN_HEAD)
+r96lib.add_model_override(id_bhvSnowmansBottom,          E_MODEL_R96_SNOWMAN_BODY)
+r96lib.add_model_override(id_bhvBigSnowmanWhole,         E_MODEL_R96_SNOWMAN_BODY)
 
-local function render_hud_keys()
-    if in_cutscene() then return end
-    if obj_get_first_with_behavior_id(id_bhvActSelector) then return end
-    if hud_is_hidden() then return end
-    if gNumLuigiKeys <= 0 or gNumLuigiKeys >= 8 then return end
-    djui_hud_set_resolution(RESOLUTION_N64)
-    djui_hud_set_color(255, 255, 255, 255)
-    djui_hud_render_texture(TEX_BOO_KEY, 22, 35, 0.0625, 0.0625)
-    djui_hud_set_font(FONT_HUD)
-    djui_hud_print_text("@", 38, 35, 1)
-    djui_hud_print_text(tostring(gNumLuigiKeys), 54, 35, 1)
-end
+r96lib.add_model_override_param(id_bhvKoopa, 0x01020000, E_MODEL_R96_KOOPA_QUICK_BOB)
+r96lib.add_model_override_param(id_bhvKoopa, 0x02030000, E_MODEL_R96_KOOPA_QUICK_THI)
 
-local function render_hud_wario_coins()
-    if in_cutscene() then return end
-    if obj_get_first_with_behavior_id(id_bhvActSelector) then return end
-    if hud_is_hidden() then return end
-    if gNumWarioCoins <= 0 or gNumWarioCoins >= 6 then return end
-    djui_hud_set_resolution(RESOLUTION_N64)
-    djui_hud_set_color(255, 255, 255, 255)
-    djui_hud_render_texture(TEX_WARIO_COIN, 22, 55, 0.0625, 0.0625)
-    djui_hud_set_font(FONT_HUD)
-    djui_hud_print_text("@", 38, 55, 1)
-    djui_hud_print_text(tostring(gNumWarioCoins), 54, 55, 1)
-end
+r96lib.add_model_override_level(id_bhvGoomba, E_MODEL_R96_GOOMBA_SSL,         E_MODEL_GOOMBA, LEVEL_SSL,   1, nil)
+r96lib.add_model_override_level(id_bhvGoomba, E_MODEL_R96_GOOMBA_UNDERGROUND, E_MODEL_GOOMBA, LEVEL_SSL,   2, nil)
+r96lib.add_model_override_level(id_bhvGoomba, E_MODEL_R96_GOOMBA_UNDERGROUND, E_MODEL_GOOMBA, LEVEL_JRB,   1, nil)
+r96lib.add_model_override_level(id_bhvGoomba, E_MODEL_R96_GOOMBA_BOXART,      E_MODEL_GOOMBA, LEVEL_BITDW, 1, nil)
+r96lib.add_model_override_level(id_bhvGoomba, E_MODEL_R96_GOOMBA_BOXART,      E_MODEL_GOOMBA, LEVEL_BITFS, 1, nil)
+r96lib.add_model_override_level(id_bhvGoomba, E_MODEL_R96_GOOMBA_BOXART,      E_MODEL_GOOMBA, LEVEL_BITS,  1, nil)
 
-hook_event(HOOK_ON_HUD_RENDER_BEHIND, function()
-    render_hud_keys()
-    render_hud_wario_coins()
-end)
+r96lib.add_model_override_level(id_bhvFlame, E_MODEL_R96_RED_FLAME_TORCH,     E_MODEL_RED_FLAME,  LEVEL_CASTLE, 3, nil)
+r96lib.add_model_override_level(id_bhvFlame, E_MODEL_R96_BLUE_FLAME_TORCH,    E_MODEL_BLUE_FLAME, LEVEL_CASTLE, 3, nil)
+r96lib.add_model_override_level(id_bhvFlame, E_MODEL_R96_RED_FLAME_TORCH,     E_MODEL_RED_FLAME,  LEVEL_HMC,    1, nil)
+r96lib.add_model_override_level(id_bhvFlame, E_MODEL_R96_RED_FLAME_BBH_TORCH, E_MODEL_RED_FLAME,  LEVEL_BBH,    1, nil)
 
-hook_chat_command("hud", "[0|1]", function(msg)
-    if msg == '0' then
-        hud_hide()
-        return true
-    elseif string.sub(msg, 1, 1) == "1" then
-        hud_show()
-        return true
-    end
-    return false
-end)
+r96lib.add_model_override_level(id_bhvFlyguyFlame,               E_MODEL_R96_RED_FLAME_BOWSER,  E_MODEL_RED_FLAME,  LEVEL_BOWSER_1, 1, nil)
+r96lib.add_model_override_level(id_bhvFlyguyFlame,               E_MODEL_R96_BLUE_FLAME_BOWSER, E_MODEL_BLUE_FLAME, LEVEL_BOWSER_1, 1, nil)
+r96lib.add_model_override_level(id_bhvFlameBowser,               E_MODEL_R96_RED_FLAME_BOWSER,  E_MODEL_RED_FLAME,  LEVEL_BOWSER_1, 1, nil)
+r96lib.add_model_override_level(id_bhvFlameBowser,               E_MODEL_R96_BLUE_FLAME_BOWSER, E_MODEL_BLUE_FLAME, LEVEL_BOWSER_1, 1, nil)
+r96lib.add_model_override_level(id_bhvFlameBouncing,             E_MODEL_R96_RED_FLAME_BOWSER,  E_MODEL_RED_FLAME,  LEVEL_BOWSER_1, 1, nil)
+r96lib.add_model_override_level(id_bhvFlameBouncing,             E_MODEL_R96_BLUE_FLAME_BOWSER, E_MODEL_BLUE_FLAME, LEVEL_BOWSER_1, 1, nil)
+r96lib.add_model_override_level(id_bhvBlueBowserFlame,           E_MODEL_R96_RED_FLAME_BOWSER,  E_MODEL_RED_FLAME,  LEVEL_BOWSER_1, 1, nil)
+r96lib.add_model_override_level(id_bhvBlueBowserFlame,           E_MODEL_R96_BLUE_FLAME_BOWSER, E_MODEL_BLUE_FLAME, LEVEL_BOWSER_1, 1, nil)
+r96lib.add_model_override_level(id_bhvSmallPiranhaFlame,         E_MODEL_R96_RED_FLAME_BOWSER,  E_MODEL_RED_FLAME,  LEVEL_BOWSER_1, 1, nil)
+r96lib.add_model_override_level(id_bhvSmallPiranhaFlame,         E_MODEL_R96_BLUE_FLAME_BOWSER, E_MODEL_BLUE_FLAME, LEVEL_BOWSER_1, 1, nil)
+r96lib.add_model_override_level(id_bhvFlameFloatingLanding,      E_MODEL_R96_RED_FLAME_BOWSER,  E_MODEL_RED_FLAME,  LEVEL_BOWSER_1, 1, nil)
+r96lib.add_model_override_level(id_bhvFlameFloatingLanding,      E_MODEL_R96_BLUE_FLAME_BOWSER, E_MODEL_BLUE_FLAME, LEVEL_BOWSER_1, 1, nil)
+r96lib.add_model_override_level(id_bhvFlameLargeBurningOut,      E_MODEL_R96_RED_FLAME_BOWSER,  E_MODEL_RED_FLAME,  LEVEL_BOWSER_1, 1, nil)
+r96lib.add_model_override_level(id_bhvFlameLargeBurningOut,      E_MODEL_R96_BLUE_FLAME_BOWSER, E_MODEL_BLUE_FLAME, LEVEL_BOWSER_1, 1, nil)
+r96lib.add_model_override_level(id_bhvFlameMovingForwardGrowing, E_MODEL_R96_RED_FLAME_BOWSER,  E_MODEL_RED_FLAME,  LEVEL_BOWSER_1, 1, nil)
+r96lib.add_model_override_level(id_bhvFlameMovingForwardGrowing, E_MODEL_R96_BLUE_FLAME_BOWSER, E_MODEL_BLUE_FLAME, LEVEL_BOWSER_1, 1, nil)
 
-local sBullyNum = 1
+r96lib.add_model_override_level(id_bhvFlyguyFlame,               E_MODEL_R96_RED_FLAME_BOWSER,  E_MODEL_RED_FLAME,  LEVEL_BOWSER_2, 1, nil)
+r96lib.add_model_override_level(id_bhvFlyguyFlame,               E_MODEL_R96_BLUE_FLAME_BOWSER, E_MODEL_BLUE_FLAME, LEVEL_BOWSER_2, 1, nil)
+r96lib.add_model_override_level(id_bhvFlameBowser,               E_MODEL_R96_RED_FLAME_BOWSER,  E_MODEL_RED_FLAME,  LEVEL_BOWSER_2, 1, nil)
+r96lib.add_model_override_level(id_bhvFlameBowser,               E_MODEL_R96_BLUE_FLAME_BOWSER, E_MODEL_BLUE_FLAME, LEVEL_BOWSER_2, 1, nil)
+r96lib.add_model_override_level(id_bhvFlameBouncing,             E_MODEL_R96_RED_FLAME_BOWSER,  E_MODEL_RED_FLAME,  LEVEL_BOWSER_2, 1, nil)
+r96lib.add_model_override_level(id_bhvFlameBouncing,             E_MODEL_R96_BLUE_FLAME_BOWSER, E_MODEL_BLUE_FLAME, LEVEL_BOWSER_2, 1, nil)
+r96lib.add_model_override_level(id_bhvBlueBowserFlame,           E_MODEL_R96_RED_FLAME_BOWSER,  E_MODEL_RED_FLAME,  LEVEL_BOWSER_2, 1, nil)
+r96lib.add_model_override_level(id_bhvBlueBowserFlame,           E_MODEL_R96_BLUE_FLAME_BOWSER, E_MODEL_BLUE_FLAME, LEVEL_BOWSER_2, 1, nil)
+r96lib.add_model_override_level(id_bhvSmallPiranhaFlame,         E_MODEL_R96_RED_FLAME_BOWSER,  E_MODEL_RED_FLAME,  LEVEL_BOWSER_2, 1, nil)
+r96lib.add_model_override_level(id_bhvSmallPiranhaFlame,         E_MODEL_R96_BLUE_FLAME_BOWSER, E_MODEL_BLUE_FLAME, LEVEL_BOWSER_2, 1, nil)
+r96lib.add_model_override_level(id_bhvFlameFloatingLanding,      E_MODEL_R96_RED_FLAME_BOWSER,  E_MODEL_RED_FLAME,  LEVEL_BOWSER_2, 1, nil)
+r96lib.add_model_override_level(id_bhvFlameFloatingLanding,      E_MODEL_R96_BLUE_FLAME_BOWSER, E_MODEL_BLUE_FLAME, LEVEL_BOWSER_2, 1, nil)
+r96lib.add_model_override_level(id_bhvFlameLargeBurningOut,      E_MODEL_R96_RED_FLAME_BOWSER,  E_MODEL_RED_FLAME,  LEVEL_BOWSER_2, 1, nil)
+r96lib.add_model_override_level(id_bhvFlameLargeBurningOut,      E_MODEL_R96_BLUE_FLAME_BOWSER, E_MODEL_BLUE_FLAME, LEVEL_BOWSER_2, 1, nil)
+r96lib.add_model_override_level(id_bhvFlameMovingForwardGrowing, E_MODEL_R96_RED_FLAME_BOWSER,  E_MODEL_RED_FLAME,  LEVEL_BOWSER_2, 1, nil)
+r96lib.add_model_override_level(id_bhvFlameMovingForwardGrowing, E_MODEL_R96_BLUE_FLAME_BOWSER, E_MODEL_BLUE_FLAME, LEVEL_BOWSER_2, 1, nil)
 
-local sBullySpawns = {
-    {x = 125, y = 1331, z = -4100},
-    {x = 600, y = 1331, z = -4485},
-    {x = 200, y = 1331, z = -4900},
-}
+r96lib.add_model_override_level(id_bhvFlyguyFlame,               E_MODEL_R96_RED_FLAME_BOWSER,  E_MODEL_RED_FLAME,  LEVEL_BOWSER_3, 1, nil)
+r96lib.add_model_override_level(id_bhvFlyguyFlame,               E_MODEL_R96_BLUE_FLAME_BOWSER, E_MODEL_BLUE_FLAME, LEVEL_BOWSER_3, 1, nil)
+r96lib.add_model_override_level(id_bhvFlameBowser,               E_MODEL_R96_RED_FLAME_BOWSER,  E_MODEL_RED_FLAME,  LEVEL_BOWSER_3, 1, nil)
+r96lib.add_model_override_level(id_bhvFlameBowser,               E_MODEL_R96_BLUE_FLAME_BOWSER, E_MODEL_BLUE_FLAME, LEVEL_BOWSER_3, 1, nil)
+r96lib.add_model_override_level(id_bhvFlameBouncing,             E_MODEL_R96_RED_FLAME_BOWSER,  E_MODEL_RED_FLAME,  LEVEL_BOWSER_3, 1, nil)
+r96lib.add_model_override_level(id_bhvFlameBouncing,             E_MODEL_R96_BLUE_FLAME_BOWSER, E_MODEL_BLUE_FLAME, LEVEL_BOWSER_3, 1, nil)
+r96lib.add_model_override_level(id_bhvBlueBowserFlame,           E_MODEL_R96_RED_FLAME_BOWSER,  E_MODEL_RED_FLAME,  LEVEL_BOWSER_3, 1, nil)
+r96lib.add_model_override_level(id_bhvBlueBowserFlame,           E_MODEL_R96_BLUE_FLAME_BOWSER, E_MODEL_BLUE_FLAME, LEVEL_BOWSER_3, 1, nil)
+r96lib.add_model_override_level(id_bhvSmallPiranhaFlame,         E_MODEL_R96_RED_FLAME_BOWSER,  E_MODEL_RED_FLAME,  LEVEL_BOWSER_3, 1, nil)
+r96lib.add_model_override_level(id_bhvSmallPiranhaFlame,         E_MODEL_R96_BLUE_FLAME_BOWSER, E_MODEL_BLUE_FLAME, LEVEL_BOWSER_3, 1, nil)
+r96lib.add_model_override_level(id_bhvFlameFloatingLanding,      E_MODEL_R96_RED_FLAME_BOWSER,  E_MODEL_RED_FLAME,  LEVEL_BOWSER_3, 1, nil)
+r96lib.add_model_override_level(id_bhvFlameFloatingLanding,      E_MODEL_R96_BLUE_FLAME_BOWSER, E_MODEL_BLUE_FLAME, LEVEL_BOWSER_3, 1, nil)
+r96lib.add_model_override_level(id_bhvFlameLargeBurningOut,      E_MODEL_R96_RED_FLAME_BOWSER,  E_MODEL_RED_FLAME,  LEVEL_BOWSER_3, 1, nil)
+r96lib.add_model_override_level(id_bhvFlameLargeBurningOut,      E_MODEL_R96_BLUE_FLAME_BOWSER, E_MODEL_BLUE_FLAME, LEVEL_BOWSER_3, 1, nil)
+r96lib.add_model_override_level(id_bhvFlameMovingForwardGrowing, E_MODEL_R96_RED_FLAME_BOWSER,  E_MODEL_RED_FLAME,  LEVEL_BOWSER_3, 1, nil)
+r96lib.add_model_override_level(id_bhvFlameMovingForwardGrowing, E_MODEL_R96_BLUE_FLAME_BOWSER, E_MODEL_BLUE_FLAME, LEVEL_BOWSER_3, 1, nil)
 
-local function entity_cleanup()
-    local mrI = obj_get_nearest_object_with_behavior_id(gMarioStates[0].marioObj, id_bhvMrI)
-    if mrI ~= nil then
-        --print(mrI.oPosX, mrI.oPosY, mrI.oPosZ)
-        obj_mark_for_deletion(mrI)
-    end
-end
+-------------
+-- Enemies --
+-------------
 
-hook_event(HOOK_ON_OBJECT_LOAD, entity_cleanup)
-    local audioStream = nil
-function wario_head_spawner()
-    local levelNum = gNetworkPlayers[0].currLevelNum
-    local areaNum = gNetworkPlayers[0].currAreaIndex
-    local actNum = gNetworkPlayers[0].currActNum
-    local m = gMarioStates[0]
-    --5235, -1074,  1995
-    --604, -1074, 1995
-    --if levelNum == LEVEL_CASTLE and m.pos.y == -1074 then
-    --r96lib.spawn_object(E_MODEL_WARIO_HEAD, id_bhvWarioHead, 5935, -1074,  2084, 0, 0, 0, nil)
---
-    ----print("spawned head")
-    --end
-    --print(levelNum)
+r96lib.add_spawn(SPECIAL_WARP_TITLE, 1, E_MODEL_MR_I,                id_bhvRender96MrI,                0,     0,     0, 0, 0, 0, false, nil, function(o) cur_obj_scale(100) end)
+r96lib.add_spawn(LEVEL_LLL,          1, E_MODEL_R96_BLARGG_FRIENDLY, id_bhvRender96BlarggFriendly, -2070,     0,  6177, 0, 0, 0, true, {5, 6})
+r96lib.add_spawn(LEVEL_LLL,          1, E_MODEL_BLARGG,              id_bhvRender96Blargg,         -6766,     0,  3033, 0, 0, 0, true)
+r96lib.add_spawn(LEVEL_LLL,          1, E_MODEL_BLARGG,              id_bhvRender96Blargg,         -6018,     0, -5512, 0, 0, 0, true)
+r96lib.add_spawn(LEVEL_LLL,          1, E_MODEL_BLARGG,              id_bhvRender96Blargg,         -2151,     0, -5254, 0, 0, 0, true)
+r96lib.add_spawn(LEVEL_LLL,          1, E_MODEL_BLARGG,              id_bhvRender96Blargg,          2012,     0, -3440, 0, 0, 0, true)
+r96lib.add_spawn(LEVEL_LLL,          1, E_MODEL_BLARGG,              id_bhvRender96Blargg,          7408,     0, -4223, 0, 0, 0, true)
+r96lib.add_spawn(LEVEL_LLL,          1, E_MODEL_BLARGG,              id_bhvRender96Blargg,          6318,     0,   752, 0, 0, 0, true)
+r96lib.add_spawn(LEVEL_LLL,          1, E_MODEL_BLARGG,              id_bhvRender96Blargg,          5647,     0,  3426, 0, 0, 0, true)
+r96lib.add_spawn(LEVEL_LLL,          1, E_MODEL_BLARGG,              id_bhvRender96Blargg,         -5315,     0,  7493, 0, 0, 0, true)
+r96lib.add_spawn(LEVEL_BITS,         1, E_MODEL_R96_MARTY,           id_bhvThwomp,                 -5247, -1330,  -787, 0, 0, 0, true, nil, function(o) o.oBehParams = 1 end)
 
-    if levelNum ~= LEVEL_CASTLE then 
-        local door = obj_get_first_with_behavior_id(id_bhvDoor)
-        while door ~= nil and door.oSwitchState1 ~= 1 and obj_has_model_extended(door, E_MODEL_HMC_WOODEN_DOOR) ~= 0 do
-            door.oSwitchState1 = 1
-            door = obj_get_next_with_same_behavior_id(door)
-        end
-    end
-    if levelNum == LEVEL_INNER_WORKINGS then 
-        sAudioStream = INNER_WORKINGS_SONG
-        audio_stream_set_loop_points(sAudioStream, 15102, 1204316)
-        audio_stream_set_looping(sAudioStream, true)
-        audio_stream_play(sAudioStream, true, 0.7)
-    end
-    sBullyNum = 1
-end
+----------------
+-- Luigi keys --
+----------------
 
-local sWasGameOver = false
-local m = gMarioStates[0]
+r96lib.add_spawn(LEVEL_BOB,   1, E_MODEL_R96_LUIGI_KEY, id_bhvLuigiKeys,  7141,  2030, -6711, 0, 0, 0, false, nil, function(o) o.oBehParams2ndByte = 0 end)
+r96lib.add_spawn(LEVEL_WF,    1, E_MODEL_R96_LUIGI_KEY, id_bhvLuigiKeys,  -356,  3584,   -21, 0, 0, 0, false, {2, 3, 4, 5, 6}, function(o) o.oBehParams2ndByte = 1 end)
+r96lib.add_spawn(LEVEL_JRB,   1, E_MODEL_R96_LUIGI_KEY, id_bhvLuigiKeys,  7134, -3322,  2169, 0, 0, 0, false, {2}, function(o) o.oBehParams2ndByte = 2 end)
+r96lib.add_spawn(LEVEL_CCM,   2, E_MODEL_R96_LUIGI_KEY, id_bhvLuigiKeys, -5539, -4812, -6637, 0, 0, 0, false, nil, function(o) o.oBehParams2ndByte = 3 end)
+r96lib.add_spawn(LEVEL_BBH,   1, E_MODEL_R96_LUIGI_KEY, id_bhvLuigiKeys, -1595,  2560,  1657, 0, 0, 0, false, nil, function(o) o.oBehParams2ndByte = 4 end)
+r96lib.add_spawn(LEVEL_SA,    1, E_MODEL_R96_LUIGI_KEY, id_bhvLuigiKeys,  -318,  -160,   -38, 0, 0, 0, false, nil, function(o) o.oBehParams2ndByte = 5 end)
+r96lib.add_spawn(LEVEL_PSS,   1, E_MODEL_R96_LUIGI_KEY, id_bhvLuigiKeys,  6094,  6144, -4145, 0, 0, 0, false, nil, function(o) o.oBehParams2ndByte = 6 end)
+r96lib.add_spawn(LEVEL_BITDW, 1, E_MODEL_R96_LUIGI_KEY, id_bhvLuigiKeys, -4560,  1126,  -179, 0, 0, 0, false, nil, function(o) o.oBehParams2ndByte = 7 end)
 
-function quality_of_life()
-    local levelNum = gNetworkPlayers[0].currLevelNum
-        if levelNum ~= LEVEL_INNER_WORKINGS then
-        if sAudioStream ~= nil then
-            audio_stream_set_looping(sAudioStream, false)
-            audio_stream_stop(sAudioStream)
-            sAudioStream = nil
-        end
-    end
+-----------------
+-- Wario coins --
+-----------------
 
-    local isGameOver = get_delayed_warp_op() == WARP_OP_GAME_OVER
-    if isGameOver then
-        if not sWasGameOver then
-            m.marioObj.oTimer = 0
-        end
-
-        if m.marioObj.oTimer >= 47 then
-            sWasGameOver = false
-            m.numLives = 4
-            m.health = 0x880
-            warp_special(SPECIAL_WARP_GODDARD_GAMEOVER)
-            return
-        end
-    end
-    sWasGameOver = isGameOver
-
-    if m.action == ACT_JUMBO_STAR_CUTSCENE and m.actionArg == 2 then --JUMBO_STAR_CUTSCENE_FLYING
-        m.marioBodyState.handState = MARIO_HAND_OPEN;
-    end
-
-    if levelNum == LEVEL_SL then
-        local bully = obj_get_nearest_object_with_behavior_id(gMarioStates[0].marioObj, id_bhvSmallBully)
-        while bully ~= nil and obj_get_model_id_extended(bully) ~= E_MODEL_CHILL_BULLY do
-            obj_set_model_extended(bully, E_MODEL_CHILL_BULLY)
-            bully.oPosX = sBullySpawns[sBullyNum].x
-            bully.oPosY = sBullySpawns[sBullyNum].y
-            bully.oPosZ = sBullySpawns[sBullyNum].z
-            bully.oHomeX =  bully.oPosX
-            bully.oHomeY =  bully.oPosY
-            bully.oHomeZ =  bully.oPosZ
-            bully.oGravity = 8
-            bully = obj_get_next_with_same_behavior_id(bully)
-            sBullyNum = sBullyNum + 1
-        end
-        local chillyChief = obj_get_nearest_object_with_behavior_id(gMarioStates[0].marioObj, id_bhvBigChillBully)
-        local bigBully = obj_get_nearest_object_with_behavior_id(gMarioStates[0].marioObj, id_bhvBigBullyWithMinions)
-        if chillyChief ~= nil and bigBully ~= nil and bigBully.oBullySubtype == 16 then
-            obj_mark_for_deletion(chillyChief)
-            bigBully.oBullySubtype = 17
-        end
-        if bigBully ~= nil and bigBully.oBullySubtype == 17 then
-            if bigBully.oBullyKBTimerAndMinionKOCounter == 3 then
-                obj_mark_for_deletion(bigBully)
-                chillyChief = spawn_non_sync_object(id_bhvBigChillBully, E_MODEL_BIG_CHILL_BULLY, -1273, 1980, 6759, function(o) 
-                    o.oBehParams = 0x01000000 o.oBullySubtype = BULLY_STYPE_CHILL
-                    o.oColorR = 1 play_puzzle_jingle() end)
-            end
-        end
-        if chillyChief ~= nil and chillyChief.oTimer == 5 and chillyChief.oColorR == 1 then
-            chillyChief.oColorR = 0
-            chillyChief.oPosX = 315
-            chillyChief.oPosY = 3000
-            chillyChief.oPosZ = -4852
-            chillyChief.oHomeX = 315 chillyChief.oHomeY = 1352 chillyChief.oHomeZ = -4852
-            chillyChief.oAction = 2
-        end
-    end
-    --print("X: " .. gMarioStates[0].marioObj.oPosX .. " Y: " .. gMarioStates[0].marioObj.oPosY .. " Z: " .. gMarioStates[0].marioObj.oPosZ)
-end
-hook_event(HOOK_MARIO_UPDATE, quality_of_life)
-
-hook_event(HOOK_ON_WARP, wario_head_spawner)
-function squishtest()
-    --vec3f_set(gMarioStates[0].marioObj.header.gfx.scale, 3, 1, 1);
-    --vec3f_set(gMarioStates[0].marioObj.header.gfx.scale, .1, 1, 1)
-    --gMarioStates[0].marioObj.header.gfx.node.flags = gMarioStates[0].marioObj.header.gfx.node.flags | GRAPH_RENDER_BILLBOARD
-end
-
-hook_event(HOOK_MARIO_UPDATE, squishtest)
-
-local function mario_update(m)
-   --if m.playerIndex ~= 0 then return end
- --if m.controller.buttonPressed & X_BUTTON ~= 0 then
-   --     --initiate_warp(LEVEL_CASTLE_GROUNDS, 1, WARP_NODE_CREDITS_START, 0);
-   --     initiate_warp(LEVEL_CASTLE_GROUNDS, 1, WARP_NODE_CREDITS_END, 0);
-   --     --WARP_NODE_CREDITS_END
-   ----spawn_non_sync_object(id_bhvRender96YoshiRideable, E_MODEL_YOSHI_RIDEABLE, m.pos.x + 200, m.pos.y, m.pos.z, nil)
-   ----spawn_non_sync_object(id_bhvGrandStar, E_MODEL_1UP, m.pos.x + 200, m.pos.y, m.pos.z, nil)
---end
-   --if m.action == ACT_BACKFLIP then
-   --    warp_to_level(LEVEL_BOB, 1, 1)
-   --end
-   --SPECIAL_WARP_CAKE
-   --WARP_NODE_CREDITS_START
-   --SPECIAL_WARP_TITLE
-   --SPECIAL_WARP_LEVEL_SELECT
-   --SPECIAL_WARP_GODDARD
-   --WARP_OP_CREDITS_START
-   
-end
-
-hook_event(HOOK_MARIO_UPDATE, mario_update)
+r96lib.add_spawn(LEVEL_VCUTM, 1, E_MODEL_R96_WARIO_LUNAR_COIN,   id_bhvSixGoldenCoin,  4287,   685, -4391, 0, 0, 0, false, nil, function(o) o.oBehParams2ndByte = 0 end)
+r96lib.add_spawn(LEVEL_TOTWC, 1, E_MODEL_R96_WARIO_HOUSE_COIN,   id_bhvSixGoldenCoin,  4045,   490,  5154, 0, 0, 0, false, nil, function(o) o.oBehParams2ndByte = 1 end)
+r96lib.add_spawn(LEVEL_LLL,   1, E_MODEL_R96_WARIO_PUMPKIN_COIN, id_bhvSixGoldenCoin,  6585,   142, -6909, 0, 0, 0, false, nil, function(o) o.oBehParams2ndByte = 2 end)
+r96lib.add_spawn(LEVEL_SSL,   1, E_MODEL_R96_WARIO_KOOPA_COIN,   id_bhvSixGoldenCoin, -2052,  1830, -1021, 0, 0, 0, false, nil, function(o) o.oBehParams2ndByte = 3 end)
+r96lib.add_spawn(LEVEL_DDD,   2, E_MODEL_R96_WARIO_MARIO_COIN,   id_bhvSixGoldenCoin,  5025, -3681, -1430, 0, 0, 0, false, nil, function(o) o.oBehParams2ndByte = 4 end)
+r96lib.add_spawn(LEVEL_COTMC, 1, E_MODEL_R96_WARIO_TREE_COIN,    id_bhvSixGoldenCoin,     7,  -143,  2141, 0, 0, 0, false, nil, function(o) o.oBehParams2ndByte = 5 end)
