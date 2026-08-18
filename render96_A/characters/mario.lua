@@ -12,10 +12,16 @@ local function open_hands_during_jumbo_star_flying(m)
 end
 
 local function restore_vanilla_gameover()
-    if gNetworkPlayers[0].currActNum == 99 then -- in credits
-        gLevelValues.entryLevel = SPECIAL_WARP_TITLE
-    elseif gNetworkPlayers[0].currLevelNum == LEVEL_CASTLE_GROUNDS then
-        gLevelValues.entryLevel = SPECIAL_WARP_GODDARD_GAMEOVER
+
+    -- Restrict game over screen to single player
+    if network_player_connected_count() <= 1 then
+        if gNetworkPlayers[0].currActNum == 99 then -- in credits
+            gLevelValues.entryLevel = SPECIAL_WARP_TITLE
+        elseif gNetworkPlayers[0].currLevelNum == LEVEL_CASTLE_GROUNDS then
+            gLevelValues.entryLevel = SPECIAL_WARP_GODDARD_GAMEOVER
+        end
+    else
+        gLevelValues.entryLevel = LEVEL_CASTLE_GROUNDS
     end
 end
 

@@ -5,10 +5,15 @@
 local version = require("/lib/version")
 local r96lib = require("/lib/r96lib")
 
-gLevelValues.entryLevel = SPECIAL_WARP_TITLE
-if version.SKIP_GODDARD_AND_FILE_SELECT then
-    gLevelValues.skipGoddard = 0
-    gLevelValues.skipFileSelect = 0
+-- Restrict title screen to host
+if network_is_server() then
+    gLevelValues.entryLevel = SPECIAL_WARP_TITLE
+    if version.SKIP_GODDARD_AND_FILE_SELECT then
+        gLevelValues.skipGoddard = 0
+        gLevelValues.skipFileSelect = 0
+    end
+else
+    gLevelValues.entryLevel = LEVEL_CASTLE_GROUNDS
 end
 
 gBehaviorValues.ProcessLODs = 1
