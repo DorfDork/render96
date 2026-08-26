@@ -205,6 +205,25 @@ gfx_rt64_set_texture_mod("mat_boo_king_boo_king_tounge", {
 	},
 })
 
+gfx_rt64_set_texture_mod("mat_bowser_bomb_bomb_blue", {
+	materialMod = {
+		reflectionFactor = 0.1,
+		shadowRayBias = 0,
+	},
+})
+
+gfx_rt64_set_texture_mod("mat_bowser_bomb_bomb_spike", {
+	materialMod = {
+		reflectionFactor = 0.1,
+		reflectionFresnelFactor = 0,
+		reflectionShineFactor = 0.91,
+		shadowRayBias = 0,
+		specularTint = true,
+		shadowEnabled = true,
+		shadowCenter = false,
+	},
+})
+
 gfx_rt64_set_texture_mod("mat_bowser_bowser_belly", {
 	materialMod = {
 		specularTint = false,
@@ -332,15 +351,17 @@ gfx_rt64_set_texture_mod("mat_bowser_bowser_shell", {
 	materialMod = {
 		specularColor = { 72, 72, 72 },
 		specularShinyness = 9.2,
-		specularTint = false,
-		shadingModel = "blinn",
 		diffuseIntensity = 1,
 		specularFactor = 1,
 		specularEccentricity = 0.2,
 		normalStrength = 1,
+		specularIntensity = 4,
+		specularTint = false,
+		shadingModel = "blinn",
 	},
 	normalMap = "bowser_shell_nrm",
 })
+
 
 gfx_rt64_set_texture_mod("mat_bowser_bowser_shell_rim", {
 	materialMod = {
@@ -837,6 +858,20 @@ gfx_rt64_set_texture_mod("mat_heave_ho_heave_ho_black", {
 	},
 })
 
+gfx_rt64_set_texture_mod("impact_ring_seg6_texture_0601CA50", {
+	materialMod = {
+		selfLightColor = { 205, 205, 205 },
+		lightGroupMaskBits = 0,
+	},
+})
+
+gfx_rt64_set_texture_mod("impact_ring_seg6_texture_0601DA50", {
+	materialMod = {
+		selfLightColor = { 205, 205, 205 },
+		lightGroupMaskBits = 0,
+	},
+})
+
 gfx_rt64_set_texture_mod("mat_key_door_door_castle_frame", {
 	materialMod = {
 		reflectionFactor = 0.1,
@@ -1247,6 +1282,7 @@ gfx_rt64_set_texture_mod("mat_peach_peach_hair", {
 		specularFactor = 1,
 		specularEccentricity = 0.3,
 	},
+	normalMap = "peach_hair_nrm",
 })
 
 gfx_rt64_set_texture_mod("mat_peach_peach_jewel_blue", {
@@ -1260,9 +1296,9 @@ gfx_rt64_set_texture_mod("mat_peach_peach_jewel_blue", {
 
 gfx_rt64_set_texture_mod("mat_peach_peach_skin", {
 	materialMod = {
-		specularColor = { 72, 72, 72 },
+		specularColor = { 36, 36, 36 },
 		specularFactor = 1,
-		specularEccentricity = 0.4,
+		specularEccentricity = 0.5,
 	},
 })
 

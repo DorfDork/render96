@@ -148,7 +148,8 @@ gfx_rt64_set_geo_layout_mod("bowser_bomb_geo", {
 	materialMod = {
 		specularColor = { 36, 36, 36 },
 		specularTint = true,
-		shadowCenter = true,
+		shadowEnabled = true,
+		shadowCenter = false,
 	},
 })
 
@@ -1004,7 +1005,7 @@ gfx_rt64_set_geo_layout_mod("star_geo", {
 	materialMod = {
 		specularColor = { 17, 17, 17 },
 		specularTint = true,
-		shadowCenter = false,
+		shadowCenter = true,
 		specularFactor = 1,
 		specularEccentricity = 0.4,
 	},
