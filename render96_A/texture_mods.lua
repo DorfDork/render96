@@ -1080,29 +1080,41 @@ gfx_rt64_set_texture_mod("mat_manta_manta_eyes2", {
 gfx_rt64_set_texture_mod("mat_mario_mario_buttons", {
 	materialMod = {
 		specularShinyness = 2e+01,
-		specularTint = false,
+		specularIntensity = 65.6,
+		specularTint = true,
+		shadowEnabled = true,
 	},
 })
 
 gfx_rt64_set_texture_mod("mat_mario_mario_eye", {
 	materialMod = {
-		specularColor = { 72, 72, 72 },
+		specularColor = { 0, 255, 240 },
 		specularShinyness = 2e+01,
+		specularIntensity = 1.2,
+		specularTint = true,
 	},
 })
 
 gfx_rt64_set_texture_mod("mat_mario_mario_gloves", {
 	materialMod = {
-		specularColor = { 26, 26, 26 },
+		specularColor = { 53, 255, 0 },
 		specularShinyness = 5,
+		diffuseIntensity = 0.83,
+		specularFactor = 0.62,
+		specularEccentricity = 0.8,
+		specularIntensity = 1,
 		specularTint = true,
+		shadowEnabled = true,
+		shadingModel = "blinn",
 	},
 })
 
 gfx_rt64_set_texture_mod("mat_mario_mario_hair", {
 	materialMod = {
-		specularColor = { 17, 17, 17 },
+		specularColor = { 34, 23, 14 },
 		specularShinyness = 6,
+		specularEccentricity = 0.27,
+		specularIntensity = 2,
 		specularTint = false,
 	},
 })
@@ -1111,6 +1123,7 @@ gfx_rt64_set_texture_mod("mat_mario_mario_mustache", {
 	materialMod = {
 		specularColor = { 34, 34, 34 },
 		specularShinyness = 8,
+		specularEccentricity = 0.18,
 		specularTint = false,
 	},
 })
@@ -1119,6 +1132,10 @@ gfx_rt64_set_texture_mod("mat_mario_mario_overalls", {
 	materialMod = {
 		specularColor = { 72, 72, 72 },
 		specularShinyness = 6,
+		diffuseIntensity = 0.74,
+		specularFactor = 1,
+		specularEccentricity = 0.45,
+		specularIntensity = 8,
 	},
 })
 
@@ -1126,6 +1143,10 @@ gfx_rt64_set_texture_mod("mat_mario_mario_shirt", {
 	materialMod = {
 		specularColor = { 72, 72, 72 },
 		specularShinyness = 6,
+		diffuseIntensity = 1,
+		specularEccentricity = 0.35,
+		specularIntensity = 9.1,
+		specularTint = true,
 	},
 })
 
@@ -1133,29 +1154,48 @@ gfx_rt64_set_texture_mod("mat_mario_mario_shoes", {
 	materialMod = {
 		specularColor = { 34, 34, 34 },
 		specularShinyness = 8,
+		diffuseIntensity = 0.9,
+		specularIntensity = 6,
 		specularTint = false,
 	},
 })
 
 gfx_rt64_set_texture_mod("mat_mario_mario_skin", {
 	materialMod = {
-		specularColor = { 17, 17, 17 },
+		specularColor = { 34, 34, 34 },
 		specularShinyness = 6,
+		diffuseIntensity = 0.88,
+		specularEccentricity = 0.35,
+		specularTint = true,
+	},
+})
+
+gfx_rt64_set_texture_mod("mat_mario_mario_soles", {
+	materialMod = {
+		diffuseIntensity = 1,
+		specularEccentricity = 1,
+		specularIntensity = 1.4,
 		specularTint = true,
 	},
 })
 
 gfx_rt64_set_texture_mod("mat_mario_newmetal", {
 	materialMod = {
-		ignoreNormalFactor = 1,
+		ignoreNormalFactor = 0,
+		reflectionFactor = 0.73,
 		reflectionFresnelFactor = 1,
-		reflectionShineFactor = 1,
-		specularColor = { 85, 85, 85 },
-		specularTint = false,
+		reflectionShineFactor = 0.72,
+		refractionFactor = 1,
+		specularColor = { 255, 255, 255 },
+		diffuseIntensity = 1,
 		specularFactor = 1,
-		specularEccentricity = 0.3,
+		specularEccentricity = 0.23,
+		reflectionColor = { 255, 255, 255 },
+		specularIntensity = 4.7,
+		specularTint = false,
 	},
 })
+
 
 gfx_rt64_set_texture_mod("mat_marty_twhomp_eye", {
 	materialMod = {
