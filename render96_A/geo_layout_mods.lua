@@ -83,6 +83,7 @@ gfx_rt64_set_geo_layout_mod("blue_flame_geo", {
 	materialMod = {
 		specularColor = { 36, 36, 36 },
 		specularTint = true,
+		shadowAlphaMultiplier = 0,
 		shadowCenter = true,
 		selfLightColor = { 179, 179, 179 },
 		lightGroupMaskBits = 0,
@@ -865,6 +866,7 @@ gfx_rt64_set_geo_layout_mod("red_flame_geo", {
 	materialMod = {
 		specularColor = { 36, 36, 36 },
 		specularTint = true,
+		shadowAlphaMultiplier = 0,
 		shadowCenter = true,
 		selfLightColor = { 179, 179, 179 },
 		lightGroupMaskBits = 0,
@@ -889,7 +891,7 @@ gfx_rt64_set_geo_layout_mod("red_flame_shadow_geo", {
 		shadowAlphaMultiplier = 0,
 		shadowCenter = true,
 		selfLightColor = { 179, 179, 179 },
-		lightGroupMaskBits = 1,
+		lightGroupMaskBits = 0,
 	},
 	lightMod = {
 		position = { 0, 0, 0 },
@@ -1287,6 +1289,7 @@ gfx_rt64_set_geo_layout_mod("blue_flame_bowser_geo", {
 	materialMod = {
 		specularColor = { 36, 36, 36 },
 		specularTint = true,
+		shadowAlphaMultiplier = 0,
 		shadowCenter = true,
 		selfLightColor = { 179, 179, 179 },
 		lightGroupMaskBits = 0,
@@ -1642,6 +1645,7 @@ gfx_rt64_set_geo_layout_mod("red_flame_bowser_geo", {
 	materialMod = {
 		specularColor = { 36, 36, 36 },
 		specularTint = true,
+		shadowAlphaMultiplier = 0,
 		shadowCenter = true,
 		selfLightColor = { 179, 179, 179 },
 		lightGroupMaskBits = 0,

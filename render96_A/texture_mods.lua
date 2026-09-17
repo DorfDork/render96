@@ -1849,3 +1849,37 @@ gfx_rt64_set_texture_mod("scuttlebug_scuttle_body_rgba32", {
 	},
 	normalMap = "bowser_shell_nrm",
 })
+
+gfx_rt64_set_texture_mod("texture_waterbox_jrb_water", {
+	materialMod = {
+		uvDetailScale = 0.4,
+		reflectionFactor = 0.375,
+		reflectionFresnelFactor = 0.75,
+		refractionFactor = 0.95,
+		solidAlphaMultiplier = 0.75,
+		shadingModel = "blinn",
+	},
+	normalMap = "texture_water_nrm",
+})
+
+gfx_rt64_set_texture_mod("texture_waterbox_lava", {
+	materialMod = {
+		selfLightColor = { 51, 51, 51 },
+		shadowEnabled = false,
+		shadingModel = "blinn",
+	},
+})
+
+gfx_rt64_set_texture_mod("texture_waterbox_water", {
+	materialMod = {
+		uvDetailScale = 0.2,
+		reflectionFactor = 0.4,
+		reflectionFresnelFactor = 0.75,
+		refractionFactor = 0.95,
+		solidAlphaMultiplier = 0.75,
+		selfLightColor = { 255, 255, 255 },
+		diffuseColorMix = { 0, 0, 0, 0.25 },
+		shadingModel = "blinn",
+	},
+	normalMap = "texture_water_nrm",
+})
